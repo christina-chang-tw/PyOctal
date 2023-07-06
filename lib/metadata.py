@@ -1,3 +1,6 @@
+CHIP_NAME = "XXX"
+
+
 ### Multimeter 8163B ###
 # Sweep
 M_SWEEP_START = 1540 # nm
