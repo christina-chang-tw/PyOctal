@@ -23,6 +23,7 @@ class Subparsers():
 
 
 class PrintSubparserInfo():
+
     def __init__(self, args):
         self.args = args
 
@@ -60,6 +61,9 @@ def print_setup_info(ttype, args):
     elif ttype == "dc":
         print_info.dc()
     print()
+
+def test_distribution(ttype, args):
+
 
 
 if __name__ == "__main__":

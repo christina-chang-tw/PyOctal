@@ -44,6 +44,7 @@ class PAL:
         graph = result.Graph("TLS0_RXTXAvgIL")
         return graph, graph.YData
     
+    @staticmethod
     def release(obj):
         obj.release
 
