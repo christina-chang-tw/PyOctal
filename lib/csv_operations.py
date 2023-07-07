@@ -2,12 +2,16 @@ from lib.metadata import *
 import os.path
 import pandas as pd
 
+def initiate(folder: str, fname: str):
+    DIR_PATH = os.getcwd() + "/test/" 
+    path = DIR_PATH + folder
+    fname = f'{fname}.csv'
 
-DIR_PATH = os.getcwd() + "/test/"
-TABLE_START_ROW = 10
+    _create_folder(path=path)
+    _get_dataframe(path=path, fname=fname)
 
 
-def create_folder(path: str):
+def _create_folder(path: str):
     try:
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -20,7 +24,7 @@ def package_info(info: dict):
     return pd.DataFrame(info.items(), columns=['Params', 'Value'])
     
 
-def get_dataframe(path: str, fname: str):
+def _get_dataframe(path: str, fname: str):
     path = path + fname
     if os.path.isfile(path) and os.stat(path).st_size != 0:
         return pd.read_csv(path, encoding='utf-8')

@@ -7,10 +7,11 @@ class Subparsers():
 
     @staticmethod
     def passive(parser):
+        parser.add_argument("-cname", "--column_name", type=float, metavar="", dest="cname", nargs=1, default=[5], help="sweep step [nm]", required=False)
         parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
-        parser.add_argument("-w1", "--start_wavelength", type=float, metavar="", dest="w1", nargs=1, default=[1540], help="start wavelength [nm]", required=False)
-        parser.add_argument("-w2", "--stop_wavelength", type=float, metavar="", dest="w2", nargs=1, default=[1570], help="stop wavelength [nm]", required=False)
-        parser.add_argument("-step", "--sweep_step", type=float, metavar="", dest="step", nargs=1, default=[5], help="sweep step [nm]", required=False)
+        parser.add_argument("-w1", "--start-wavelength", type=float, metavar="", dest="w1", nargs=1, default=[1540], help="start wavelength [nm]", required=False)
+        parser.add_argument("-w2", "--stop-wavelength", type=float, metavar="", dest="w2", nargs=1, default=[1570], help="stop wavelength [nm]", required=False)
+        parser.add_argument("-rate", "--sweep-rate", type=float, metavar="", dest="rate", nargs=1, default=[5], help="sweep step [nm]", required=False)
 
     @staticmethod
     def dc(parser):
@@ -63,7 +64,7 @@ def print_setup_info(ttype, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Automated testing for optical chip", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-chip", "--chip_name", dest="name", metavar="", nargs=1, type=str, default="XXX", help="Chip name", required=False) # this create a folder in the name of the chip under test folder
+    parser.add_argument("-chip", "--chip_name", dest="chip_name", metavar="", nargs=1, type=str, default="XXX", help="Chip name", required=False) # this create a folder in the name of the chip under test folder
     subparsers = parser.add_subparsers(dest="test", help="Test type: " + ", ".join([meas for meas in TEST_TYPES]), required=True)
 
     # Arguments for passive testing

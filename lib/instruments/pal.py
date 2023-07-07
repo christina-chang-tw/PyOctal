@@ -31,7 +31,7 @@ class PAL:
     def start_meas(self):
         self.engine.StartMeasurement
 
-    def start_meas(self):
+    def stop_meas(self):
         self.engine.StopMeasurement
 
     def process_status(self):
@@ -42,16 +42,7 @@ class PAL:
             time.sleep(1)
         result = self.engine.MeasurementResult
         graph = result.Graph("TLS0_RXTXAvgIL")
-        no_channels = graph.noChannels
-        data_per_curve = graph.dataPerCurve
-        data = np.reshape(graph.YData, data_per_curve, no_channels)
-        xstart = graph.xStart
-        xstep = graph.xStep
-
-        # Create list of column names with the format "colN" (from 1 to N)
-        col_names = ['col' + str(i) for i in np.arange(data.shape[0]) + 1]
-        # Declare pandas.DataFrame object
-        return pd.DataFrame(data=data.T, columns=col_names)
+        return graph, graph.YData
     
     def release(obj):
         obj.release
