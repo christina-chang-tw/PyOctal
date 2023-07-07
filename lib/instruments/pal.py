@@ -53,6 +53,7 @@ class PAL:
         # Declare pandas.DataFrame object
         return pd.DataFrame(data=data.T, columns=col_names)
     
+    @staticmethod
     def release(obj):
         obj.release
 
