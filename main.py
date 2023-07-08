@@ -11,10 +11,9 @@ class Subparsers():
 
     @staticmethod
     def iloss(parser):
-        parser.add_argument("-cname", "--column_name", type=float, metavar="", dest="cname", nargs=1, default=[5], help="sweep step [nm]", required=False)
+        parser.add_argument("-cname", "--column_name", type=float, metavar="", dest="cname", nargs=1, default=["YYY"], help="sweep step [nm]", required=False)
         parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
-        parser.add_argument("-w1", "--start-wavelength", type=float, metavar="", dest="w1", nargs=1, default=[1540], help="start wavelength [nm]", required=False)
-        parser.add_argument("-w2", "--stop-wavelength", type=float, metavar="", dest="w2", nargs=1, default=[1570], help="stop wavelength [nm]", required=False)
+        parser.add_argument("-r", "--wavelength-range", type=float, metavar="", dest="range", nargs="+", default=[1540,1570], help="start wavelength and stop wavelength in nm", required=False)
         parser.add_argument("-rate", "--sweep-rate", type=float, metavar="", dest="rate", nargs=1, default=[5], help="sweep step [nm]", required=False)
 
     @staticmethod
@@ -32,10 +31,9 @@ class PrintSubparserInfo():
         self.args = args
 
     def iloss(self):
-        print(f'{"Output power":<20} : {self.args.power[0]:<12} dBm')
-        print(f'{"Start lambda":<20} : {self.args.w1[0]:<12} nm')
-        print(f'{"Stop lambda":<20} : {self.args.w2[0]:<12} nm')
-        print(f'{"Sweep rate":<20} : {self.args.rate[0]:<12} nm')
+        print(f'{"Output power":<20} : {self.args.power[0]:<6} dBm')
+        print(f'{"Wavelength Range":<20} : {self.args.range[0]:<3} - {self.args.range[1]:<3} nm')
+        print(f'{"Sweep rate":<20} : {self.args.rate[0]:<6} nm')
 
     def dc(self):
         pass

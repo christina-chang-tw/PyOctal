@@ -12,8 +12,8 @@ class SWEEPS:
         df = df_initiate(args.chip_name, get_func_name())
 
         self.dev.sweep_params(
-            start=args.w1,
-            stop=args.w2,
+            start=args.range[0],
+            stop=args.range[1],
             rate=args.rate,
             power=args.power,
         )

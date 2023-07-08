@@ -29,12 +29,17 @@ Install Anaconda from its official site and make sure the following listed packa
 ```
 # 
 
-## How to use this?
+## How to run a test?
 Everything is this repository should be run as a python module.
 
 ```bash
-# Example: this calls the main.py as a python module
-> python -m main
+# Example: 
+# (1) General helper message
+> python -m main -h
+# (2) Helper message of the parameters for insertion loss test
+> python -m main iloss -h
+# (3) Running an insertion loss test with pout=10dBm and range=(1550, 1570)nm
+> python -m main iloss -p 10 -r 1550 1570
 ```
 
 
