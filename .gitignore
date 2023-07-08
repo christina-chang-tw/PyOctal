@@ -1,5 +1,5 @@
 *.csv
 *__pycache__*
 
-test/*
-!test/.gitkeep
+results/*
+!results/.gitkeep

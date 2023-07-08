@@ -2,7 +2,7 @@ import os.path
 import pandas as pd
 
 def _dir_path():
-    return os.getcwd() + "/test/"
+    return os.getcwd() + "/results/"
 
 def _create_folder(path: str):
     try:
@@ -21,7 +21,7 @@ def _get_dataframe(path: str, fname: str):
 
 
 def df_initiate(folder: str="XXX", fname: str="XXX"):
-    path = __dir_path() + folder
+    path = _dir_path() + folder
     fname = f'{fname}.csv'
 
     _create_folder(path=path)
@@ -36,7 +36,7 @@ def package_result(dataframe: pd.DataFrame, data, name: str="NaN"):
     return dataframe
 
 def export_csv(data: pd.DataFrame, folder: str="XXX", fname: str="XXX"):
-    path = __dir_path() + folder
+    path = _dir_path() + folder
     fname = f'{fname}.csv'
 
     path_to_file = path + fname
