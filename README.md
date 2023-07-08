@@ -24,6 +24,7 @@ Install Anaconda from its official site and make sure the following listed packa
 │   ├── info.py              # test information
 │   ├── sweeps.py            # automated testing sweeps
 │   └── util.py              # general functions
+├── test                     # store testing data
 └── main.py                  # interface with the 
 ```
 # 
