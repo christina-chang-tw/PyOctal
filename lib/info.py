@@ -1,15 +1,18 @@
-from lib.metadata import *
+from lib.csv_operations import export_csv, package_info
+from lib.util import get_func_name
 
-class M_8163B_INFO():
-    def __init__():
-        pass
+class TEST_INFO():
 
-    def sweep_params():
-        sweep = ("Sweep Params: \n"
-                 f"Start: {M_SWEEP_START}nm\n"
-                 f"Stop: {M_SWEEP_END}nm\n"
-                 f"Step: {M_SWEEP_STEP}nm\n"
-                 "\n"
-                 "Laser: \n"
-                 f"Power: {M_POWER}nm\n")
-        return sweep
+    @staticmethod
+    def iloss(chip_name, args):
+        info = {
+            "Testing Type" : "Insertion Loss",
+            "Power" : args.power[0],
+            "Start lambda" : args.w1[0],
+            "Stop lambda" : args.w2[0],
+            "Sweep rate" : args.rate[0]
+        }
+        export_csv(package_info(info), chip_name, f'{get_func_name()}_info')
+
+
+    

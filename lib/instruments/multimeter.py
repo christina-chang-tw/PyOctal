@@ -1,7 +1,3 @@
-import pyvisa
-
-c = 299792458
-
 class M_8163B:
 
     def __init__(self, src_num: int=1, src_chan: int=1, sens_num: int=1, sens_chan: int=1):

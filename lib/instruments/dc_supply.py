@@ -1,5 +1,3 @@
-import pyvisa
-
 class PS_E3640A:
     def __init__(self):
         self.instr = []

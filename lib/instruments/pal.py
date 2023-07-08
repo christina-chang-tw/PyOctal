@@ -1,8 +1,5 @@
 import win32com.client as win32
 import time
-import numpy as np
-import pandas as pd
-
 
 class PAL:
     def __init__(self):
@@ -42,7 +39,7 @@ class PAL:
             time.sleep(1)
         result = self.engine.MeasurementResult
         graph = result.Graph("TLS0_RXTXAvgIL")
-        return graph, graph.YData
+        return graph.YData
     
     @staticmethod
     def release(obj):
