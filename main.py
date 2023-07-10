@@ -16,7 +16,7 @@ class Subparsers():
         parser.add_argument("l", "--lengths", type=float, metavar="", dest="lengths", nargs="+", help="The lengths of each test waveguides", required=True)
         parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
         parser.add_argument("-r", "--wavelength-range", type=float, metavar="", dest="range", nargs="+", default=[1540,1570], help="start wavelength and stop wavelength in nm", required=False)
-        parser.add_argument("-rate", "--sweep-rate", type=float, metavar="", dest="rate", nargs=1, default=[5], help="sweep step [nm]", required=False)
+        parser.add_argument("-s", "--wavelength-step", type=float, metavar="", dest="step", nargs=1, default=[5], help="Wavelength step [nm]", required=False)
 
     @staticmethod
     def dc(parser):

@@ -1,16 +1,20 @@
 import os
 import sys
 import subprocess
-import platform
 
 requirements = "requirements.txt"
-venv_path = f"{os.getcwd()}/.venv"
-py = f"{os.getcwd()}/.venv/bin/python3"
+venv_path = os.getcwd() + r"/.venv"
+py = os.getcwd() + r"/.venv/bin/python3"
 
 if not os.path.dirname(sys.executable):
     raise Exception("Python Environment Not Found")
 
-# Create a venv
+if sys.version_info[0] < 3:
+    subprocess.check_call([sys.executable, '-m', 'pip', "install", "virtualenv"])
+    subprocess.check_call([sys.executable, '-m', 'pip', "install", "virtualenv"])
+
+
+
 subprocess.check_call([sys.executable, '-m', 'venv', venv_path])
 
 print("Created a local Virtual Environment...")

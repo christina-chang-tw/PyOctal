@@ -21,8 +21,8 @@ class Sweeps:
         self.dev.sweep_params(
                 start=args.range[0],
                 stop=args.range[1],
-                rate=args.rate,
-                power=args.power,
+                step=args.step[0],
+                power=args.power[0],
             )
 
         for i, length in enumerate(args.lengths):

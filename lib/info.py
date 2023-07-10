@@ -10,7 +10,7 @@ class Test_Info():
             "Power [dBm]" : args.power[0],
             "Start lambda [nm]" : args.w1[0],
             "Stop lambda [nm]" : args.w2[0],
-            "Sweep rate [nm/s]" : args.rate[0],
+            "Wavelength step [nm]" : args.step[0],
         }
         export_csv(package_info(info), chip_name, f'{get_func_name()}_info')
 
