@@ -1,4 +1,10 @@
 class M_8163B:
+    """
+    Instrument: 8163B Lightwave Multimeter
+    
+    Remote control the multimeter with this library
+    ** Not tested **
+    """
 
     def __init__(self, src_num: int=1, src_chan: int=1, sens_num: int=1, sens_chan: int=1):
         self.instr = []

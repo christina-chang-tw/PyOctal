@@ -10,11 +10,23 @@ Method 1:
 Install Anaconda from its official site and make sure the listed packages are installed.
 
 Method 2:
+
+Run this in the root-directory of this repository namely `autotesting`.
+
+| Platform | Shell   | Command to activate virtual environment
+|----------|---------|----------------------------------------|
+| Posix | bash/zsh   | $ source .venv/bin/activate |
+|       | fish       | $ source .venv/bin/activate.fish |
+|       | csh/tcsh   | $ source .venv/bin/activate.csh |
+|       | PowerShell | $ .venv/bin/Activate.ps1 |
+| Windows | cmd.exe    | > .venv\Scripts\activate.bat |
+|         | PowerShell | > .venv\Scripts\Activate.ps1|
+
 ```bash
 # This automatically setup your virtual environment
 > python3 -m venv_setup
 
-# Windows PS example is shown below
+# Windows PS example
 # Activate a venv machine.
 > .venv\Scripts\Activate.ps1
 

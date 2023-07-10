@@ -1,7 +1,19 @@
+""" Photonics Application Suite (PAS) Interface """
+
 import win32com.client as win32
 import time
 
-class PAL:
+def release(obj):
+    obj.release
+
+class ILME:
+    """
+    Instrument: Insertion Loss Measurement Engine
+    
+    Remote control the ILME programme to run tests
+    ** Not tested **
+    """
+
     def __init__(self):
         self.enginer_mgr = win32.gencache.EnsureDispatch('AgServerILPDL.EnginerMgr')
         self.engine = self.enginer_mgr.NewEngine
@@ -14,6 +26,7 @@ class PAL:
         self.engine.Deactivate
 
     def sweep_params(self, start: float=1540, stop: float=1575, rate: float=5, power: float=10):
+        """ Setting sweep parameters """
         self.tls.WavelengthStart = start
         self.tls.WavelengthStop = stop
         self.tls.SweepRate = rate # 0.3 x sweep rate [nm/s] = step size [pm]
@@ -40,10 +53,6 @@ class PAL:
         result = self.engine.MeasurementResult
         graph = result.Graph("TLS0_RXTXAvgIL")
         return graph.YData, graph.XData
-    
-    @staticmethod
-    def release(obj):
-        obj.release
 
 if __name__ == "__main__":
-    engine = PAL()
+    engine = ILME()

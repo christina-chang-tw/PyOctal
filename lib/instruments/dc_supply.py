@@ -1,4 +1,11 @@
 class PS_E3640A:
+    """
+    Instrument: E3640A Power Meter
+    
+    Remote control the power meter with this library
+    ** Not tested **
+    """
+
     def __init__(self):
         self.instr = []
 

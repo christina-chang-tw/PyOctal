@@ -1,3 +1,5 @@
+""" Functions related to CSV operations """
+
 import os.path
 import pandas as pd
 
