@@ -27,7 +27,7 @@ class Sweeps:
 
         for i, length in enumerate(args.lengths):
             self.dev.start_meas()
-            df[float(length)], lf[i] = self.dev.get_result()
+            lf[i], df[float(length)] = self.dev.get_result()
             wait_for_next_meas()
         
         if lf.eq(lf.iloc[:, 0], axis=0).all(axis=1):

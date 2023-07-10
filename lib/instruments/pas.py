@@ -2,13 +2,11 @@
 
 from lib.csv_operations import export_csv
 
-import win32com.client as win32
+import win32com.client
 import time
 import numpy as np
 import pandas as pd
 
-def release(obj):
-    obj.release
 
 class ILME:
     """
@@ -19,11 +17,14 @@ class ILME:
     """
 
     def __init__(self):
-        self.engine_mgr = win32.gencache.EnsureDispatch('AgServerIL.EngineMgr')
+        self.engine_mgr = win32com.client.Dispatch('AgServerIL.EngineMgr')
         self.engine = self.engine_mgr.NewEngine()
-        EngineIDs = self.engine_mgr.EngineIDs
-        self.engine = self.engine_mgr.OpenEngine(EngineIDs[0])
-        self.deactivate()
+        self.activate()
+
+        activating = 0
+        while activating == 0:
+            time.sleep(0.5) 
+            activating = self.engine.Active
 
     def activate(self):
         self.engine.Activate()
@@ -42,17 +43,15 @@ class ILME:
         self.engine.NumberOfScans = num
 
     def quit(self):
-        self.enginer_mgr.DeleteEngine(self.engine)
-        self.enginer_mgr.Release()
+        self.deactivate()
+        self.engine_mgr.DeleteEngine(self.engine)
+        self.engine_mgr.release()
 
     def start_meas(self):
         self.engine.StartMeasurement()
 
     def stop_meas(self):
         self.engine.StopMeasurement()
-
-    def process_status(self):
-        return self.engine.EventMeasurementFinished # when an event is finished, the number will increase
 
     def get_result(self):
         busy = 1
@@ -61,19 +60,21 @@ class ILME:
             busy = self.engine.Busy
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
-        return self.get_wavelength(IOMRGraph), IOMRGraph.YData 
+        data_per_curve = IOMRGraph.dataPerCurve
+        no_channels = IOMRGraph.noChannels
+        ydata = IOMRGraph.YData
+        ycurve = [tuple(np.negative(ydata[i*data_per_curve:(i+1)*data_per_curve])) for i in range(no_channels)]
+        return self._get_wavelength(IOMRGraph, data_per_curve), ycurve
     
     @staticmethod
-    def get_wavelength(IOMRGraph):
-        XStart = IOMRGraph.xStart
-        XStep = IOMRGraph.xStep
-        dataPerCurve = IOMRGraph.dataPerCurve
-        XData = [XStart + i * XStep for i in range(dataPerCurve)]   
-        return tuple(np.divide(XData, 1e-9))
+    def _get_wavelength(IOMRGraph, data_per_curve):
+        xstart = IOMRGraph.xStart
+        xstep = IOMRGraph.xStep
+        xdata = [xstart + i * xstep for i in range(data_per_curve)]
+        return tuple(np.divide(xdata, 1e-9))
 
-    @staticmethod
-    def validate_settings(dev):
-        dev.ValidateSettings()
+    def validate_settings(self):
+        self.engine.ValidateSettings()
 
 if __name__ == "__main__":
     engine = ILME()
