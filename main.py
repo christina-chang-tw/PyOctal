@@ -1,5 +1,5 @@
-from lib.info import TEST_INFO
-from lib.sweeps import SWEEPS
+from lib.info import Test_Info
+from lib.sweeps import Sweeps
 
 import argparse
 from datetime import datetime
@@ -11,7 +11,7 @@ class Subparsers():
 
     @staticmethod
     def iloss(parser):
-        parser.add_argument("-cname", "--column_name", type=float, metavar="", dest="cname", nargs=1, default=["YYY"], help="sweep step [nm]", required=False)
+        parser.add_argument("l", "--lengths", type=float, metavar="", dest="lengths", nargs="+", help="The lengths of each test waveguides", required=True)
         parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
         parser.add_argument("-r", "--wavelength-range", type=float, metavar="", dest="range", nargs="+", default=[1540,1570], help="start wavelength and stop wavelength in nm", required=False)
         parser.add_argument("-rate", "--sweep-rate", type=float, metavar="", dest="rate", nargs=1, default=[5], help="sweep step [nm]", required=False)
@@ -65,8 +65,8 @@ def print_setup_info(ttype, args):
     print()
 
 def test_distribution(ttype, args):
-    info = TEST_INFO()
-    sweeps = SWEEPS()
+    info = Test_Info()
+    sweeps = Sweeps()
 
     if ttype == "passive":
         info.iloss(args.chip_name, args)

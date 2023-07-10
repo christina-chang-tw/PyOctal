@@ -1,7 +1,7 @@
 from lib.csv_operations import export_csv, package_info
 from lib.util import get_func_name
 
-class TEST_INFO():
+class Test_Info():
 
     @staticmethod
     def iloss(chip_name, args):

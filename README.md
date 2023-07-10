@@ -2,16 +2,25 @@
 
 ## Setup Environment
 
-**NOTE:** This automated optical chip testing only works with Windows OS machine.**
+**NOTE:** This automated optical chip testing only works with Windows OS machine.
 
+Required packages: pandas, numpy, pywin32, pyvisa, argparse
 
-Install Anaconda from its official site and make sure the following listed packages are installed.
+Method 1:
+Install Anaconda from its official site and make sure the listed packages are installed.
 
-- pandas
-- pywin32
-- pyvisa
-- argparse
+Method 2:
+```bash
+# This automatically setup your virtual environment
+> python3 -m venv_setup
 
+# Windows PS example is shown below
+# Activate a venv machine.
+> .venv\Scripts\Activate.ps1
+
+# Deactivate a venv machine
+> deactivate
+```
 #
 
 ## Directory Structure

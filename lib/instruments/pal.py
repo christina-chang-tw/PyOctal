@@ -39,7 +39,7 @@ class PAL:
             time.sleep(1)
         result = self.engine.MeasurementResult
         graph = result.Graph("TLS0_RXTXAvgIL")
-        return graph.YData
+        return graph.YData, graph.XData
     
     @staticmethod
     def release(obj):
