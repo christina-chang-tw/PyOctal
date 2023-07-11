@@ -48,6 +48,7 @@ class M_8163B:
         self.instr.write(f":read{self.sens_num}:channel{self.sens_num}:power:unit {unit}")
 
     def set_wavelength(self, wavelength: float):
+        wavelength = wavelength * 1e-09
         self._set_sens_wavelength(wavelength)
         self._set_src_wavelength(wavelength)
 

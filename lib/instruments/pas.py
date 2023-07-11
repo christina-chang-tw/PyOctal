@@ -59,11 +59,14 @@ class ILME:
     def stop_meas(self):
         self.engine.StopMeasurement()
 
-    def get_result(self):
-        busy = 1
-        while busy == 1:
+    def get_result(self, length: int=0):
+        data = pd.DataFrame()
+
+        busy = True
+        while busy == True:
             time.sleep(0.1)
             busy = self.engine.Busy
+        
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
         data_per_curve = IOMRGraph.dataPerCurve
@@ -71,11 +74,10 @@ class ILME:
         ydata = IOMRGraph.YData
 
         ycurve = [tuple(np.negative(ydata[i*data_per_curve:(i+1)*data_per_curve])) for i in range(no_channels)]
-        data = pd.DataFrame()
-        data["ycurve"] = ycurve
-        export_csv(data, "XXX", "data")
+        for i in range(no_channels):
+            data[f"{length}_ch{i}"] = ycurve[i]
         
-        return self._get_wavelength(IOMRGraph, data_per_curve), ycurve
+        return self._get_wavelength(IOMRGraph, data_per_curve), data
     
     @staticmethod
     def _get_wavelength(IOMRGraph, data_per_curve):

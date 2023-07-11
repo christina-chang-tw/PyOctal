@@ -1,10 +1,10 @@
 from lib.instruments.pas import ILME
-from lib.csv_operations import create_folder, export_csv
+from lib.csv_operations import export_csv
 from lib.util import get_func_name, wait_for_next_meas
 
 import lib.analysis as analysis
-import numpy as np
 import pandas as pd
+import numpy as np
 
 
 class Sweeps:
@@ -25,12 +25,14 @@ class Sweeps:
 
         for i, length in enumerate(args.lengths):
             self.dev.start_meas()
-            lf[i], df[float(length)] = self.dev.get_result()
+            lf[i], temp = self.dev.get_result(length)
+            pd.concat([df, temp], axis = 1).T.drop_duplicates().T
             wait_for_next_meas()
         
-        x = lf.eq(lf.iloc[:, 0], axis=0).all(axis=1)
+        if not lf.eq(lf.iloc[:, 0], axis=0).all(axis=1).all(axis=0):
+            raise Exception("Descrepancy in wavelengths")
         
-        # analysis.iloss(df, np.array(lf.iloc[:,1]), chip_name)
+        analysis.iloss(df, np.array(lf.iloc[:,1]), chip_name)
 
         export_csv(lf, chip_name, f'{get_func_name()}_lambda')
         export_csv(df, chip_name, f'{get_func_name()}_data')
