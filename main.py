@@ -1,6 +1,7 @@
 from lib.info import Test_Info
 from lib.sweeps import Sweeps
 from lib.instruments.pas import ILME
+from lib.csv_operations import create_folder
 
 import argparse
 from datetime import datetime
@@ -13,10 +14,11 @@ class Subparsers():
 
     @staticmethod
     def iloss(parser):
-        parser.add_argument("l", "--lengths", type=float, metavar="", dest="lengths", nargs="+", help="The lengths of each test waveguides", required=True)
+        requiredNamed = parser.add_argument_group('required arguments')
+        requiredNamed.add_argument("-l", "--lengths", type=float, metavar="", dest="lengths", nargs="+", help="The lengths of each test waveguides", required=True)
         parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
         parser.add_argument("-r", "--wavelength-range", type=float, metavar="", dest="range", nargs="+", default=[1540,1570], help="start wavelength and stop wavelength in nm", required=False)
-        parser.add_argument("-s", "--wavelength-step", type=float, metavar="", dest="step", nargs=1, default=[5], help="Wavelength step [nm]", required=False)
+        parser.add_argument("-s", "--sweep-step", type=float, metavar="", dest="step", nargs=1, default=[5], help="Sweep step [nm]", required=False)
 
     @staticmethod
     def dc(parser):
@@ -34,9 +36,10 @@ class PrintSubparserInfo():
         self.args = args
 
     def iloss(self):
-        print(f'{"Output power":<20} : {self.args.power[0]:<6} dBm')
+        print(f'{"Lengths":<20} : {[" ".join(str(i)) for i in self.args.lengths]}')
+        print(f'{"Output power":<20} : {self.args.power[0]:<6} dB')
         print(f'{"Wavelength Range":<20} : {self.args.range[0]:<3} nm - {self.args.range[1]:<3} nm')
-        print(f'{"Sweep rate":<20} : {self.args.rate[0]:<6} nm/s')
+        print(f'{"Sweep step":<20} : {self.args.step[0]:<6} nm/s')
 
     def dc(self):
         pass
@@ -53,7 +56,7 @@ def print_setup_info(ttype, args):
     print("---------------------------------------")
     print("| General INFORMATION:                |")
     print("---------------------------------------")
-    print(f'{"Chip name":<20} : {args.name:<12}')
+    print(f'{"Chip name":<20} : {args.chip_name:<12}')
     print()
     print("---------------------------------------")
     print("| SETUP PARAMETERS:                   |")
@@ -74,7 +77,7 @@ def test_distribution(ttype, args):
         type: test type,
         args: containing all input arguments
     """
-
+    create_folder()
     info = Test_Info()
     pal = ILME()
     sweeps = Sweeps(pal)

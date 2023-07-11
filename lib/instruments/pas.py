@@ -22,9 +22,15 @@ class ILME:
         self.activate()
 
         activating = 0
+        start = time.time()
+
+        # If the engine is not activated 
         while activating == 0:
             time.sleep(0.5) 
             activating = self.engine.Active
+
+            if time.time() - start > 30:
+                raise Exception("Timeout error: check devices connection")
 
     def activate(self):
         self.engine.Activate()
@@ -63,7 +69,12 @@ class ILME:
         data_per_curve = IOMRGraph.dataPerCurve
         no_channels = IOMRGraph.noChannels
         ydata = IOMRGraph.YData
+
         ycurve = [tuple(np.negative(ydata[i*data_per_curve:(i+1)*data_per_curve])) for i in range(no_channels)]
+        data = pd.DataFrame()
+        data["ycurve"] = ycurve
+        export_csv(data, "XXX", "data")
+        
         return self._get_wavelength(IOMRGraph, data_per_curve), ycurve
     
     @staticmethod

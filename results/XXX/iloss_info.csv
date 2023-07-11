@@ -1,0 +1,5 @@
+Params,Value
+Testing Type,Insertion Loss
+Power [dBm],10
+Wavelength Range [nm],1540 - 1570
+Wavelength step [nm],5

@@ -4,7 +4,7 @@ import os.path
 import pandas as pd
 
 def _dir_path():
-    return os.getcwd() + "/results/"
+    return os.getcwd() + "\\results\\"
 
 def _get_dataframe(path: str, fname: str):
     path = path + fname
@@ -13,9 +13,9 @@ def _get_dataframe(path: str, fname: str):
     return pd.DataFrame()
 
 
-def create_folder(folder: str="XXX/"):
+def create_folder(folder: str="XXX\\"):
     try:
-        path = _dir_path() + folder
+        path = _dir_path() + folder    
         if not os.path.isdir(path):
             os.mkdir(path)
     except:
@@ -31,6 +31,7 @@ def package_result(dataframe: pd.DataFrame, data, name: str="NaN"):
 
 def export_csv(data: pd.DataFrame, folder: str="XXX/", fname: str="XXX"):
     path_to_file = f"{_dir_path()}{folder}/{fname}.csv"
+    print(path_to_file)
 
     with open(path_to_file, 'w', encoding='utf-8') as f:
         data.to_csv(f, index=False)

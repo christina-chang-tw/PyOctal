@@ -8,8 +8,7 @@ class Test_Info():
         info = {
             "Testing Type" : "Insertion Loss",
             "Power [dBm]" : args.power[0],
-            "Start lambda [nm]" : args.w1[0],
-            "Stop lambda [nm]" : args.w2[0],
+            "Wavelength Range [nm]" : f'{args.range[0]} - {args.range[1]}',
             "Wavelength step [nm]" : args.step[0],
         }
         export_csv(package_info(info), chip_name, f'{get_func_name()}_info')

@@ -1,4 +1,4 @@
-from lib.instruments.pas import PAL
+from lib.instruments.pas import ILME
 from lib.csv_operations import create_folder, export_csv
 from lib.util import get_func_name, wait_for_next_meas
 
@@ -8,13 +8,11 @@ import pandas as pd
 
 
 class Sweeps:
-    def __init__(self, dev: PAL):
+    def __init__(self, dev: ILME):
         self.dev = dev
         dev.activate()
 
     def iloss(self, chip_name, args):
-
-        create_folder(folder=chip_name)
         df = pd.DataFrame()
         lf = pd.DataFrame()
         
@@ -30,10 +28,9 @@ class Sweeps:
             lf[i], df[float(length)] = self.dev.get_result()
             wait_for_next_meas()
         
-        if lf.eq(lf.iloc[:, 0], axis=0).all(axis=1):
-            print("Wavelength spacing are not equal!")
+        x = lf.eq(lf.iloc[:, 0], axis=0).all(axis=1)
         
-        analysis.iloss(df, np.array(lf.iloc[:,1]), chip_name)
+        # analysis.iloss(df, np.array(lf.iloc[:,1]), chip_name)
 
         export_csv(lf, chip_name, f'{get_func_name()}_lambda')
         export_csv(df, chip_name, f'{get_func_name()}_data')
