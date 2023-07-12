@@ -59,6 +59,9 @@ class ILME:
     def stop_meas(self):
         self.engine.StopMeasurement()
 
+    def get_no_channels(self):
+        return self.no_channels
+
     def get_result(self, length: int=0):
         data = pd.DataFrame()
 
@@ -71,6 +74,7 @@ class ILME:
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
         data_per_curve = IOMRGraph.dataPerCurve
         no_channels = IOMRGraph.noChannels
+        self.no_channels = no_channels
         ydata = IOMRGraph.YData
 
         ycurve = [tuple(np.negative(ydata[i*data_per_curve:(i+1)*data_per_curve])) for i in range(no_channels)]

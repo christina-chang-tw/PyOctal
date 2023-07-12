@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-def iloss(df, wavelengths, chip_name):
+def iloss(df, wavelengths, no_channels: int=1, chip_name: str="XXX"):
     """ 
     Extract the waveguide loss coefficient and insertion loss related to each wavelength to iloss_coeffs.csv file
 
@@ -16,15 +16,16 @@ def iloss(df, wavelengths, chip_name):
     """
 
     df = df.transpose() # transpose dataframe
-    lengths = np.array([float(i) for i in df.index.tolist()])
+    lengths = np.array([float(i.split("_")[0]) for i in df.index.tolist()])
 
-    df_coeff = pd.DataFrame(columns=["lambda", "loss [db/um]", "insertion loss [dB]"])
+    df_coeff = pd.DataFrame()
     df_coeff["lambda"] = wavelengths
 
     for i in range(0, len(df.columns)):
-        fit = np.polyfit(lengths, df.iloc[:, i].to_numpy(), deg=1)
-        df_coeff.loc[i, "loss [db/um]"] = round(fit[0],2)
-        df_coeff.loc[i, "insertion loss [dB]"] = round(fit[1], 2)
+        for j in range(no_channels):
+            fit = np.polyfit(lengths, df.iloc[:, i].to_numpy(), deg=1)
+            df_coeff.loc[i, f"CH{j} - loss [db/um]"] = round(fit[0],2)
+            df_coeff.loc[i, f"CH{j} - insertion loss [dB]"] = round(fit[1], 2)
 
     export_csv(df_coeff, chip_name, f'{get_func_name()}_coeffs')
    

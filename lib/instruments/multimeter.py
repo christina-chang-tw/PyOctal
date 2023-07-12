@@ -6,32 +6,41 @@ class M_8163B:
     ** Not tested **
     """
 
-    def __init__(self, src_num: int=1, src_chan: int=1, sens_num: int=1, sens_chan: int=1):
-        self.instr = []
+    def __init__(self, rm, addr: str="GPIB0::28::INSTR", src_num: int=1, src_chan: int=1, sens_num: int=1, sens_chan: int=1):
+        self.instr = rm.open_resource(addr)
         self.src_num = src_num
         self.src_chan = src_chan
         self.sens_num = sens_num
         self.sens_chan = sens_chan
 
-    def setup(self, rm, addr: str="GPIB0::28::INSTR"):
-        self.instr = rm.open_resource(addr)
+    def setup(self, wavelength: float=1550, power: float=10):
         self.instr.write("*RST")
-        self.instr.write(f"sense{self.sens_num}:channel{self.sens_num}:power:range:auto ON")
-        self.instr.write(f"sense{self.sens_num}:channel{self.sens_num}:power:unit Watt")
+        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:range:auto ON")
+        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:unit Watt")
+        self.set_wavelength(wavelength=wavelength)
+        self.set_power(pow(10, power/10)/1000)
         self.switch_laser_state(1)
+        self.set_average_time(period=200e-06)
+        self.set_unit()
+
+    def set_average_time(self, period):
+        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:atime {period}s")
+
+    def switch_local_state (self, state: bool=1): # 0 - remote, 1 - local
+        self.instr.write(f":display:lockout {state}")
 
     def _set_sens_wavelength(self, wavelength: float):
-        self.instr.write(f"sense{self.sens_num}:channel{self.sens_num}:power:wavelength {wavelength}")
+        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:wavelength {wavelength}")
 
     def _set_src_wavelength(self, wavelength: float):
-        self.instr.write(f"source{self.src_num}:channel{self.src_chan}:power:wavelength {wavelength}")
+        self.instr.write(f":source{self.src_num}:channel{self.src_chan}:power:wavelength {wavelength}")
 
     # Setting the detector
     def set_power_range(self, prange: float): # in dBm
-        self.instr.write(f"sense{self.sens_num}:channel{self.sens_chan}:power:range {prange}")
+        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:range {prange}")
 
     def set_power_range_auto(self, auto: bool):
-        self.instr.write(f"sense{self.sens_num}:channel{self.sens_chan}:power:range:auto {auto}")
+        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:range:auto {auto}")
 
     # Reading off the detector
     def read_status(self):
@@ -44,8 +53,9 @@ class M_8163B:
         return self.instr.query(f":sense:channel{self.sens_chan}:function:result:block?")
 
     # Setting the source
-    def set_unit(self, unit):
-        self.instr.write(f":read{self.sens_num}:channel{self.sens_num}:power:unit {unit}")
+    def set_unit(self, source: str="dBm", sensor: str="Watt"):
+        self.instr.write(f":power:unit {source}") # set the source unit in dBm
+        self.instr.write(f":sense:power:unit {sensor}") # set sensor unit
 
     def set_wavelength(self, wavelength: float):
         wavelength = wavelength * 1e-09
