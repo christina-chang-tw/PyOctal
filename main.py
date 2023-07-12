@@ -5,9 +5,32 @@ from lib.csv_operations import create_folder
 
 import argparse
 from datetime import datetime
+import logging
 
 
 TEST_TYPES = ("passive", "dc", "ac")
+
+class CustomFormatter(logging.Formatter):
+
+    grey = "\x1b[38;20m"
+    yellow = "\x1b[33;20m"
+    red = "\x1b[31;20m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+
+    FORMATS = {
+        logging.DEBUG: grey + format + reset,
+        logging.INFO: grey + format + reset,
+        logging.WARNING: yellow + format + reset,
+        logging.ERROR: red + format + reset,
+        logging.CRITICAL: bold_red + format + reset
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
 
 class Subparsers():
     """ Adding subparser-dependent arguments"""
@@ -92,7 +115,10 @@ def test_distribution(ttype, args):
         pass
 
 
+
 if __name__ == "__main__":
+    loglvl = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+
     parser = argparse.ArgumentParser(
         description="Automated testing for optical chip", 
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -105,13 +131,24 @@ if __name__ == "__main__":
         type=str,
         default="XXX",
         help="Chip name",
-        required=False
+        required=False,
     ) # this create a folder in the name of the chip under test folder
+    parser.add_argument(
+        "--log-lvl",
+        dest="loglvl",
+        metavar="",
+        nargs=1,
+        type=str,
+        default="WARNING",
+        help=f'Levels: {", ".join([i for i in loglvl])}',
+        required=False,
+    )
     subparsers = parser.add_subparsers(
         dest="test",
         help="Test type: " + ", ".join([meas for meas in TEST_TYPES]),
-        required=True
+        required=True,
     )
+    
 
     # Arguments for passive testing
     iloss = subparsers.add_parser(TEST_TYPES[0], help="passive testing", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -123,8 +160,19 @@ if __name__ == "__main__":
     Subparsers.dc(dc)
     Subparsers.ac(ac)
 
-
     args = parser.parse_args()
+
+    logging.basicConfig(filename="logging",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%d-%m-%Y %H:%M:%S',
+                    level=args.loglvl[0])
+    
+    logger = logging.getLogger()
+    cmd = logging.StreamHandler()
+    cmd.setFormatter(CustomFormatter())
+    logger.addHandler(cmd)
+
     print_setup_info(args.test, args)
     test_distribution(args.test, args)
 

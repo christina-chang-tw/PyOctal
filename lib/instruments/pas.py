@@ -1,12 +1,12 @@
 """ Photonics Application Suite (PAS) Interface """
 
-from lib.csv_operations import export_csv
-
 import win32com.client
 import time
 import numpy as np
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ILME:
     """
@@ -28,9 +28,8 @@ class ILME:
         while activating == 0:
             time.sleep(0.5) 
             activating = self.engine.Active
-
             if time.time() - start > 30:
-                raise Exception("Timeout error: check devices connection")
+                logging.error("Timeout error: check devices connection")
 
     def activate(self):
         self.engine.Activate()
@@ -76,7 +75,6 @@ class ILME:
         no_channels = IOMRGraph.noChannels
         self.no_channels = no_channels
         ydata = IOMRGraph.YData
-
         ycurve = [tuple(np.negative(ydata[i*data_per_curve:(i+1)*data_per_curve])) for i in range(no_channels)]
         for i in range(no_channels):
             data[f"{length}_ch{i}"] = ycurve[i]

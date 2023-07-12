@@ -6,6 +6,9 @@ import lib.analysis as analysis
 import pandas as pd
 import numpy as np
 from tqdm import tqdm 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Sweeps:
     def __init__(self, dev: ILME):
@@ -31,7 +34,7 @@ class Sweeps:
             
         
         if not lf.eq(lf.iloc[:, 0], axis=0).all(axis=1).all(axis=0):
-            raise Exception("Descrepancy in wavelengths")
+            logger.warning("Discrepancy in wavelengths")
         
         analysis.iloss(df, np.array(lf.iloc[:,1]), self.dev.get_no_channels(), chip_name)
         export_csv(lf, chip_name, f'{get_func_name()}_lambda')
