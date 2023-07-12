@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm 
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +27,13 @@ class Sweeps:
                 power=args.power[0],
             )
 
-        for i, length in tqdm(iterable=enumerate(args.lengths), ncols=10, desc="iloss sweep", colour="1eb6cd"):
-            wait_for_next_meas()
+
+        for i, length in tqdm(enumerate(args.lengths), total=len(args.lengths), desc="ILOSS Sweeps"):
+            wait_for_next_meas(i, len(args.lengths)) # this takes an input to continue to next measurement
             self.dev.start_meas()
             lf[i], temp = self.dev.get_result(length)
-            pd.concat([df, temp], axis = 1)
-            
+            df = pd.concat([df, temp], axis=1)
+
         
         if not lf.eq(lf.iloc[:, 0], axis=0).all(axis=1).all(axis=0):
             logger.warning("Discrepancy in wavelengths")

@@ -16,7 +16,7 @@ def iloss(df, wavelengths, no_channels: int=1, chip_name: str="XXX"):
     """
 
     df = df.transpose() # transpose dataframe
-    lengths = np.array([float(i.split("_")[0]) for i in df.index.tolist()])
+    lengths = np.array([float(i.split(" - ")[1]) for i in df.index.tolist()])
 
     df_coeff = pd.DataFrame()
     df_coeff["lambda"] = wavelengths

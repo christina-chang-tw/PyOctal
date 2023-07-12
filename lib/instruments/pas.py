@@ -77,7 +77,7 @@ class ILME:
         ydata = IOMRGraph.YData
         ycurve = [tuple(np.negative(ydata[i*data_per_curve:(i+1)*data_per_curve])) for i in range(no_channels)]
         for i in range(no_channels):
-            data[f"{length}_ch{i}"] = ycurve[i]
+            data[f"CH{i} - {length}"] = ycurve[i]
         
         return self._get_wavelength(IOMRGraph, data_per_curve), data
     

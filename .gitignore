@@ -4,3 +4,5 @@ results/*
 !results/.gitkeep
 
 .venv/*
+
+*.log

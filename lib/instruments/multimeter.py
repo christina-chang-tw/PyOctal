@@ -6,7 +6,7 @@ class M_8163B:
     ** Not tested **
     """
 
-    def __init__(self, rm, addr: str="GPIB0::28::INSTR", src_num: int=1, src_chan: int=1, sens_num: int=1, sens_chan: int=1):
+    def __init__(self, rm, addr: str="GPIB0::25::INSTR", src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         self.instr = rm.open_resource(addr)
         self.src_num = src_num
         self.src_chan = src_chan
@@ -33,7 +33,7 @@ class M_8163B:
         self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:wavelength {wavelength}")
 
     def _set_src_wavelength(self, wavelength: float):
-        self.instr.write(f":source{self.src_num}:channel{self.src_chan}:power:wavelength {wavelength}")
+        self.instr.write(f":source{self.src_num}:channel{self.src_chan}:wavelength:fixed {wavelength}")
 
     # Setting the detector
     def set_power_range(self, prange: float): # in dBm
