@@ -48,6 +48,35 @@ Run this in the root-directory of this repository namely `autotesting`.
 ├── results                  # store testing data
 └── main.py                  # interface with the 
 ```
+
+#
+
+## Implemented Instruments
+
+There are three instruments that are can be controlled remotely with this library.
+
+| Filename | Instrument | Manufacturer |
+| -------- | ---------- | ------------ |
+| `dc_supply`  | E3640A Power Supply  | Keysight |
+| `multimeter` | 8163B Lightwave Multimeter  | Keysight |
+| `pas`        | Insertion Loss Measurement Engine | Keysight |
+
+
+# 
+
+## Tests and Setup Instrument
+### Tests
+These are the optical tests that are currently implemented by this library. These can be run by running `main.py` as a module from the root directory.
+
+| Test    | Description    |
+|---------|----------------|
+| iloss   | Optain insertion loss and loss coefficient of the waveguide |
+
+### Instrument setup
+| Test    | Description    |
+|---------|----------------|
+| m_8163b | Setup the multimeter to the auto-range and desired wavelength and output power |
+
 # 
 
 ## How to run a test?
@@ -62,6 +91,13 @@ Everything is this repository should be run as a python module.
 # (3) Running an insertion loss test with pout=10dBm and range=(1550, 1570)nm
 > python -m main iloss -p 10 -r 1550 1570
 ```
+
+
+#
+
+## Debugging issues
+
+1. f-string formatting method cannot be used is an issues related to the python version. Only versions after Python 3.6 adopts f-string format.
 
 
 
