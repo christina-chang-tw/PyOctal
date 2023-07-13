@@ -1,11 +1,10 @@
-from lib.csv_operations import export_csv, create_folder
-from lib.util import get_func_name
+from lib.util.csv_operations import create_folder
 
 import numpy as np
 import pandas as pd
 
 
-def iloss(df, wavelengths, no_channels: int=1, chip_name: str="XXX"):
+def iloss(df, wavelengths, no_channels: int=1):
     """ 
     Extract the waveguide loss coefficient and insertion loss related to each wavelength to iloss_coeffs.csv file
 

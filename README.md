@@ -1,5 +1,7 @@
 # Optical Chip Optical Automated Testing 
 
+Repository last updated date: July 2023
+
 ## Setup Environment
 
 **NOTE:** This automated optical chip testing only works with Windows OS machine.
@@ -46,7 +48,9 @@ Run this in the root-directory of this repository namely `autotesting`.
 │   ├── sweeps.py            # automated testing sweeps
 │   └── util.py              # general functions
 ├── results                  # store testing data
-└── main.py                  # interface with the 
+├── instr.py                 # direct interface with instruments
+├── main.py                  # interface with running sweeps
+└── venv_setup.py            # set up virtual environment
 ```
 
 #
@@ -99,6 +103,11 @@ Everything is this repository should be run as a python module.
 
 1. f-string formatting method cannot be used is an issues related to the python version. Only versions after Python 3.6 adopts f-string format.
 
+
+#
+
+## Expand this library
+To maintain the current structure, place your instrument class in the correct file. If the type of your instrument does not exist yet, please create a file with a general category of your instrument.
 
 
 

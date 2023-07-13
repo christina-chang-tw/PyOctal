@@ -1,10 +1,10 @@
-from lib.info import Test_Info
-from lib.sweeps import Sweeps
+from lib.info import TestInfo
+from lib.sweeps.iloss import ILossSweep
 from lib.instruments.pas import ILME
 from lib.instruments.multimeter import M_8163B
-from lib.csv_operations import create_folder
-from lib.logger import CustomFormatter
-from lib.util import version_check
+from lib.util.csv_operations import create_folder
+from lib.util.logger import CustomFormatter
+from lib.util.util import version_check
 
 import argparse
 from datetime import datetime
@@ -20,6 +20,7 @@ class Subparsers():
     def iloss(parser):
         requiredNamed = parser.add_argument_group('required arguments')
         requiredNamed.add_argument("-l", "--lengths", type=float, metavar="", dest="lengths", nargs="+", help="The lengths of each test waveguides", required=True)
+        parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
         parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
         parser.add_argument("-r", "--wavelength-range", type=float, metavar="", dest="range", nargs="+", default=[1540,1570], help="start wavelength and stop wavelength in nm", required=False)
         parser.add_argument("-s", "--sweep-step", type=float, metavar="", dest="step", nargs=1, default=[5], help="Sweep step [nm]", required=False)
@@ -79,14 +80,14 @@ def test_distribution(ttype, args):
     """
     create_folder(args.chip_name[0])
     rm = pyvisa.ResourceManager()
-    info = Test_Info()
+    info = TestInfo()
     pal = ILME()
     
 
     if ttype == "iloss":
         M_8163B_ADDR = "GPIB0::25::INSTR"
         instr = M_8163B(rm=rm, addr=M_8163B_ADDR)
-        sweeps = Sweeps(pal, instr)
+        sweeps = ILossSweep(pal, instr)
         info.iloss(args.chip_name[0], args)
         sweeps.iloss(args.chip_name[0], args)
 

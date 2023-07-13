@@ -6,11 +6,10 @@ class PS_E3640A:
     ** Not tested **
     """
 
-    def __init__(self):
-        self.instr = []
-
-    def setup(self, rm, addr: str="GPIB0::28::INSTR"):
+    def __init__(self, rm, addr: str="GPIB0::28::INSTR"):
         self.instr = rm.open_resource(addr)
+
+    def setup(self):
         self.instr.write("*RST")
         self.set_output_status(1)
 

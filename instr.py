@@ -1,5 +1,5 @@
 from lib.instruments.multimeter import M_8163B
-from lib.util import version_check
+from lib.util.util import version_check
 
 import pyvisa
 import argparse
