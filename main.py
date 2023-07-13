@@ -1,6 +1,7 @@
 from lib.info import Test_Info
 from lib.sweeps import Sweeps
 from lib.instruments.pas import ILME
+from lib.instruments.multimeter import M_8163B
 from lib.csv_operations import create_folder
 from lib.logger import CustomFormatter
 from lib.util import version_check
@@ -8,6 +9,7 @@ from lib.util import version_check
 import argparse
 from datetime import datetime
 import logging
+import pyvisa
 
 TEST_TYPES = ("iloss", "dc", "ac")
 
@@ -58,7 +60,7 @@ def print_setup_info(ttype, args):
     print("----------------------------------------------")
     print("| TEST INFORMATION:                          |")
     print("----------------------------------------------")
-    print(f'{"Chip name":<25} : {args.chip_name:<12}')
+    print(f'{"Chip name":<25} : {args.chip_name[0]:<12}')
     print(f'{"Test Type":<25} : {ttype:<12}')
     print_info = PrintSubparserInfo(args)
     if ttype == "iloss":
@@ -75,14 +77,18 @@ def test_distribution(ttype, args):
         type: test type,
         args: containing all input arguments
     """
-    create_folder()
+    create_folder(args.chip_name[0])
+    rm = pyvisa.ResourceManager()
     info = Test_Info()
     pal = ILME()
-    sweeps = Sweeps(pal)
+    
 
     if ttype == "iloss":
-        info.iloss(args.chip_name, args)
-        sweeps.iloss(args.chip_name, args)
+        M_8163B_ADDR = "GPIB0::25::INSTR"
+        instr = M_8163B(rm=rm, addr=M_8163B_ADDR)
+        sweeps = Sweeps(pal, instr)
+        info.iloss(args.chip_name[0], args)
+        sweeps.iloss(args.chip_name[0], args)
 
     elif ttype == "ac":
         pass
@@ -106,7 +112,7 @@ if __name__ == "__main__":
         metavar="",
         nargs=1,
         type=str,
-        default="XXX",
+        default=["XXX"],
         help="Chip name",
         required=False,
     ) # this create a folder in the name of the chip under test folder
@@ -116,7 +122,7 @@ if __name__ == "__main__":
         metavar="",
         nargs=1,
         type=str,
-        default="DEBUG",
+        default=["INFO"],
         help=f'Levels: {", ".join([i for i in loglvl])}',
         required=False,
     )
@@ -143,7 +149,7 @@ if __name__ == "__main__":
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
-                    level=args.loglvl)
+                    level=args.loglvl[0])
     
     logger = logging.getLogger()
     cmd = logging.StreamHandler()

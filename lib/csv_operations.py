@@ -17,9 +17,9 @@ def _get_dataframe(path: str, fname: str):
     return pd.DataFrame()
 
 
-def create_folder(folder: str="XXX/"):
+def create_folder(folder: str="XXX"):
     try:
-        path = _dir_path() + folder    
+        path = f'{_dir_path()}{folder}/'
         if not os.path.isdir(path):
             os.mkdir(path)
     except:

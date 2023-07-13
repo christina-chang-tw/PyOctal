@@ -19,15 +19,13 @@ class M_8163B:
         self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:unit Watt")
         self.set_wavelength(wavelength=wavelength)
         self.set_power(pow(10, power/10)/1000)
+        self.set_average_time(period=200e-03) # avgtime = 200ms
+        self.set_unit(source="dBm", sensor="Watt")
         self.switch_laser_state(1)
-        self.set_average_time(period=200e-06)
-        self.set_unit()
+
 
     def set_average_time(self, period):
         self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:atime {period}s")
-
-    def switch_local_state (self, state: bool=1): # 0 - remote, 1 - local
-        self.instr.write(f":display:lockout {state}")
 
     def _set_sens_wavelength(self, wavelength: float):
         self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:wavelength {wavelength}")
@@ -37,20 +35,13 @@ class M_8163B:
 
     # Setting the detector
     def set_power_range(self, prange: float): # in dBm
-        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:range {prange}")
+        self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:range {prange}dBm")
 
     def set_power_range_auto(self, auto: bool):
         self.instr.write(f":sense{self.sens_num}:channel{self.sens_chan}:power:range:auto {auto}")
 
-    # Reading off the detector
-    def read_status(self):
-        return self.instr.query(":status:operation:condition?")
-
     def read_power(self):
         return self.instr.query(f":read{self.sens_num}:channel{self.sens_chan}:power:dc?")
-
-    def read_sweep_result(self):
-        return self.instr.query(f":sense:channel{self.sens_chan}:function:result:block?")
 
     # Setting the source
     def set_unit(self, source: str="dBm", sensor: str="Watt"):
@@ -63,13 +54,13 @@ class M_8163B:
         self._set_src_wavelength(wavelength)
 
     def switch_laser_state(self, status: bool):
-        self.instr.write(f"source{self.src_num}:channel{self.src_chan}:state {status}")
+        self.instr.write(f"source{self.src_num}:channel{self.src_chan}:power:state {status}")
 
     def set_power(self, power: float):
-        self.instr.write(f"source{self.src_num}:channel{self.src_chan}:power:level:immediate:amplitude {power}")
+        self.instr.write(f"source{self.src_num}:channel{self.src_chan}:power:level:immediate:amplitude {power}dBm")
 
     # Setting source sweep parameters
-    def set_sweep_mode(self, mode: str): # STEP, MAN, CONT
+    def set_sweep_mode(self, mode: str="STEP"): # STEP, MAN, CONT
         self.instr.write(f"source{self.src_num}:channel{self.src_chan}:sweep:mode {mode}")
 
     def set_sweep_start_stop(self, start: float, stop: float):
