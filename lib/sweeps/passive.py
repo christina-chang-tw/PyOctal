@@ -37,10 +37,11 @@ class ILossSweep:
             export_csv(df, chip_name, f'{get_func_name()}_data')
 
         
-        if not lf.eq(lf.iloc[:, 0], axis=0).all(axis=1).all(axis=0):
+        if not lf.eq(lf.iloc[:,0], axis=0).all(axis=1).all(axis=0):
             logger.warning("Discrepancy in wavelengths")
         
-        df_coeff = iloss.iloss(df, np.array(lf.iloc[:,1]), self.dev.get_no_channels())
+        export_csv(pd.concat([lf.iloc[:,0], df]), chip_name, f'{get_func_name()}_data')
+        df_coeff = iloss.iloss(df, np.array(lf.iloc[:,0]), self.dev.get_no_channels())
         export_csv(df_coeff, chip_name, f'{get_func_name()}_coeffs')
 
         

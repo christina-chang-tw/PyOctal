@@ -20,7 +20,7 @@ class ILME:
         self.engine_mgr = win32com.client.Dispatch('AgServerIL.EngineMgr')
         self.engine = self.engine_mgr.NewEngine()
         self.activate()
-
+        self.no_channels = 1
         activating = 0
         start = time.time()
 

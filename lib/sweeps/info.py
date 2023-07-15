@@ -1,16 +1,18 @@
 from lib.util.csv_operations import export_csv, package_info
 from lib.util.util import get_func_name
+from lib.instruments.pas import ILME
 
 class TestInfo():
     """ Information about tests that are run and export to an info file in csv format """
     @staticmethod
-    def iloss(chip_name, args):
+    def iloss(chip_name, ilme, args):
         info = {
             "Testing Type" : "Insertion Loss",
             "Power [dBm]" : args.power[0],
-            "Wavelength Range [nm]" : f'{args.range[0]} - {args.range[1]}',
+            "Wavelength range [nm]" : f'{args.range[0]} - {args.range[1]}',
             "Wavelength step [nm]" : args.step[0],
-            "Lengths [um]"
+            "Lengths [um]" : [", ".join(str(i)) for i in args.lengths],
+            "Number of channels" : ilme.get_no_channels(),
         }
         export_csv(package_info(info), chip_name, f'{get_func_name()}_info')
 

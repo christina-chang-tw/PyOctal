@@ -1,5 +1,12 @@
-Params,Value
-Testing Type,Insertion Loss
-Power [dBm],10
-Wavelength Range [nm],1535.0 - 1575.0
-Wavelength step [nm],5
+Params,Value
+
+Testing Type,Insertion Loss
+
+Power [dBm],10
+
+Wavelength Range [nm],1535.0 - 1575.0
+
+Wavelength step [nm],5
+
+Number of channels, 1
+

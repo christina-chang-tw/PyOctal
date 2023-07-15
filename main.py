@@ -1,5 +1,5 @@
-from lib.info import TestInfo
-from lib.sweeps.iloss import ILossSweep
+from lib.sweeps.info import TestInfo
+from lib.sweeps.passive import ILossSweep
 from lib.instruments.pas import ILME
 from lib.instruments.multimeter import M_8163B
 from lib.util.csv_operations import create_folder
