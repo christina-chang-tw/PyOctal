@@ -6,9 +6,6 @@ import numpy as np
 EXPECTED_WAVELENGTH = 1550
 
 
-
-
-
 class PlotGraphs:
 
     @staticmethod
@@ -33,6 +30,7 @@ class PlotGraphs:
             df_dropped = df.loc[:, [not x for x in df.columns.str.endswith(columns_dropping[name])]]
 
             for i in range(no_channels):
+                label = f'{name}' if no_channels == 1 else f'{name}_CH{i}'
                 temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
 
                 xdata = [float(i.split(" - ")[1]) for i in temp.columns.values[0:]]
@@ -44,11 +42,14 @@ class PlotGraphs:
                 yline = xline*fit[0] + fit[1]
 
                 ax.plot(xline, yline, ':')
-                ax.scatter(xdata, ydata, label=f'{name}_CH{i}')
-                print(f'{name}_CH{i} : y = {round(fit[0],2)}x {round(fit[1],2)}')
+                ax.scatter(xdata, ydata, label=label)
+                print(f'{name}_CH{i} : y = {round(fit[0],4)}x {round(fit[1],4)}')
+               
+        ax.legend()
+        ax.minorticks_on()
             
     
-    def plt_lambda_loss(self, chips: tuple, columns_plot, unit: str="nm"):
+    def plt_lambda_loss(self, chips: tuple, columns_plot, unit: str="mm"):
         DATA_FNAME = "iloss_data_1.csv"
         INFO_FNAME = "iloss_info.csv"
         
@@ -74,34 +75,10 @@ class PlotGraphs:
                 temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
                 
                 for length in temp.columns.values:
+                    label = f'{name}_{length.split(" - ")[1]}{unit}' if no_channels == 1 else f'{name}_{length}{unit}'
                     ydata = temp.loc[:,length]
-                    ax.plot(xdata, ydata, label=f'{name}_{length}')
+                    ax.plot(xdata, ydata, label=label)
+        
+        ax.legend()
+        ax.minorticks_on()
 
-
-
-
-if __name__ == "__main__":
-
-    plot = PlotGraphs()
-    CHIPS = ("KTN_3","KTN_4", "KTN_5")
-
-    COLUMNS_DROPPING = { 
-        # Do not forget the space in front of the number to distinguish
-        # between 40.0 and 240.0, etc
-        "KTN_3" : (" 40.0", " 160.0"), 
-        "KTN_4" : (),
-        "KTN_5" : (),
-    }
-
-    COLUMNS_PLOT = {
-        "KTN_3" : (" 0.0",), 
-        "KTN_4" : (" 0.0",),
-        "KTN_5" : (),
-    }
-
-    plot.plt_len_loss(chips=CHIPS, columns_dropping=COLUMNS_DROPPING, unit="mm")
-    plot.plt_lambda_loss(chips=CHIPS, columns_plot=COLUMNS_PLOT, unit="mm")
-
-    plt.legend(loc="upper right")
-    plt.minorticks_on()
-    plt.show()
