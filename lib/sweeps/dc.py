@@ -1,4 +1,4 @@
-from lib.instruments.pas import ILME
+from lib.instruments.pas import AgilentILME
 from lib.util.csv_operations import export_csv
 from lib.util.util import get_func_name, wait_for_next_meas
 import lib.analysis.iloss as iloss
@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class PShiftSweep:
-    def __init__(self, dev: ILME, instr):
+    def __init__(self, dev: AgilentILME, instr):
         self.dev = dev
         self.dc_supply = instr
         

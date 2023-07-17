@@ -11,8 +11,10 @@ def get_ddir_path():
     return os.getcwd() + "/results"
 
 def get_dataframe(path: str):
-    if os.path.isfile(path) and os.stat(path).st_size != 0:
-        return pd.read_csv(path, encoding='utf-8')
+    path_to_file = f'{path}.csv'
+
+    if os.path.isfile(path_to_file) and os.stat(path_to_file).st_size != 0:
+        return pd.read_csv(path_to_file, encoding='utf-8')
     logger.error("File does not exist")
 
 

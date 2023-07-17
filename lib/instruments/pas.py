@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class ILME:
+class AgilentILME:
     """
     Instrument: Insertion Loss Measurement Engine
     
@@ -92,7 +92,7 @@ class ILME:
         self.engine.ValidateSettings()
 
 if __name__ == "__main__":
-    engine = ILME()
+    engine = AgilentILME()
     engine.activate()
     engine.sweep_params()
     engine.start_meas()

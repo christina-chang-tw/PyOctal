@@ -1,6 +1,5 @@
 from lib.util.csv_operations import export_csv, package_info
 from lib.util.util import get_func_name
-from lib.instruments.pas import ILME
 
 class TestInfo():
     """ Information about tests that are run and export to an info file in csv format """
@@ -14,7 +13,7 @@ class TestInfo():
             "Lengths [um]" : [", ".join(str(i)) for i in args.lengths],
             "Number of channels" : ilme.get_no_channels(),
         }
-        export_csv(package_info(info), chip_name, f'{get_func_name()}_info')
+        export_csv(package_info(info), chip_name, f'{args.structure[0]}_{get_func_name()}_info')
 
 
     

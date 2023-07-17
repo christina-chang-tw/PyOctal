@@ -1,4 +1,4 @@
-from lib.instruments.multimeter import M_8163B
+from lib.instruments.multimeter import Agilent8163B
 from lib.util.util import version_check
 
 import pyvisa
@@ -10,11 +10,11 @@ INSTR_OPERATIONS = {
 }
 
 # Instruments' GPIB address
-M_8163B_ADDR = "GPIB0::25::INSTR"
+Agilent8163B_ADDR = "GPIB0::25::INSTR"
 
 def setup(rm, ttype, args):
     if ttype == "m_8163b":
-        instr = M_8163B(rm=rm, addr=M_8163B_ADDR)
+        instr = Agilent8163B(rm=rm, addr=Agilent8163B_ADDR)
         if args.op[0] == "setup":
             instr.setup(wavelength=args.wavelength[0], power=args.power[0])
 

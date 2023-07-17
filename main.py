@@ -1,7 +1,7 @@
 from lib.sweeps.info import TestInfo
 from lib.sweeps.passive import ILossSweep
-from lib.instruments.pas import ILME
-from lib.instruments.multimeter import M_8163B
+from lib.instruments.pas import AgilentILME
+from lib.instruments.multimeter import Agilent8163B
 from lib.util.csv_operations import create_folder
 from lib.util.logger import CustomFormatter
 from lib.util.util import version_check
@@ -55,7 +55,6 @@ class PrintSubparserInfo():
 
 def print_setup_info(ttype, args):
     """Print the setup information for each test"""
-
     print()
     print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     print("----------------------------------------------")
@@ -72,21 +71,21 @@ def print_setup_info(ttype, args):
         print_info.dc()
     print()
 
+
 def test_distribution(ttype, args):
     """ 
-    Distributing tests 
+    Distribute tests 
         type: test type,
         args: containing all input arguments
     """
     create_folder(args.chip_name[0])
     rm = pyvisa.ResourceManager()
     info = TestInfo()
-    pal = ILME()
     
-
     if ttype == "iloss":
-        M_8163B_ADDR = "GPIB0::25::INSTR"
-        instr = M_8163B(rm=rm, addr=M_8163B_ADDR)
+        Agilent8163B_ADDR = "GPIB0::25::INSTR"
+        instr = Agilent8163B(rm=rm, addr=Agilent8163B_ADDR)
+        pal = AgilentILME()
         sweeps = ILossSweep(pal, instr)
         info.iloss(args.chip_name[0], args)
         sweeps.iloss(args.chip_name[0], args)
@@ -108,15 +107,24 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "-chip", 
-        "--chip_name", 
+        "--chip-name", 
         dest="chip_name",
         metavar="",
         nargs=1,
         type=str,
-        default=["XXX"],
-        help="Chip name",
-        required=False,
+        help="Chip name (this create a folder of the name specified)",
+        required=True,
     ) # this create a folder in the name of the chip under test folder
+    parser.add_argument(
+        "-s",
+        "--structure",
+        dest="structure",
+        metavar="",
+        nargs=1,
+        type=str,
+        help="Test structure name",
+        required=True,
+    )
     parser.add_argument(
         "--log-lvl",
         dest="loglvl",

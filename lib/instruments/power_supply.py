@@ -1,4 +1,4 @@
-class PS_E3640A:
+class AgilentE3640A:
     """
     Instrument: E3640A Power Meter
     

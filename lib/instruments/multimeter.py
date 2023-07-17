@@ -6,12 +6,11 @@ class Multimeter():
         self.sens_num = sens_num
         self.sens_chan = sens_chan
 
-class M_8163B:
+class Agilent8163B:
     """
     Instrument: 8163B Lightwave Multimeter
     
     Remote control the multimeter with this library
-    ** Not tested **
     """
 
     def __init__(self, rm, addr: str="GPIB0::25::INSTR", src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
