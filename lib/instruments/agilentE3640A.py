@@ -1,4 +1,6 @@
-class AgilentE3640A:
+from lib.instruments.base import BaseInstrument
+
+class AgilentE3640A(BaseInstrument):
     """
     Instrument: E3640A Power Meter
     
@@ -6,8 +8,8 @@ class AgilentE3640A:
     ** Not tested **
     """
 
-    def __init__(self, rm, addr: str="GPIB0::28::INSTR"):
-        self.instr = rm.open_resource(addr)
+    def __init__(self, addr: str="GPIB0::28::INSTR"):
+        super().__init__(addr=addr) 
 
     def setup(self):
         self.instr.write("*RST")

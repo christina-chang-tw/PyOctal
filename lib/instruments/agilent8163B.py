@@ -1,20 +1,18 @@
-class Multimeter():
-    def __init__(self, rm, addr: str, src_num: int, src_chan: int, sens_num: int, sens_chan: int):
-        self.instr = rm.open_resource(addr)
-        self.src_num = src_num
-        self.src_chan = src_chan
-        self.sens_num = sens_num
-        self.sens_chan = sens_chan
+from lib.instruments.base import BaseInstrument
 
-class Agilent8163B:
+class Agilent8163B(BaseInstrument):
     """
     Instrument: 8163B Lightwave Multimeter
     
     Remote control the multimeter with this library
     """
 
-    def __init__(self, rm, addr: str="GPIB0::25::INSTR", src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
-        super().__init__(rm=rm, addr=addr, src_num=src_num, src_chan=src_chan, sens_num=sens_num, sens_chan=sens_chan) 
+    def __init__(self, addr: str="GPIB0::25::INSTR", src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+        super().__init__(addr=addr) 
+        self.src_num = src_num
+        self.src_chan = src_chan
+        self.sens_num = sens_num
+        self.sens_chan = sens_chan
 
     def setup(self, wavelength: float=1550, power: float=10):
         self.instr.write("*RST")

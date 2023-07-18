@@ -1,4 +1,4 @@
-from lib.instruments.multimeter import Agilent8163B
+from lib.instruments.agilent8163B import Agilent8163B
 from lib.util.util import version_check
 
 import pyvisa

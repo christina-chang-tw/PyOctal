@@ -1,6 +1,6 @@
 """ Photonics Application Suite (PAS) Interface """
+from lib.instruments.base import BasePAS
 
-import win32com.client
 import time
 import numpy as np
 import pandas as pd
@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class AgilentILME:
+class AgilentILME(BasePAS):
     """
     Instrument: Insertion Loss Measurement Engine
     
@@ -17,25 +17,10 @@ class AgilentILME:
     """
 
     def __init__(self):
-        self.engine_mgr = win32com.client.Dispatch('AgServerIL.EngineMgr')
-        self.engine = self.engine_mgr.NewEngine()
-        self.activate()
         self.no_channels = 1
-        activating = 0
-        start = time.time()
+        server_addr = "AgServerIL.EngineMgr"
+        super().__init__(server_addr=server_addr)
 
-        # If the engine is not activated 
-        while activating == 0:
-            time.sleep(0.5) 
-            activating = self.engine.Active
-            if time.time() - start > 30:
-                logging.error("Timeout error: check devices connection")
-
-    def activate(self):
-        self.engine.Activate()
-    
-    def deactivate(self):
-        self.engine.DeActivate()
 
     def sweep_params(self, start: float=1540, stop: float=1575, step: float=5, power: float=10):
         """ Setting sweep parameters """
@@ -46,11 +31,6 @@ class AgilentILME:
 
     def set_num_of_scans(self, num: int=1):
         self.engine.NumberOfScans = num
-
-    def quit(self):
-        self.deactivate()
-        self.engine_mgr.DeleteEngine(self.engine)
-        self.engine_mgr.release()
 
     def start_meas(self):
         self.engine.StartMeasurement()
@@ -88,8 +68,6 @@ class AgilentILME:
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
         return tuple(np.divide(xdata, 1e-9))
 
-    def validate_settings(self):
-        self.engine.ValidateSettings()
 
 if __name__ == "__main__":
     engine = AgilentILME()
