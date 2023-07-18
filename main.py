@@ -21,7 +21,6 @@ class Subparsers():
         requiredNamed = parser.add_argument_group('required arguments')
         requiredNamed.add_argument("-l", "--lengths", type=float, metavar="", dest="lengths", nargs="+", help="The lengths of each test waveguides", required=True)
         parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
-        parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
         parser.add_argument("-r", "--wavelength-range", type=float, metavar="", dest="range", nargs="+", default=[1540,1570], help="start wavelength and stop wavelength in nm", required=False)
         parser.add_argument("-s", "--sweep-step", type=float, metavar="", dest="step", nargs=1, default=[5], help="Sweep step [nm]", required=False)
 
@@ -79,12 +78,11 @@ def test_distribution(ttype, args):
         args: containing all input arguments
     """
     create_folder(args.chip_name[0])
-    rm = pyvisa.ResourceManager()
     info = TestInfo()
     
     if ttype == "iloss":
         Agilent8163B_ADDR = "GPIB0::25::INSTR"
-        instr = Agilent8163B(rm=rm, addr=Agilent8163B_ADDR)
+        instr = Agilent8163B(addr=Agilent8163B_ADDR)
         pal = AgilentILME()
         sweeps = ILossSweep(pal, instr)
         info.iloss(args.chip_name[0], args)

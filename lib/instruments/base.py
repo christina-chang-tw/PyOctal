@@ -15,6 +15,7 @@ def list_resources():
     return resources
 
 class BaseInstrument(object):
+
     def __init__(self, rsc_addr, termination: str='\n'):
         # Communicate with the resource and identify it
         self.addr = rsc_addr
@@ -24,19 +25,19 @@ class BaseInstrument(object):
         
         if rsc_addr in self.rm.list_resources(): # Checking if the resource is available
             self.instr = self.rm.open_resource(rsc_addr)
-            if self.inst.resource_info[3][:4] == 'ASRL':
+            if self.instr.resource_info[3][:4] == 'ASRL':
                 #This should be changed! gpib is also a instrument type
                 if termination is not None:
-                    self.inst.read_termination = termination
-                    self.inst.write_termination = termination
+                    self.instr.read_termination = termination
+                    self.instr.write_termination = termination
                 print('You have connected succesfully with an ASRL type resource')
-            elif self.inst.resource_info[3][:4] == 'GPIB':
+            elif self.instr.resource_info[3][:4] == 'GPIB':
                 print('You have connected succesfully with an GPIB type resource')
-            elif self.inst.resource_info[3][:4] == 'USB0':
+            elif self.instr.resource_info[3][:4] == 'USB0':
                 print('You have connected succesfully with an USB0 type resource')
             else:
                 raise Exception('Resource class not contemplated, check pyLab library')
-            self.identify = self.inst.query("*IDN?")
+            self.identify = self.get_idn()
 
         else:
             raise Exception("Resource not know, check your ports or NI MAX")
@@ -51,10 +52,10 @@ class BaseInstrument(object):
         return self.instr.query(str).rstrip()
     
     def get_idn(self):
-        return self.query("*IDN?")
+        return self.instr.query("*IDN?")
 
     def reset(self):
-        self.write("*RST")
+        self.instr.write("*RST")
 
 
 class BasePAS(object):

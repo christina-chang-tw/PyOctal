@@ -8,7 +8,7 @@ class Agilent8163B(BaseInstrument):
     """
 
     def __init__(self, addr: str="GPIB0::25::INSTR", src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
-        super().__init__(addr=addr) 
+        super().__init__(rsc_addr=addr) 
         self.src_num = src_num
         self.src_chan = src_chan
         self.sens_num = sens_num

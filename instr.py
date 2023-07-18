@@ -12,9 +12,9 @@ INSTR_OPERATIONS = {
 # Instruments' GPIB address
 Agilent8163B_ADDR = "GPIB0::25::INSTR"
 
-def setup(rm, ttype, args):
+def setup(ttype, args):
     if ttype == "m_8163b":
-        instr = Agilent8163B(rm=rm, addr=Agilent8163B_ADDR)
+        instr = Agilent8163B(addr=Agilent8163B_ADDR)
         if args.op[0] == "setup":
             instr.setup(wavelength=args.wavelength[0], power=args.power[0])
 
@@ -43,6 +43,4 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    rm = pyvisa.ResourceManager()
-    setup(rm, args.test, args)
-    rm.close()
+    setup(args.test, args)
