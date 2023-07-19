@@ -51,6 +51,9 @@ class BaseInstrument(object):
     def query(self, cmd):
         return self.instr.query(cmd).rstrip()
     
+    def query_float(self, cmd):
+        return float(self.instr.query(cmd).rstrip())
+    
     def query_binary_values(self, cmd):
         return self.instr.query_binary_values(cmd, is_big_endian=False)
     
@@ -59,6 +62,16 @@ class BaseInstrument(object):
 
     def reset(self):
         self.instr.write("*RST")
+
+    def clear(self):
+        self.instr.write("*CLS")
+
+
+class KeithleySource(BaseInstrument):
+    def __init__(self, addr):
+        super().__init__(rsc_addr=addr)
+
+    
 
 
 class BasePAS(object):
@@ -77,7 +90,6 @@ class BasePAS(object):
             if time.time() - start > 30:
                 logging.error("Timeout error: check devices connection")
 
-    
     def activate(self):
         self.engine.Activate()
 

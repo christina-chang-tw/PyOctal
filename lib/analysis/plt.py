@@ -7,13 +7,14 @@ import numpy as np
 
 
 
-class PlotGraphs:
+class PlotGraphs(object):
 
-    exp_wavelength = 1550
     coeffs_name = "iloss_coeffs"
     data_name = "iloss_data"
     info_name = "iloss_info"
 
+    def __init__(self, exp_wavelength: float=1550):
+        self.exp_wavelength = exp_wavelength
 
     @staticmethod
     def __get_new_figure():

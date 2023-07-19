@@ -124,6 +124,7 @@ class Agilent8163B(BaseInstrument):
         return self.query_binary_values(f"{self.laser}:read:data? {mode}")
     
 
+
     ### SWEEP ####################################
     def set_sweep_mode(self, mode: str="CONT"): # STEP, MAN, CONT
         self.write(f"{self.laser}:sweep:mode {mode}")

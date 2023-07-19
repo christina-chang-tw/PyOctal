@@ -1,6 +1,5 @@
 from lib.base import BaseInstrument
 
-
 class AgilentE3640A(BaseInstrument):
     """
     Instrument: E3640A Power Meter
