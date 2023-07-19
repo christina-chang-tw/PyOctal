@@ -1,47 +1,37 @@
-from lib.instruments.base import BaseInstrument
+from lib.base import BaseInstrument
+
 
 class AgilentE3640A(BaseInstrument):
     """
     Instrument: E3640A Power Meter
     
     Remote control the power meter with this library
-    ** Not tested **
     """
 
     def __init__(self, addr: str="GPIB0::4::INSTR"):
         super().__init__(rsc_addr=addr) 
 
     def setup(self):
-        self.instr.write("*RST")
-        self.set_output_status(1)
+        self.reset()
+        self.set_output_status(status=1)
 
-    def set_volt(self, volt: float):
+    def set_volt(self, volt: float=0):
         self.write(f"voltage {volt}")
     
-    def set_current(self, curr: float):
+    def set_curr(self, curr: float=0):
         self.write(f"current {curr}")
 
-    def set_params(self, volt: float, cur: float):
-        self.write(f"apply {volt}, {cur}")
+    def set_params(self, volt: float=0, curr: float=0):
+        self.write(f"apply {volt}, {curr}")
 
     def read_params(self):
         return self.query("apply?")
 
-    def read_current(self):
+    def read_curr(self):
         return self.query("measure:current?")
     
-    def read_voltage(self):
+    def read_volt(self):
         return self.query("measure:voltage?")
     
-    def set_output_status(self, status: bool):
+    def set_output_status(self, status: bool=1):
         self.write(f"output {status}")
-
-
-if __name__ == "__main__":
-    power_meter = AgilentE3640A()
-    power_meter.set_output_status(1)
-    power_meter.set_volt(3)
-    power_meter.set_current(1)
-    power_meter.set_params(volt=4, cur=2)
-    ans = power_meter.read_voltage()
-    print(ans)

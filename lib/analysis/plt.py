@@ -1,6 +1,6 @@
-from lib.util.csv_operations import get_ddir_path, get_dataframe
+from lib.util.file_operations import get_ddir_path, get_dataframe_from_csv, get_dataframe_from_excel
 from lib.analysis.iloss import iloss_coeffs
-from lib.util.csv_operations import export_csv
+from lib.util.file_operations import export_to_csv, export_to_excel
 
 import matplotlib.pyplot as plt 
 import numpy as np
@@ -23,7 +23,7 @@ class PlotGraphs:
         return ax
 
 
-    def plt_len_loss(self, chips: tuple, columns_dropping, structure: str="XXX", unit: str="um"):
+    def plt_len_loss_csv(self, chips: tuple, columns_dropping, structure: str="XXX", unit: str="um"):
 
         ax = self.__get_new_figure()
         ax.set_xlabel(f'Length [{unit}]')
@@ -33,11 +33,8 @@ class PlotGraphs:
         for name in chips:
             df_coeff = []
 
-            data_path = f'{get_ddir_path()}/{name}/{structure}_{self.data_name}'
-            info_path = f'{get_ddir_path()}/{name}/{structure}_{self.info_name}'
-
-            df = get_dataframe(data_path)
-            info = get_dataframe(info_path)
+            df = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}")
+            info = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.info_name}")
 
             no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
             df_dropped = df.loc[:, [not x for x in df.columns.str.endswith(tuple(columns_dropping[name]))]]
@@ -47,7 +44,7 @@ class PlotGraphs:
                 temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
 
                 xdata = [float(i.split(" - ")[1]) for i in temp.columns.values[0:]]
-                ydata = temp.iloc[(df_dropped['lambda'] - self.exp_wavelength).abs().argsort()[:1]].values[0][0:]
+                ydata = temp.iloc[(df_dropped['Wavelength'] - self.exp_wavelength).abs().argsort()[:1]].values[0][0:]
 
                 # linear regression
                 fit = np.polyfit(xdata, ydata, deg=1)
@@ -57,9 +54,9 @@ class PlotGraphs:
                 ax.plot(xline, yline, ':')
                 ax.scatter(xdata, ydata, label=label)
                 print(f'{name}_CH{i} : y = {round(fit[0],4)}x {round(fit[1],4)}')
-                df_coeff = iloss_coeffs(df=temp, wavelengths=df_dropped['lambda'], lengths=xdata, no_channels=no_channels, unit=unit)
+                df_coeff = iloss_coeffs(df=temp, wavelengths=df_dropped['Wavelength'], lengths=xdata, no_channels=no_channels, unit=unit)
             
-            export_csv(df_coeff, name, f'{structure}_iloss_coeffs')
+            export_to_csv(df_coeff, get_ddir_path(name), f'{structure}_iloss_coeffs')
         ax.legend(fontsize=8)
     
 
@@ -72,16 +69,13 @@ class PlotGraphs:
 
         for name in chips:
 
-            data_path = f'{get_ddir_path()}/{name}/{structure}_{self.data_name}'
-            info_path = f'{get_ddir_path()}/{name}/{structure}_{self.info_name}'
-
-            df = get_dataframe(data_path)
-            info = get_dataframe(info_path)
+            df = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}")
+            info = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.info_name}")
 
             no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
             df_dropped = df.loc[:, [x for x in df.columns.str.endswith(tuple(columns_plot[name]))]]
 
-            xdata = df['lambda']
+            xdata = df['Wavelength']
 
             for i in range(no_channels):
                 temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
@@ -107,14 +101,11 @@ class PlotGraphs:
 
         for name in chips:
 
-            coeffs_path = f'{get_ddir_path()}/{name}/{structure}_{self.coeffs_name}'
-            info_path = f'{get_ddir_path()}/{name}/{structure}_{self.info_name}'           
-            
-            df_coeffs = get_dataframe(coeffs_path)
-            info = get_dataframe(info_path)
+            df_coeffs = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.coeffs_name}")
+            info = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.info_name}")
             
             no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
-            xdata = df_coeffs['lambda']
+            xdata = df_coeffs['Wavelength']
 
             for i in range(no_channels):
                 label = f'{name}' if no_channels == 1 else f'{name}_CH{i}'
@@ -124,3 +115,66 @@ class PlotGraphs:
         ax1.legend(fontsize=8)
         ax2.legend(fontsize=8)
 
+
+    def plt_len_loss_excel(self, chips: tuple, columns_dropping, sheet_names, structure: str="XXX", unit: str="um"):
+
+        ax = self.__get_new_figure()
+        ax.set_xlabel(f'Length [{unit}]')
+        ax.set_ylabel(f'Loss [dB/{unit}]')
+        ax.set_title('Insertion Loss of Different Chips')
+
+        for name in chips:
+
+            df, info = get_dataframe_from_excel(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}", sheet_names=sheet_names)
+            for sheet in sheet_names:
+                df_coeff = []
+
+                no_channels = int(info.loc[info["General:"] == "NumberOfChannels"].loc[:, "Unnamed: 1"])
+                df_dropped = df[sheet].loc[:, [not x for x in df[sheet].columns.str.endswith(tuple(columns_dropping[name]))]]
+                wavelength = df_dropped['Wavelength']*1e+09
+
+                for i in range(no_channels):
+                    label = f'{name}_{sheet}' if no_channels == 1 else f'{name}_{sheet}_CH{i}'
+                    temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
+           
+                    xdata = [float(i.split(" - ")[1]) for i in temp.columns.values[0:]]
+                    ydata = temp.iloc[(wavelength - self.exp_wavelength).abs().argsort()[:1]].values[0][0:]
+
+                    # linear regression
+                    fit = np.polyfit(xdata, ydata, deg=1)
+                    xline = np.linspace(min(xdata), max(xdata))
+                    yline = xline*fit[0] + fit[1]
+
+                    ax.plot(xline, yline, ':')
+                    ax.scatter(xdata, ydata, label=label)
+                    offset = f'+{round(fit[1],4)}' if fit[1] > 0 else round(fit[1], 4) if fit[1] < 0 else 0
+                    print(f'{name}_CH{i} : y = {round(fit[0],4)}x {offset}')
+                    df_coeff = iloss_coeffs(df=temp, wavelengths=wavelength, lengths=xdata, no_channels=no_channels, unit=unit)
+                
+                export_to_excel(df_coeff, get_ddir_path(name), f'{structure}_iloss_coeffs')
+        ax.legend(fontsize=8)
+
+
+    def plt_lambda_loss_excel(self, chips: tuple, columns_plot, sheet_names, structure: str="XXX", unit: str="mm"):
+        
+        ax = self.__get_new_figure()
+        ax.set_xlabel(f'Wavelength [nm]')
+        ax.set_ylabel(f'Loss [dB/{unit}]')
+        ax.set_title('Insertion Loss of Different Wavelengths')
+
+        for name in chips:
+            df, info = get_dataframe_from_excel(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}", sheet_names=sheet_names)
+            for sheet in sheet_names:
+                no_channels = int(info.loc[info["General:"] == "NumberOfChannels"].loc[:, "Unnamed: 1"])
+                df_dropped = df[sheet].loc[:, [x for x in df[sheet].columns.str.endswith(tuple(columns_plot[name]))]]
+
+                xdata = df[sheet]['Wavelength']*1e+09
+
+                for i in range(no_channels):
+                    temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
+                    
+                    for length in temp.columns.values:
+                        label = f'{name}_{length.split(" - ")[1]}{unit}' if no_channels == 1 else f'{name}_{length}{unit}'
+                        ydata = np.negative(temp.loc[:,length])
+                        ax.plot(xdata, ydata, label=label)
+        ax.legend(fontsize=8)

@@ -1,4 +1,4 @@
-import win32com.client
+# import win32com.client
 import pyvisa
 import time
 
@@ -42,14 +42,17 @@ class BaseInstrument(object):
         else:
             raise Exception("Resource not know, check your ports or NI MAX")
         
-    def write(self, str):
-        return self.instr.write(str)
+    def write(self, cmd):
+        return self.instr.write(cmd)
     
-    def read(self, str):
-        return self.instr.read(str).rstrip()
+    def read(self, cmd):
+        return self.instr.read(cmd).rstrip()
     
-    def query(self, str):
-        return self.instr.query(str).rstrip()
+    def query(self, cmd):
+        return self.instr.query(cmd).rstrip()
+    
+    def query_binary_values(self, cmd):
+        return self.instr.query_binary_values(cmd, is_big_endian=False)
     
     def get_idn(self):
         return self.instr.query("*IDN?")
@@ -61,11 +64,9 @@ class BaseInstrument(object):
 class BasePAS(object):
 
     def __init__(self, server_addr):
-        self.engine_mgr = win32com.client.Dispatch(server_addr)
+        #self.engine_mgr = win32com.client.Dispatch(server_addr)
         self.engine = self.engine_mgr.NewEngine()
-
         self.activate()
-        
         activating = 0
         start = time.time()
 
@@ -93,3 +94,9 @@ class BasePAS(object):
     def validate_settings(self):
         self.engine.ValidateSettings()
 
+
+class BaseSweeps(object):
+
+    def __init__(self, instrument):
+        self.instr = instrument
+    

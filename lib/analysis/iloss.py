@@ -1,4 +1,4 @@
-from lib.util.csv_operations import create_folder
+from lib.util.file_operations import create_folder
 
 import numpy as np
 import pandas as pd
@@ -17,7 +17,7 @@ def iloss_coeffs(df, wavelengths, lengths, no_channels: int=1, unit: str="um"):
     df = df.transpose()
 
     df_coeff = pd.DataFrame()
-    df_coeff["lambda"] = wavelengths
+    df_coeff["Wavelength"] = wavelengths
 
     for i in range(0, len(df.columns)):
         for j in range(no_channels):

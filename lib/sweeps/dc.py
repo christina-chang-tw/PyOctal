@@ -1,5 +1,5 @@
 from lib.instruments.pas import AgilentILME
-from lib.util.csv_operations import export_csv
+from lib.util.file_operations import export_to_csv
 from lib.util.util import get_func_name, wait_for_next_meas
 import lib.analysis.iloss as iloss
 

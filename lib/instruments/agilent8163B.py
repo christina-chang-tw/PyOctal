@@ -1,10 +1,6 @@
-from lib.instruments.base import BaseInstrument
-import logging
-import time
-import pandas as pd
-import sys
+from lib.base import BaseInstrument
 
-logger = logging.getLogger(__name__)
+from typing import Union
 
 class Agilent8163B(BaseInstrument):
     """
@@ -19,6 +15,8 @@ class Agilent8163B(BaseInstrument):
         self.src_chan = src_chan
         self.sens_num = sens_num
         self.sens_chan = sens_chan
+        self.laser = f"source{self.src_num}:channel{self.src_chan}"
+        self.detect = f"sense{self.sens_num}:channel{self.sens_chan}"
 
     def setup(self, wavelength: float=1550, power: float=10):
         self.reset("*RST")
@@ -29,6 +27,9 @@ class Agilent8163B(BaseInstrument):
         self.set_unit(source="dBm", sensor="Watt")
         self.set_laser_state(1)
 
+    def unlock(self):
+        self.write(f"lock {0},{1234}") # unlock with code 1234
+
     def set_wavelength(self, wavelength: float):
         wavelength = wavelength * 1e-09
         self.set_detect_wav(wavelength)
@@ -38,9 +39,6 @@ class Agilent8163B(BaseInstrument):
         self.write(f"power:unit {source}") # set the source unit in dBm
         self.write(f"sense:power:unit {sensor}") # set sensor unit
 
-    def unlock(self):
-        self.write("lock 0,1234")
-
     def set_trig_config(self, config):
         self.write(f"trigger:conf {config}")
 
@@ -49,164 +47,118 @@ class Agilent8163B(BaseInstrument):
 
 
 
-    # Detector
+    ### DETECTOR ####################################
     def set_detect_avgtime(self, period):
-        self.write(f"sense{self.sens_num}:channel{self.sens_chan}:power:atime {period}s")
+        self.write(f"{self.detect}:power:atime {period}s")
 
     def set_detect_wav(self, wavelength: float):
-        self.write(f"sense{self.sens_num}:channel{self.sens_chan}:power:wavelength {wavelength}")
+        self.write(f"{self.detect}:power:wavelength {wavelength}")
 
     def set_detect_prange(self, prange: float):
         # set power range
-        self.write(f"sense{self.sens_num}:channel{self.sens_chan}:power:range {prange}dBm")
+        self.write(f"{self.detect}:power:range {prange}dBm")
 
     def set_detect_autorange(self, auto: bool=1):
-        self.write(f"sense{self.sens_num}:channel{self.sens_chan}:power:range:auto {auto}")
+        self.write(f"{self.detect}:power:range:auto {auto}")
 
-    def set_detect_unit(self, unit):
-        self.write(f"sense{self.sens_num}:channel{self.sens_chan}:power:unit {unit}") # set sensor unit
+    def set_detect_unit(self, unit: str="Watt"):
+        self.write(f"{self.detect}:power:unit {unit}") # set detector unit
+
+    def set_detect_calibration_val(self, value: float=0):
+        self.write(f"{self.detect}:correction {value}dB")
 
     def set_detect_trig_response(self, in_rsp: str="smeasure", out_rsp: str="disabled"):
         self.write(f"trigger{self.sens_num}:channel{self.sens_chan}:input {in_rsp}")
         self.write(f"trigger{self.src_num}:channel{self.sens_chan}:output {out_rsp}")
 
-    def set_detect_func_mode(self, mode: str):
-        self.write(f"sense{self.sens_num}:channel{self.sens_chan}:function:status {mode[0]},{mode[1]}")
-
-    def set_detect_calibration_val(self, value: float=0):
-        self.write(f"sense{self.sens_num}:channel{self.sens_chan}:correction {value}dB")
-
-    def set_detect_func_params(self, mode: str, params):
+    def set_detect_func_mode(self, mode: Union[tuple,list]):
+        self.write(f"{self.sens}:function:status {mode[0]},{mode[1]}")
+    
+    def set_detect_func_params(self, mode: str, params: Union[tuple,list]):
         mode = mode.lower()
         if mode == "logging" or "logg": # params = [data_pts, avg_time]
-            self.write(f"sense{self.sens_num}:channel{self.sens_chan}:function:parameter:logging {params[0]},{params[1]}s") 
+            self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s") 
         elif mode == "minmax" or "minm": # params = [mode, data_pts]
-            self.write(f"sense{self.sens_num}:channel{self.sens_chan}:function:parameter:minmax {params[0]},{params[1]}") 
+            self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
         elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
-            self.write(f"sense{self.sens_num}:channel{self.sens_chan}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
+            self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
 
     def get_detect_pow(self):
         return self.query(f"read{self.sens_num}:channel{self.sens_chan}:power?")
     
     def get_detect_trigno(self):
-        return self.query(f"sense{self.sens_num}:channel{self.sens_chan}:wavelength:sweep:exp?")
+        return self.query(f"{self.detect}:wavelength:sweep:exp?")
+    
+    def get_detect_func_status(self):
+        return self.query(f"{self.detect}:function:state?")
+    
+    def get_detect_func_result(self):
+        return self.query_binary_values(f"{self.detect}:function:result?")
 
 
 
-    # Laser
-    def set_laser_wav(self, wavelength: float):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength {wavelength}")
+    ### LASER ######################################
+    def set_laser_wav(self, wavelength: float=1550):
+        self.write(f"{self.laser}:wavelength {wavelength}")
 
     def get_laser_wav_min(self):
-        return self.query(f"source{self.src_num}:channel{self.src_chan}:wavelength? MIN")
+        return self.query(f"{self.laser}:wavelength? MIN")
 
     def get_laser_wav_max(self):
-        return self.query(f"source{self.src_num}:channel{self.src_chan}:wavelength? MAX")
+        return self.query(f"{self.laser}:wavelength? MAX")
     
     def set_laser_state(self, status: bool=1):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:power:state {status}")
+        self.write(f"{self.laser}:power:state {status}")
 
-    def set_laser_pow(self, power: float):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:power:level:immediate:amplitude {power}dBm")
+    def set_laser_pow(self, power: float=10):
+        self.write(f"{self.laser}:power:level:immediate:amplitude {power}dBm")
 
     def set_laser_trig_response(self, in_rsp: str="ignore", out_rsp: str="stfinished"):
         self.write(f"trigger{self.src_num}:channel{self.src_chan}:input {in_rsp}")
         self.write(f"trigger{self.src_num}:channel{self.src_chan}:output {out_rsp}")
 
-    def set_laser_unit(self, unit):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:power:unit {unit}") # set the source unit in dBm
+    def set_laser_unit(self, unit: str="dBm"):
+        self.write(f"{self.laser}:power:unit {unit}") # set the source unit in dBm
 
-
+    def get_laser_data(self, mode: str="lloging"):
+        return self.query_binary_values(f"{self.laser}:read:data? {mode}")
     
-    # Setting sweep parameters
+
+    ### SWEEP ####################################
     def set_sweep_mode(self, mode: str="CONT"): # STEP, MAN, CONT
-        self.write(f"source{self.src_num}:channel{self.src_chan}:sweep:mode {mode}")
+        self.write(f"{self.laser}:sweep:mode {mode}")
 
-    def set_sweep_state(self, state: int=1): # 0 - stop, 1 - start, 2 - pause, 3 - continue
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength:sweep:state {state}")
-    
+    def set_sweep_state(self, state: Union[int, str]): # 0 - stop, 1 - start, 2 - pause, 3 - continue
+        self.write(f"{self.laser}:wavelength:sweep:state {state}")
+
+    def set_sweep_speed(self, speed: float=50):
+        self.write(f"{self.laser}:wavelength:sweep:speed {speed}nm/s")
+
     def set_sweep_step(self, step: float=5):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength:sweep:step {step}pm")
+        self.write(f"{self.laser}:wavelength:sweep:step {step}pm")
 
-    def set_sweep_start_stop(self, start: float, stop: float):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength:sweep:start {start}nm")
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength:sweep:stop {stop}nm")
+    def set_sweep_start_stop(self, start: float=1535, stop: float=1575):
+        self.write(f"{self.laser}:wavelength:sweep:start {start}nm")
+        self.write(f"{self.laser}:wavelength:sweep:stop {stop}nm")
     
     def set_sweep_wav_logging(self, status: bool=1):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength:sweep:llogging {status}")
+        self.write(f"{self.laser}:wavelength:sweep:llogging {status}")
 
     def set_sweep_repeat_mode(self, mode: str="oneway"):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength:sweep:repeat {mode}")
+        self.write(f"{self.laser}:wavelength:sweep:repeat {mode}")
 
     def set_sweep_cycles(self, cycles: int=1):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:wavelength:sweep:cycles {cycles}")
+        self.write(f"{self.laser}:wavelength:sweep:cycles {cycles}")
 
-    def set_sweep_tdwell(self, time: float=0):
-        self.write(f"source{self.src_num}:channel{self.src_chan}:dwell {time}s")
-
+    def set_sweep_tdwell(self, tdwell: float=0):
+        self.write(f"{self.laser}:dwell {tdwell}s")
     
-    # sweeps
-    def run_laser_sweep_manual(self, power: float=10.0, start_lambda: float=1535.0, stop_lambda: float=1575.0, step: float=5.0):
-        if start_lambda <= float(self.get_laser_wav_min()) and stop_lambda >= float(self.get_laser_wav_min()):
-            sys.exit("Wavelength out of range")
-        
-        wavelengths = []
-        powers = []
-        self.set_detect_autorange(1)
-        self.set_detect_avgtime(200e-03)
-        self.set_laser_pow(power)
-
-        #### Loop through wavelengths:
-        for wavelength in range(start_lambda, stop_lambda + step, step):
-            tolerance = 0.001 # detector stability tolerance
-            diff = power_temp = sys.maxsize # initiation
-            LOOP_MAX = 20
-
-            self.set_wavelength(wavelength)
-            
-            # Make sure that the laser power is stabalised
-            for _ in range(LOOP_MAX):
-                time.sleep(0.5)
-                detected_power = float(self.get_detect_pow())
-                diff = (detected_power - power_temp)/detected_power
-                power_temp = detected_power
-                if abs(diff) <= tolerance:
-                    break
-
-            wavelengths.append(wavelength)
-            powers.append(detected_power)
-
-            return wavelengths, powers
-        
-    def run_laser_sweep_auto(self, power: float=10.0, start_lambda: float=1535.0, stop_lambda: float=1575.0, step: float=5.0, cycles: int=1, tavg: float=100):
-
-        self.set_unit(source="dBm", sensor="Watt")
-
-        self.set_laser_pow(power=power)
-        self.set_laser_wav(wavelength=start_lambda)
-        self.set_laser_state(status=1)
+    def get_sweep_state(self): # 0 - stop, 1 - start, 2 - pause, 3 - continue
+        return self.query(f"{self.laser}:wavelength:sweep:state?")
         
 
-        self.set_detect_wav(wavelength=1550)
-        self.set_detect_avgtime(period=1e-04)
-        self.set_detect_calibration_val(value=0)
-        self.set_detect_autorange(auto=0)
-        self.set_detect_prange(range=10)
 
-        self.set_trig_config(config=3)
-        self.set_laser_trig_response(in_rsp="ignored", out_rsp="stfinished")
-        self.set_detect_trig_response(in_rsp="smeasure", out_rsp="disabled")
-        
-        self.set_sweep_mode(mode="continuous")
-        self.set_sweep_repeat_mode(mode="oneway")
-        self.set_sweep_cycles(cycles=cycles)
-        self.set_sweep_tdwell(time=0)
-        self.set_sweep_start_stop(start=start_lambda, stop=stop_lambda)
-        self.set_sweep_step(step=step)
-        
-        self.set_detect_func_mode(mode=("logging","stop"))
-        trigno = self.get_detect_trigno()
-        self.set_detect_func_params(mode="logging", params=(trigno, tavg*1e-06))
+
 
 
 

@@ -1,5 +1,5 @@
 """ Photonics Application Suite (PAS) Interface """
-from lib.instruments.base import BasePAS
+from lib.base import BasePAS
 
 import time
 import numpy as np
@@ -55,7 +55,7 @@ class AgilentILME(BasePAS):
         no_channels = IOMRGraph.noChannels
         self.no_channels = no_channels
         ydata = IOMRGraph.YData
-        ycurve = [tuple(np.negative(ydata[i*data_per_curve:(i+1)*data_per_curve])) for i in range(no_channels)]
+        ycurve = [tuple(ydata[i*data_per_curve:(i+1)*data_per_curve]) for i in range(no_channels)]
         for i in range(no_channels):
             data[f"CH{i} - {length}"] = ycurve[i]
         
@@ -67,18 +67,3 @@ class AgilentILME(BasePAS):
         xstep = IOMRGraph.xStep
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
         return tuple(np.divide(xdata, 1e-9))
-
-
-if __name__ == "__main__":
-    engine = AgilentILME()
-    engine.activate()
-    engine.sweep_params()
-    engine.start_meas()
-
-    x, y = engine.get_result()
-    x = pd.DataFrame(x)
-    y = pd.DataFrame(y)
-    with open("./x.csv", 'w', encoding='utf-8') as f:
-        x.to_csv(f, index=False)
-    with open("./y.csv", 'w', encoding='utf-8') as f:
-        y.to_csv(f, index=False)

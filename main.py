@@ -2,7 +2,7 @@ from lib.sweeps.info import TestInfo
 from lib.sweeps.passive import ILossSweep
 from lib.instruments.pas import AgilentILME
 from lib.instruments.agilent8163B import Agilent8163B
-from lib.util.csv_operations import create_folder
+from lib.util.file_operations import create_folder
 from lib.util.logger import CustomFormatter
 from lib.util.util import version_check
 
