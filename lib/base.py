@@ -18,13 +18,13 @@ class BaseInstrument(object):
 
     def __init__(self, rsc_addr, termination: str='\n'):
         # Communicate with the resource and identify it
-        self.addr = rsc_addr
-        self.rm = pyvisa.ResourceManager()
-        self.rm.timeout = 20000
-        self.rm.read_termination = termination
+        self._addr = rsc_addr
+        self._rm = pyvisa.ResourceManager()
+        self._rm.timeout = 20000
+        self._rm.read_termination = termination
         
-        if rsc_addr in self.rm.list_resources(): # Checking if the resource is available
-            self.instr = self.rm.open_resource(rsc_addr)
+        if rsc_addr in self._rm.list_resources(): # Checking if the resource is available
+            self.instr = self._rm.open_resource(rsc_addr)
             if self.instr.resource_info[3][:4] == 'ASRL':
                 #This should be changed! gpib is also a instrument type
                 if termination is not None:
@@ -37,10 +37,12 @@ class BaseInstrument(object):
                 print('You have connected succesfully with an USB0 type resource')
             else:
                 raise Exception('Resource class not contemplated, check pyLab library')
-            self.identity = self.get_idn()
-
+        
+            self._identity = self.get_idn()
+        
         else:
             raise Exception("Resource not know, check your ports or NI MAX")
+        
         
     def write(self, cmd):
         return self.instr.write(cmd)
@@ -58,25 +60,26 @@ class BaseInstrument(object):
         return self.instr.query_binary_values(cmd, is_big_endian=False)
     
     def get_idn(self):
-        return self.instr.query("*IDN?")
+        return self.query("*IDN?")
 
     def reset(self):
-        self.instr.write("*RST")
+        self.write("*RST")
 
     def clear(self):
-        self.instr.write("*CLS")
+        self.write("*CLS")
 
     @property
     def identity(self):
-        return self.identity
+        return self._identity
     
     @property
     def address(self):
-        return self.addr
+        return self._addr
     
     @property
     def rm(self):
-        return self.rm
+        return self._rm
+    
 
     def __get_name(self):
         return self.__class__.__name__

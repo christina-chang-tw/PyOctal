@@ -19,7 +19,7 @@ class Agilent8163B(BaseInstrument):
         self.detect = f"sense{self.sens_num}:channel{self.sens_chan}"
 
     def setup(self, wavelength: float=1550, power: float=10):
-        self.reset("*RST")
+        self.reset()
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(pow(10, power/10)/1000)
@@ -107,8 +107,8 @@ class Agilent8163B(BaseInstrument):
     def get_laser_wav_max(self):
         return self.query(f"{self.laser}:wavelength? MAX")
     
-    def set_laser_state(self, status: bool=1):
-        self.write(f"{self.laser}:power:state {status}")
+    def set_laser_state(self, state: bool=1):
+        self.write(f"{self.laser}:power:state {state}")
 
     def set_laser_pow(self, power: float=10):
         self.write(f"{self.laser}:power:level:immediate:amplitude {power}dBm")
