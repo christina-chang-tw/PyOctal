@@ -75,12 +75,13 @@ Before you run a test, please make sure that you set all parameters correctly in
 ### Tests
 These are the optical tests that are currently implemented by this library. These can be run by running `main.py` as a module from the root directory.
 
-| Test      | Description    |
+| Test (-t) | Description    |
 |-----------|----------------|
 | passive   | insertion loss testing |
 | dc        | dc sweeps |
 
 ### Instrument setup
+Run `instr.py` as a module.
 | Test    | Description    |
 |---------|----------------|
 | m_8163b | Setup the multimeter to the auto-range and desired wavelength and output power |
@@ -90,6 +91,7 @@ These are the optical tests that are currently implemented by this library. Thes
 ## Debugging issues
 
 1. f-string formatting method cannot be used is an issues related to the python version. Only versions after Python 3.6 adopts f-string format.
+2. Contact me if need extra help: tyc1g20@soton.ac.uk 
 
 
 ## Developer Information
