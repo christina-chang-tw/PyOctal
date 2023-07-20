@@ -1,4 +1,4 @@
-# import win32com.client
+import win32com.client
 import pyvisa
 import time
 
@@ -37,7 +37,7 @@ class BaseInstrument(object):
                 print('You have connected succesfully with an USB0 type resource')
             else:
                 raise Exception('Resource class not contemplated, check pyLab library')
-            self.identify = self.get_idn()
+            self.identity = self.get_idn()
 
         else:
             raise Exception("Resource not know, check your ports or NI MAX")
@@ -66,10 +66,26 @@ class BaseInstrument(object):
     def clear(self):
         self.instr.write("*CLS")
 
+    @property
+    def identity(self):
+        return self.identity
+    
+    @property
+    def address(self):
+        return self.addr
+    
+    @property
+    def rm(self):
+        return self.rm
 
-class KeithleySource(BaseInstrument):
-    def __init__(self, addr):
-        super().__init__(rsc_addr=addr)
+    def __get_name(self):
+        return self.__class__.__name__
+    
+    def __str__(self):
+        return f"Instrument: {self.__get_name()} "
+    
+    def __repr__(self):
+        return f"{self.__get_name()}({self.instr, self.identity})"
 
     
 
@@ -77,7 +93,7 @@ class KeithleySource(BaseInstrument):
 class BasePAS(object):
 
     def __init__(self, server_addr):
-        #self.engine_mgr = win32com.client.Dispatch(server_addr)
+        self.engine_mgr = win32com.client.Dispatch(server_addr)
         self.engine = self.engine_mgr.NewEngine()
         self.activate()
         activating = 0
@@ -105,6 +121,15 @@ class BasePAS(object):
 
     def validate_settings(self):
         self.engine.ValidateSettings()
+
+    def __get_name(self):
+        return self.__class__.__name__
+    
+    def __str__(self):
+        return f"Photonics Application Suite: {self.__get_name()} "
+    
+    def __repr__(self):
+        return f"{self.__get_name()}({self.engine, self.identity})"
 
 
 class BaseSweeps(object):

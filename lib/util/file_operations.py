@@ -7,14 +7,16 @@ import os.path
 
 logger = logging.getLogger(__name__)
 
+def get_config_dirpath():
+    return f'{os.getcwd()}/config'
 
-def get_ddir_path(folder):
+def get_result_dirpath(folder):
     return f'{os.getcwd()}/results/{folder}'
 
 
 def create_folder(folder: str="XXX"):
     try:
-        path = f'{get_ddir_path(folder)}'
+        path = f'{get_result_dirpath(folder)}'
         if not os.path.isdir(path):
             os.mkdir(path)
     except:
@@ -46,14 +48,14 @@ def package_info(info: dict):
     return pd.DataFrame(info.items(), columns=['Params', 'Value'])
 
 
-def export_to_csv(data: pd.DataFrame, path: str=get_ddir_path("XXX"), fname: str="XXX"):
+def export_to_csv(data: pd.DataFrame, path: str=get_result_dirpath("XXX"), fname: str="XXX"):
     path_to_file = f"{path}/{fname}.csv"
 
     with open(path_to_file, 'w', encoding='utf-8') as f:
         data.to_csv(f, index=False)
 
 
-def export_to_excel(data: Union[pd.DataFrame, list, tuple], path: str=get_ddir_path("XXX"), fname: str="XXX"):
+def export_to_excel(data: Union[pd.DataFrame, list, tuple], path: str=get_result_dirpath("XXX"), fname: str="XXX"):
     path_to_file = f"{path}/{fname}.xlsx"
 
     with pd.ExcelWriter(path_to_file) as writer:

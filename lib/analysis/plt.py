@@ -1,4 +1,4 @@
-from lib.util.file_operations import get_ddir_path, get_dataframe_from_csv, get_dataframe_from_excel
+from lib.util.file_operations import get_result_dirpath, get_dataframe_from_csv, get_dataframe_from_excel
 from lib.analysis.iloss import iloss_coeffs
 from lib.util.file_operations import export_to_csv, export_to_excel
 
@@ -34,8 +34,8 @@ class PlotGraphs(object):
         for name in chips:
             df_coeff = []
 
-            df = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}")
-            info = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.info_name}")
+            df = get_dataframe_from_csv(dir=get_result_dirpath(name), fname=f"{structure}_{self.data_name}")
+            info = get_dataframe_from_csv(dir=get_result_dirpath(name), fname=f"{structure}_{self.info_name}")
 
             no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
             df_dropped = df.loc[:, [not x for x in df.columns.str.endswith(tuple(columns_dropping[name]))]]
@@ -57,7 +57,7 @@ class PlotGraphs(object):
                 print(f'{name}_CH{i} : y = {round(fit[0],4)}x {round(fit[1],4)}')
                 df_coeff = iloss_coeffs(df=temp, wavelengths=df_dropped['Wavelength'], lengths=xdata, no_channels=no_channels, unit=unit)
             
-            export_to_csv(df_coeff, get_ddir_path(name), f'{structure}_iloss_coeffs')
+            export_to_csv(df_coeff, get_result_dirpath(name), f'{structure}_iloss_coeffs')
         ax.legend(fontsize=8)
     
 
@@ -70,8 +70,8 @@ class PlotGraphs(object):
 
         for name in chips:
 
-            df = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}")
-            info = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.info_name}")
+            df = get_dataframe_from_csv(dir=get_result_dirpath(name), fname=f"{structure}_{self.data_name}")
+            info = get_dataframe_from_csv(dir=get_result_dirpath(name), fname=f"{structure}_{self.info_name}")
 
             no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
             df_dropped = df.loc[:, [x for x in df.columns.str.endswith(tuple(columns_plot[name]))]]
@@ -102,8 +102,8 @@ class PlotGraphs(object):
 
         for name in chips:
 
-            df_coeffs = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.coeffs_name}")
-            info = get_dataframe_from_csv(dir=get_ddir_path(name), fname=f"{structure}_{self.info_name}")
+            df_coeffs = get_dataframe_from_csv(dir=get_result_dirpath(name), fname=f"{structure}_{self.coeffs_name}")
+            info = get_dataframe_from_csv(dir=get_result_dirpath(name), fname=f"{structure}_{self.info_name}")
             
             no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
             xdata = df_coeffs['Wavelength']
@@ -126,7 +126,7 @@ class PlotGraphs(object):
 
         for name in chips:
 
-            df, info = get_dataframe_from_excel(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}", sheet_names=sheet_names)
+            df, info = get_dataframe_from_excel(dir=get_result_dirpath(name), fname=f"{structure}_{self.data_name}", sheet_names=sheet_names)
             for sheet in sheet_names:
                 df_coeff = []
 
@@ -152,7 +152,7 @@ class PlotGraphs(object):
                     print(f'{name}_CH{i} : y = {round(fit[0],4)}x {offset}')
                     df_coeff = iloss_coeffs(df=temp, wavelengths=wavelength, lengths=xdata, no_channels=no_channels, unit=unit)
                 
-                export_to_excel(df_coeff, get_ddir_path(name), f'{structure}_iloss_coeffs')
+                export_to_excel(df_coeff, get_result_dirpath(name), f'{structure}_iloss_coeffs')
         ax.legend(fontsize=8)
 
 
@@ -164,11 +164,14 @@ class PlotGraphs(object):
         ax.set_title('Insertion Loss of Different Wavelengths')
 
         for name in chips:
-            df, info = get_dataframe_from_excel(dir=get_ddir_path(name), fname=f"{structure}_{self.data_name}", sheet_names=sheet_names)
+            
+            df, info = get_dataframe_from_excel(dir=get_result_dirpath(name), fname=f"{structure}_{self.data_name}", sheet_names=sheet_names)
+            
             for sheet in sheet_names:
+                
                 no_channels = int(info.loc[info["General:"] == "NumberOfChannels"].loc[:, "Unnamed: 1"])
                 df_dropped = df[sheet].loc[:, [x for x in df[sheet].columns.str.endswith(tuple(columns_plot[name]))]]
-
+                
                 xdata = df[sheet]['Wavelength']*1e+09
 
                 for i in range(no_channels):
