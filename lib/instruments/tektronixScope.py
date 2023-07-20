@@ -4,7 +4,7 @@ import numpy
 import matplotlib.pyplot as plot
 
 
-class TekScope(BaseInstrument):
+class TektronixScope(BaseInstrument):
     """Class to control a Tektronix series oscilloscope"""
     def __init__(self, addr):
         super().__init__(rsc_addr=addr)

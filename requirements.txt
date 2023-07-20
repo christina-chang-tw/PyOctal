@@ -1,5 +1,9 @@
+matplotlib
 numpy
 pandas
 pyvisa
 pywin32
-matplotlib
+pyyaml
+tqdm
+
+

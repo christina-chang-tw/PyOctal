@@ -2,16 +2,34 @@
 
 Repository last updated date: July 2023
 
+## Directory Structure
+
+```
+.
+├── config                   # all configuration files
+├── lib                      # core library
+├── results                  # store testing results
+├── tests                    # contain simple instrument function tests <not implemented>
+├── instr.py                 # direct interface with instruments (only for simple setup cases)
+├── logging.log              # logging the output to a file
+├── main.py                  # interface with running sweeps
+├── plot.py                  # interface with plotting graphs
+├── requirements.txt         # contain all required python packages for this repository <need to be amended>
+└── venv_setup.py            # set up virtual environment <not working>
+```
+
 ## Setup Environment
 
-**NOTE:** This automated optical chip testing only works with Windows OS machine.
+**NOTE:** This automated optical chip testing only works for Windows OS machine with python version >= 3.6.
 
-Required packages: pandas, numpy, pywin32, pyvisa, argparse
+**Method 1 (Preferred)**:
 
-Method 1:
-Install Anaconda from its official site and make sure the listed packages are installed.
+Install Anaconda from its official site and make sure the listed packages in `requirements.txt` are installed. After installation of correct python version and packages, install Visual Studio Code (VSCode) and launch VSCode through Anaconda Navigator. 
 
-Method 2:
+Open a new bash terminal by going to the top tab bar and Terminal > New Terminal. Now you will have opened a terminal and ready to start running the program. Go to [User Information](#user-information) section for information about how to use this repository for your personal usage.
+
+
+**Method 2 (Not working)**:
 
 Run this in the root-directory of this repository namely `autotesting`.
 
@@ -35,78 +53,48 @@ Run this in the root-directory of this repository namely `autotesting`.
 # Deactivate a venv machine
 > deactivate
 ```
-#
 
-## Directory Structure
+## User Information
 
+### How to run a test?
+Everything is this repository should be run as a python module. It uses argparse python package to parse command line information into the program. 
+
+Before you run a test, please make sure that you set all parameters correctly in the corresponding configuration file! All configuration files are stored under `config` folder.
+
+```bash
+# Example: 
+# (1) General helper message
+> python -m main -h
+# (2) Run a passive test
+> python -m main -t passive
+# (3) Run a passive test with a logging level of debug
+> python -m main -t passive --log-lvl="DEBUG"
 ```
-.
-├── lib                      # test files (alternatively `spec` or `tests`)
-│   ├── instruments          # containing instruments' calling functions 
-│   ├── csv_operations.py    # csv file operations
-│   ├── info.py              # test information
-│   ├── sweeps.py            # automated testing sweeps
-│   └── util.py              # general functions
-├── results                  # store testing data
-├── instr.py                 # direct interface with instruments
-├── main.py                  # interface with running sweeps
-└── venv_setup.py            # set up virtual environment
-```
-
-#
-
-## Implemented Instruments
-
-There are three instruments that are can be controlled remotely with this library.
-
-| Filename | Instrument | Manufacturer |
-| -------- | ---------- | ------------ |
-| `dc_supply`  | E3640A Power Supply  | Keysight |
-| `multimeter` | 8163B Lightwave Multimeter  | Keysight |
-| `pas`        | Insertion Loss Measurement Engine | Keysight |
-
-
-# 
 
 ## Tests and Setup Instrument
 ### Tests
 These are the optical tests that are currently implemented by this library. These can be run by running `main.py` as a module from the root directory.
 
-| Test    | Description    |
-|---------|----------------|
-| iloss   | Optain insertion loss and loss coefficient of the waveguide |
+| Test      | Description    |
+|-----------|----------------|
+| passive   | insertion loss testing |
+| dc        | dc sweeps |
 
 ### Instrument setup
 | Test    | Description    |
 |---------|----------------|
 | m_8163b | Setup the multimeter to the auto-range and desired wavelength and output power |
 
-# 
 
-## How to run a test?
-Everything is this repository should be run as a python module.
-
-```bash
-# Example: 
-# (1) General helper message
-> python -m main -h
-# (2) Helper message of the parameters for insertion loss test
-> python -m main iloss -h
-# (3) Running an insertion loss test with pout=10dBm and range=(1550, 1570)nm
-> python -m main iloss -p 10 -r 1550 1570
-```
-
-
-#
 
 ## Debugging issues
 
 1. f-string formatting method cannot be used is an issues related to the python version. Only versions after Python 3.6 adopts f-string format.
 
 
-#
+## Developer Information
 
-## Expand this library
+### Expand this library
 To maintain the current structure, place your instrument class in the correct file. If the type of your instrument does not exist yet, please create a file with a general category of your instrument.
 
 

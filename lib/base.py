@@ -46,7 +46,10 @@ class BaseInstrument(object):
         
         
     def write(self, cmd):
-        return self.instr.write(cmd)
+        self.instr.write(cmd)
+    
+    def write_binary_values(self, cmd):
+        self.instr.write_binary_values(cmd)
     
     def read(self, cmd):
         return self.instr.read(cmd).rstrip()

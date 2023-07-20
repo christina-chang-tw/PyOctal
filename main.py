@@ -71,19 +71,19 @@ def test_distribution(ttype, configs):
 
     create_folder(folder)
     
-    # if ttype == "passive":
-    #     instr = Agilent8163B(addr=addr)
-    #     sweeps = PASILossSweep(instr=instr)
-    #     info.passive(folder, configs)
-    #     sweeps.run_sweep(folder, configs)
+    if ttype == "passive":
+        instr = Agilent8163B(addr=addr)
+        sweeps = PASILossSweep(instr=instr)
+        info.passive(folder, configs)
+        sweeps.run_sweep(folder, configs)
 
-    # elif ttype == "ac":
-    #     pass
-    # elif ttype == "dc":
-    #     instr = AgilentE3640A(addr=addr)
-    #     sweeps = DCSweeps(instr=instr)
-    #     info.dc(folder, configs)
-    #     sweeps.run_sweep(chip_name=folder, configs=configs)
+    elif ttype == "ac":
+        pass
+    elif ttype == "dc":
+        instr = AgilentE3640A(addr=addr)
+        sweeps = DCSweeps(instr=instr)
+        info.dc(folder, configs)
+        sweeps.run_sweep(chip_name=folder, configs=configs)
         
 
 if __name__ == "__main__":
