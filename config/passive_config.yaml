@@ -1,0 +1,26 @@
+# This is a configuration file for setting up DC sweeps
+# This will be loaded to plot.py when it starts running
+
+--- # document start
+
+## var  ###########################################
+folder: "Christina" # under results folder
+structure: "straight" # the name of the file {structure}_DCSweeps_data
+ext: "csv"
+
+addr: 25 # instrument address
+
+power: 0       # output power [dBm]
+w_start: 1535  # start wavelength [nm]
+w_end: 1575    # end wavelength [nm]
+step: 5        # sweep step [pm]
+
+## list ###########################################
+lengths:
+  - 10
+  - 20
+
+
+## dictionary #####################################
+
+... # document end

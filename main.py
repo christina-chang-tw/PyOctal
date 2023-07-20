@@ -1,49 +1,32 @@
 from lib.sweeps.info import TestInfo
-from lib.sweeps.passive import ILossSweep
-from lib.instruments.pas import AgilentILME
+from lib.sweeps.passive import PASILossSweep
+from lib.sweeps.dc import DCSweeps
 from lib.instruments.agilent8163B import Agilent8163B
+from lib.instruments.agilentE364X import AgilentE3640A
 from lib.util.file_operations import create_folder
 from lib.util.logger import CustomFormatter
-from lib.util.util import version_check
+from lib.util.util import version_check, get_gpib_full_addr, get_config_dirpath
 
 import argparse
 from datetime import datetime
 import logging
-import pyvisa
+import yaml
 
-TEST_TYPES = ("iloss", "dc", "ac")
-
-class Subparsers():
-    """ Adding subparser-dependent arguments"""
-
-    @staticmethod
-    def iloss(parser):
-        requiredNamed = parser.add_argument_group('required arguments')
-        requiredNamed.add_argument("-l", "--lengths", type=float, metavar="", dest="lengths", nargs="+", help="The lengths of each test waveguides", required=True)
-        parser.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=[10], help="laser output power [dBm]", required=False)
-        parser.add_argument("-r", "--wavelength-range", type=float, metavar="", dest="range", nargs="+", default=[1540,1570], help="start wavelength and stop wavelength in nm", required=False)
-        parser.add_argument("-s", "--sweep-step", type=float, metavar="", dest="step", nargs=1, default=[5], help="Sweep step [nm]", required=False)
-
-    @staticmethod
-    def dc(parser):
-        pass
-
-    @staticmethod
-    def ac(parser):
-        pass
+TEST_TYPES = ("passive", "dc", "ac")
 
 
 class PrintSubparserInfo():
     """ Print subparser-dependent information to the CMD output """
 
-    def __init__(self, args):
-        self.args = args
+    def __init__(self, configs):
+        self.configs = configs
 
     def iloss(self):
-        print(f'{"Length [um]":<25} : {", ".join([str(round(i, 2)) for i in self.args.lengths])}')
-        print(f'{"Output power [dBm]":<25} : {self.args.power[0]:<6}')
-        print(f'{"Wavelength Range [nm]":<25} : {self.args.range[0]:<3} - {self.args.range[1]:<3}')
-        print(f'{"Sweep step [pm]":<25} : {self.args.step[0]:<6}')
+        print(f'{"Length [um]":<25} : {", ".join([str(round(i, 2)) for i in self.configs["lengths"]])}')
+        print(f'{"Output power [dBm]":<25} : {self.configs["power"]:<6}')
+        print(f'{"Wavelength start [nm]":<25} : {self.configs["w_start"]:<6}')
+        print(f'{"Wavelength stop [nm]":<25} : {self.configs["w_stop"]:<6}')
+        print(f'{"Sweep step [pm]":<25} : {self.configs["step"]:<6}')
 
     def dc(self):
         pass
@@ -51,18 +34,23 @@ class PrintSubparserInfo():
     def ac(self):
         pass
 
+def load_config(ttype):
+    fpath = f"{get_config_dirpath()}/{ttype}_config.yaml"
+    with open(fpath, 'r') as file:
+        configs = yaml.safe_load(file)
+    return configs
 
-def print_setup_info(ttype, args):
+def print_setup_info(ttype, configs):
     """Print the setup information for each test"""
     print()
     print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     print("----------------------------------------------")
     print("| TEST INFORMATION:                          |")
     print("----------------------------------------------")
-    print(f'{"Chip name":<25} : {args.chip_name[0]:<12}')
+    print(f'{"Folder":<25} : {configs["folder"]:<12}')
     print(f'{"Test Type":<25} : {ttype:<12}')
-    print_info = PrintSubparserInfo(args)
-    if ttype == "iloss":
+    print_info = PrintSubparserInfo(configs)
+    if ttype == "passive":
         print_info.iloss()
     elif ttype == "ac":
         print_info.ac()
@@ -71,29 +59,32 @@ def print_setup_info(ttype, args):
     print()
 
 
-def test_distribution(ttype, args):
+def test_distribution(ttype, configs):
     """ 
     Distribute tests 
         type: test type,
-        args: containing all input arguments
+        configs: containing all input arguments
     """
-    create_folder(args.chip_name[0])
+    folder = configs["folder"]
     info = TestInfo()
+    addr = get_gpib_full_addr(configs["addr"])
+
+    create_folder(folder)
     
-    if ttype == "iloss":
-        Agilent8163B_ADDR = "GPIB0::25::INSTR"
-        instr = Agilent8163B(addr=Agilent8163B_ADDR)
-        pal = AgilentILME()
-        sweeps = ILossSweep(pal, instr)
-        info.iloss(args.chip_name[0], args)
-        sweeps.iloss(args.chip_name[0], args)
+    # if ttype == "passive":
+    #     instr = Agilent8163B(addr=addr)
+    #     sweeps = PASILossSweep(instr=instr)
+    #     info.passive(folder, configs)
+    #     sweeps.run_sweep(folder, configs)
 
-    elif ttype == "ac":
-        pass
-    elif ttype == "dc":
-        pass
-
-
+    # elif ttype == "ac":
+    #     pass
+    # elif ttype == "dc":
+    #     instr = AgilentE3640A(addr=addr)
+    #     sweeps = DCSweeps(instr=instr)
+    #     info.dc(folder, configs)
+    #     sweeps.run_sweep(chip_name=folder, configs=configs)
+        
 
 if __name__ == "__main__":
     version_check()
@@ -104,23 +95,13 @@ if __name__ == "__main__":
         description="Automated testing for optical chip", 
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
-        "-chip", 
-        "--chip-name", 
-        dest="chip_name",
+        "-t",
+        "--test",
+        dest="test",
         metavar="",
         nargs=1,
         type=str,
-        help="Chip name (this create a folder of the name specified)",
-        required=True,
-    ) # this create a folder in the name of the chip under test folder
-    parser.add_argument(
-        "-s",
-        "--structure",
-        dest="structure",
-        metavar="",
-        nargs=1,
-        type=str,
-        help="Test structure name",
+        help="Tests: " + ", ".join([meas for meas in TEST_TYPES]),
         required=True,
     )
     parser.add_argument(
@@ -133,22 +114,6 @@ if __name__ == "__main__":
         help=f'Levels: {", ".join([i for i in loglvl])}',
         required=False,
     )
-    subparsers = parser.add_subparsers(
-        dest="test",
-        help="Test type: " + ", ".join([meas for meas in TEST_TYPES]),
-        required=True,
-    )
-    
-
-    # Arguments for passive testing
-    iloss = subparsers.add_parser(TEST_TYPES[0], help="insertion loss testing", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    dc = subparsers.add_parser(TEST_TYPES[1], help="dc testing", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ac = subparsers.add_parser(TEST_TYPES[2], help="ac testing", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-    # Add parser-specfic arguments
-    Subparsers.iloss(iloss)
-    Subparsers.dc(dc)
-    Subparsers.ac(ac)
 
     args = parser.parse_args()
 
@@ -163,8 +128,11 @@ if __name__ == "__main__":
     cmd.setFormatter(CustomFormatter())
     logger.addHandler(cmd)
 
-    print_setup_info(args.test, args)
-    test_distribution(args.test, args)
+    configs = load_config(args.test)
+    print_setup_info(args.test[0], configs)
+    test_distribution(args.test[0], configs)
+    
+    
 
     
 

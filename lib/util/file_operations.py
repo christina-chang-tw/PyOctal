@@ -1,17 +1,12 @@
 """ Functions related to CSV operations """
-import pandas as pd
+from lib.util.util import get_result_dirpath
 
+import pandas as pd
 import logging
 from typing import Union
 import os.path
 
 logger = logging.getLogger(__name__)
-
-def get_config_dirpath():
-    return f'{os.getcwd()}/config'
-
-def get_result_dirpath(folder):
-    return f'{os.getcwd()}/results/{folder}'
 
 
 def create_folder(folder: str="XXX"):

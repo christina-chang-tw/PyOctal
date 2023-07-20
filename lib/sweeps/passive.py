@@ -5,7 +5,6 @@ from lib.util.util import get_func_name, wait_for_next_meas
 from lib.base import BaseSweeps
 
 import sys
-from typing import Union
 import pandas as pd
 from tqdm import tqdm 
 import logging
@@ -16,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 class PASILossSweep(BaseSweeps):
     """ This uses the ILME to sweep through the data """
-    def __init__(self, dev: Union[AgilentILME, Agilent8163B], instr: Agilent8163B):
-        super().__init__(instrument=instr)
-        self.dev = dev
+    def __init__(self, instr: Agilent8163B):
+        self.dev = AgilentILME()
         self.dev.activate()
+        super().__init__(instr=instr)
 
-    def iloss_ilme(self, chip_name: str, args):
+    def run_sweep(self, chip_name: str, args):
         df = pd.DataFrame()
         lf = pd.DataFrame()
         
@@ -52,7 +51,7 @@ class PASILossSweep(BaseSweeps):
 class InstrILossSweep(BaseSweeps):
     """ This directly uses 8163B to sweep the data """
     def __init__(self, instr: Agilent8163B):
-        super().__init__(instrument=instr)
+        super().__init__(instr=instr)
 
     def run_sweep_manual(self, power: float=10.0, start_lambda: float=1535.0, stop_lambda: float=1575.0, step: float=5.0):
         if start_lambda <= float(instr.get_laser_wav_min()) and stop_lambda >= float(instr.get_laser_wav_min()):

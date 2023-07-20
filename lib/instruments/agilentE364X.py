@@ -34,3 +34,8 @@ class AgilentE3640A(BaseInstrument):
     
     def set_output_status(self, status: bool=1):
         self.write(f"output {status}")
+
+
+
+class AgilentE3645(BaseInstrument):
+    pass

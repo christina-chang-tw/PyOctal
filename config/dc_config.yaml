@@ -1,0 +1,21 @@
+# This is a configuration file for setting up DC sweeps
+# This will be loaded to plot.py when it starts running
+
+--- # document start
+
+## var  ###########################################
+folder: "Christina" # under results folder
+structure: "straight" # the name of the file {structure}_DCSweeps_data
+ext: "csv"
+
+addr: 25 # instrument address
+
+v_start: 0 # start voltage [V]
+v_stop: 5  # stop voltage [V]
+v_step: 1    # step [V]
+
+## list ###########################################
+
+## dictionary #####################################
+
+... # document end

@@ -1,6 +1,6 @@
 import yaml
 
-with open('plot_config.yaml', 'r') as file:
+with open('./config/test.yaml', 'r') as file:
     data = yaml.safe_load(file)
 
-print(data["structure"])
+print(data["orc_groups"]["laser_groups"])

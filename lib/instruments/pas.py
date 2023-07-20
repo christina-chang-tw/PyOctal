@@ -39,9 +39,9 @@ class AgilentILME(BasePAS):
         self.engine.StopMeasurement()
 
     def get_no_channels(self):
-        return self.no_channels
+        return self.no_channels  
 
-    def get_result(self, length: int=0):
+    def get_result(self, name: int=0):
         data = pd.DataFrame()
 
         busy = True
@@ -57,13 +57,18 @@ class AgilentILME(BasePAS):
         ydata = IOMRGraph.YData
         ycurve = [tuple(ydata[i*data_per_curve:(i+1)*data_per_curve]) for i in range(no_channels)]
         for i in range(no_channels):
-            data[f"CH{i} - {length}"] = ycurve[i]
+            data[f"CH{i} - {name}"] = ycurve[i]
+        IOMRFile.release()
         
-        return self._get_wavelength(IOMRGraph, data_per_curve), data
+        return self.get_wavelength(IOMRGraph, data_per_curve), data
     
     @staticmethod
-    def _get_wavelength(IOMRGraph, data_per_curve):
+    def get_wavelength(IOMRGraph, data_per_curve):
         xstart = IOMRGraph.xStart
         xstep = IOMRGraph.xStep
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
         return tuple(np.divide(xdata, 1e-9))
+    
+    @staticmethod
+    def export_file(results, fname):
+        results.Write(fname)

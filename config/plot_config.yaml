@@ -2,31 +2,19 @@
 # This will be loaded to plot.py when it starts running
 --- # document start
 
-#####################################################
-# key - value
-# e.g. a: "hello", b: 35
+## var  ###########################################
 structure: "KTN" # e.g. {structure}_iloss_data.py
 
 
-#####################################################
-# list
-# e.g.
-# var:
-#   - "name"
-#   - "weight"
+## list ###########################################
 folders: # select folder name under results
   - "Chip_3"
 
 sheets: # only for excel
-  - "IL W=1"
+  - "IL W=0.5 angle=18"
 
 
-#####################################################
-# map
-# e.g.
-# var:
-#   "name": "melody"
-#   "weight": 20
+## dictionary #####################################
 columns_dropping: # only used for length loss plots
   Chip_3:
     - " 5.5"
@@ -37,10 +25,13 @@ columns_dropping: # only used for length loss plots
 
 columns_plot: # only used for wavelength loss plots
   Chip_3:
+    - " 1.5"
+    - " 2.5" 
+    - " 3.5"
     - " 4.5"
+    - " 6.5"
+
   Chip_4:
-    - 0.0
   Chip_5:
-    - 0.0
 
 ... # document end

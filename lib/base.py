@@ -23,6 +23,7 @@ class BaseInstrument(object):
         self._rm.timeout = 20000
         self._rm.read_termination = termination
         
+        # Connect to the device
         if rsc_addr in self._rm.list_resources(): # Checking if the resource is available
             self.instr = self._rm.open_resource(rsc_addr)
             if self.instr.resource_info[3][:4] == 'ASRL':
@@ -136,7 +137,15 @@ class BasePAS(object):
 
 
 class BaseSweeps(object):
+    def __init__(self, instr):
+        self.instr = instr
 
-    def __init__(self, instrument):
-        self.instr = instrument
+    def __get_name(self):
+        return self.__class__.__name__
+    
+    def __str__(self):
+        return f"Sweep: {self.__get_name()} "
+    
+    def __repr__(self):
+        return f"{self.__get_name()}({self.dev})"
     
