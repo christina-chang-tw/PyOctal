@@ -164,7 +164,7 @@ Pull the newest changes down:
 Push your local changes to your remote branch:
 ```bash
 > git add .
-> git commit -m "message" # commit your local changes with commit message = "message"
+> git commit -m "message" # commit your local changes with "message" as a comment
 > git push                # push your changes to remote branch
 ```
 

@@ -1,4 +1,4 @@
-import win32com.client
+#import win32com.client
 import pyvisa
 import time
 
@@ -97,46 +97,46 @@ class BaseInstrument(object):
     
 
 
-class BasePAS(object):
+# class BasePAS(object):
 
-    def __init__(self, server_addr):
-        self.engine_mgr = win32com.client.Dispatch(server_addr)
-        self.engine = self.engine_mgr.NewEngine()
-        self.activate()
-        activating = 0
-        start = time.time()
+#     def __init__(self, server_addr):
+#         self.engine_mgr = win32com.client.Dispatch(server_addr)
+#         self.engine = self.engine_mgr.NewEngine()
+#         self.activate()
+#         activating = 0
+#         start = time.time()
 
-        # If the engine is not activated 
-        while activating == 0:
-            time.sleep(0.5) 
-            activating = self.engine_status()
-            if time.time() - start > 30:
-                logging.error("Timeout error: check devices connection")
+#         # If the engine is not activated 
+#         while activating == 0:
+#             time.sleep(0.5) 
+#             activating = self.engine_status()
+#             if time.time() - start > 30:
+#                 logging.error("Timeout error: check devices connection")
 
-    def activate(self):
-        self.engine.Activate()
+#     def activate(self):
+#         self.engine.Activate()
 
-    def deactivate(self):
-        self.engine.DeActivate()
+#     def deactivate(self):
+#         self.engine.DeActivate()
 
-    def engine_status(self):
-        return self.engine.Active
+#     def engine_status(self):
+#         return self.engine.Active
     
-    def quit(self):
-        self.deactivate()
-        self.engine_mgr.DeleteEngine(self.engine)
+#     def quit(self):
+#         self.deactivate()
+#         self.engine_mgr.DeleteEngine(self.engine)
 
-    def validate_settings(self):
-        self.engine.ValidateSettings()
+#     def validate_settings(self):
+#         self.engine.ValidateSettings()
 
-    def __get_name(self):
-        return self.__class__.__name__
+#     def __get_name(self):
+#         return self.__class__.__name__
     
-    def __str__(self):
-        return f"Photonics Application Suite: {self.__get_name()} "
+#     def __str__(self):
+#         return f"Photonics Application Suite: {self.__get_name()} "
     
-    def __repr__(self):
-        return f"{self.__get_name()}({self.engine, self.identity})"
+#     def __repr__(self):
+#         return f"{self.__get_name()}({self.engine, self.identity})"
 
 
 class BaseSweeps(object):

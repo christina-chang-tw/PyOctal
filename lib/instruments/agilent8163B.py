@@ -18,12 +18,12 @@ class Agilent8163B(BaseInstrument):
         self.laser = f"source{self.src_num}:channel{self.src_chan}"
         self.detect = f"sense{self.sens_num}:channel{self.sens_chan}"
 
-    def setup(self, wavelength: float=1550, power: float=10):
+    def setup(self, wavelength: float=1550, power: float=10, period: float=200e-03):
         self.reset()
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(pow(10, power/10)/1000)
-        self.set_detect_avgtime(period=200e-03) # avgtime = 200ms
+        self.set_detect_avgtime(period=period) # avgtime = 200ms
         self.set_unit(source="dBm", sensor="Watt")
         self.set_laser_state(1)
 
