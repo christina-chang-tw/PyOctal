@@ -1,6 +1,13 @@
+# Check the python version first!
+from lib.util.util import version_check
+version_check()
+
 from lib.instruments.agilent8163B import Agilent8163B
 from lib.instruments.keysight86100D import Keysight86100D
 from lib.util.util import version_check, get_gpib_full_addr
+from lib.util.formatter import CustomArgparseFormatter
+
+
 
 import textwrap
 import argparse
@@ -18,7 +25,7 @@ def setup(ttype, args):
 
     elif ttype == "h_speed":
         instr1 = Keysight86100D(addr=get_gpib_full_addr(Keysight86100D_ADDR))
-        instr1.set_
+
 
 def subparser_info(type):
     if type == INSTR_TYPES[0]:
@@ -43,7 +50,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Remote setup the instrument", 
-        formatter_class=argparse.RawTextHelpFormatter)
+        formatter_class=CustomArgparseFormatter)
 
     subparsers = parser.add_subparsers(
         dest="test",
@@ -51,7 +58,7 @@ if __name__ == "__main__":
         required=True
     )
 
-    m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("m_8163b"), help="Multimeter M8163B Equipment", formatter_class=argparse.RawTextHelpFormatter)
+    m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("m_8163b"), help="Multimeter M8163B Equipment", formatter_class=CustomArgparseFormatter)
     m_8163b.add_argument("-w", "--wavelength", type=float, metavar="", dest="wavelength", nargs=1, default=(1550,), help="Sensing and output wavelength [nm]", required=False)
     m_8163b.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=(10,), help="Laser output power [dBm]", required=False)
     m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(10,), help="Averaged period [s]", required=False)

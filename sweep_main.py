@@ -1,10 +1,14 @@
+# Check the python version first!
+from lib.util.util import version_check
+version_check()
+
 from lib.sweeps.info import TestInfo
 from lib.sweeps.passive import PASILossSweep
 from lib.sweeps.dc import DCSweeps
 from lib.instruments.agilent8163B import Agilent8163B
 from lib.instruments.agilentE364X import AgilentE3640A
 from lib.util.file_operations import create_folder
-from lib.util.logger import CustomFormatter
+from lib.util.formatter import CustomLogFormatter, CustomArgparseFormatter
 from lib.util.util import version_check, get_gpib_full_addr, get_config_dirpath
 
 import argparse
@@ -34,8 +38,9 @@ class PrintSubparserInfo():
     def ac(self):
         pass
 
-def load_config(ttype):
-    fpath = f"{get_config_dirpath()}/{ttype}_config.yaml"
+def load_config(ttype, args_config):
+    #  If a config file is defined by user then use that otherwise use the default ones
+    fpath = f"{get_config_dirpath()}/{ttype}_config.yaml" if args_config is None else args_config[0]
     with open(fpath, 'r') as file:
         configs = yaml.safe_load(file)
     return configs
@@ -87,13 +92,20 @@ def test_distribution(ttype, configs):
         
 
 if __name__ == "__main__":
-    version_check()
-    
     loglvl = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 
+    desc = """
+Automated Testing for Optical Chip
+
+Example:
+Run a dc sweep test with DEBUG logging level and specify a config file path
+    
+    > python -m sweep_main -t dc --log-lvl DEBUG --config ./config/test.yaml
+    """
+
     parser = argparse.ArgumentParser(
-        description="Automated testing for optical chip", 
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        description=desc, 
+        formatter_class=CustomArgparseFormatter)
     parser.add_argument(
         "-t",
         "--test",
@@ -115,6 +127,17 @@ if __name__ == "__main__":
         required=False,
     )
 
+    parser.add_argument(
+        "--config",
+        dest="config",
+        metavar="",
+        nargs=1,
+        type=str,
+        default=None,
+        help=f'Setting a user-defined path to a config file',
+        required=False,
+    )
+
     args = parser.parse_args()
 
     logging.basicConfig(filename="logging.log",
@@ -125,10 +148,10 @@ if __name__ == "__main__":
     
     logger = logging.getLogger()
     cmd = logging.StreamHandler()
-    cmd.setFormatter(CustomFormatter())
+    cmd.setFormatter(CustomLogFormatter())
     logger.addHandler(cmd)
 
-    configs = load_config(args.test)
+    configs = load_config(args.test, args.config)
     print_setup_info(args.test[0], configs)
     test_distribution(args.test[0], configs)
     

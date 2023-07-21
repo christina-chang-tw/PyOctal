@@ -4,7 +4,8 @@
 
 ## var  ###########################################
 structure: "KTN" # e.g. {structure}_iloss_data.py
-
+func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
+unit: "mm" # unit 
 
 ## list ###########################################
 folders: # select folder name under results
@@ -14,8 +15,10 @@ sheets: # only for excel
   - "IL W=0.5 angle=18"
 
 
-## dictionary #####################################
-columns_dropping: # only used for length loss plots
+## Length Loss Plots Only Variables #####################################
+exp_lambda: 1550 # wavelength of interest [nm]
+lambda_avgrange: 10 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
+columns_dropping:
   Chip_3:
     - " 5.5"
   Chip_4:
@@ -23,7 +26,8 @@ columns_dropping: # only used for length loss plots
   Chip_5:
     -
 
-columns_plot: # only used for wavelength loss plots
+## Wavelength Loss Plots Only Variables ################################
+columns_plot: 
   Chip_3:
     - " 1.5"
     - " 2.5" 
