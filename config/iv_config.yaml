@@ -1,24 +1,20 @@
-# This is a configuration file for setting up passive sweeps such as insertion loss
+# This is a configuration file for setting up IV sweeps
 # This will be loaded to sweeps_main.py when it starts running
 
 --- # document start
 
 ## var  ###########################################
 folder: "Christina" # under results folder
-structure: "straight" # the name of the file {structure}_DCSweeps_data
+structure: "straight" # the name of the file e.g. <structure>_IVSweeps_data.csv
 ext: "csv"
 
 addr: 25 # instrument address
 
-power: 0       # output power [dBm]
-w_start: 1535  # start wavelength [nm]
-w_end: 1575    # end wavelength [nm]
-step: 5        # sweep step [pm]
+v_start: 0 # start voltage [V]
+v_stop: 5 # stop voltage [V]
+v_step: 1 # step [V]
 
 ## list ###########################################
-lengths:
-  - 10
-  - 20
 
 
 ## dictionary #####################################

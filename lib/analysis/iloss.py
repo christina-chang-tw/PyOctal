@@ -1,5 +1,3 @@
-from lib.util.file_operations import create_folder
-
 import numpy as np
 import pandas as pd
 

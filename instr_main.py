@@ -1,22 +1,28 @@
-# Check the python version first!
+# Perform version check before everything
 from lib.util.util import version_check
 version_check()
 
-from lib.instruments.agilent8163B import Agilent8163B
-from lib.instruments.keysight86100D import Keysight86100D
-from lib.util.util import version_check, get_gpib_full_addr
+from lib.instruments import (
+    Agilent8163B, 
+    Keysight86100D, 
+    KeysightE8257D,
+)
+from lib.util.util import (
+    get_gpib_full_addr, 
+    get_config_dirpath,
+)
 from lib.util.formatter import CustomArgparseFormatter
-
-
 
 import textwrap
 import argparse
 
 INSTR_TYPES = ("m_8163b", "h_speed")
 
-# Instruments' GPIB address
+# Define each instrument's address
 Agilent8163B_ADDR = 25
 Keysight86100D_ADDR = 1
+KeysightE8257D_ADDR = 1
+
 
 def setup(ttype, args):
     if ttype == "m_8163b":
@@ -24,7 +30,12 @@ def setup(ttype, args):
         instr.setup(wavelength=args.wavelength[0], power=args.power[0], time=args.period[0])
 
     elif ttype == "h_speed":
-        instr1 = Keysight86100D(addr=get_gpib_full_addr(Keysight86100D_ADDR))
+        # obtaining the device
+        siggen = KeysightE8257D(addr=get_gpib_full_addr(KeysightE8257D_ADDR))
+        osc = Keysight86100D(addr=get_gpib_full_addr(Keysight86100D_ADDR))
+        siggen.set_freq(freq=args.freq[0])
+
+        
 
 
 def subparser_info(type):
@@ -45,8 +56,7 @@ def subparser_info(type):
 
 
 if __name__ == "__main__":
-
-    version_check()
+    config_fpath= f'{get_config_dirpath()}/instr_config.yaml'
 
     parser = argparse.ArgumentParser(
         description="Remote setup the instrument", 
@@ -58,11 +68,15 @@ if __name__ == "__main__":
         required=True
     )
 
-    m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("m_8163b"), help="Multimeter M8163B Equipment", formatter_class=CustomArgparseFormatter)
+    m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("m_8163b"), help="Multimeter M8163B equipment setup", formatter_class=CustomArgparseFormatter)
     m_8163b.add_argument("-w", "--wavelength", type=float, metavar="", dest="wavelength", nargs=1, default=(1550,), help="Sensing and output wavelength [nm]", required=False)
     m_8163b.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=(10,), help="Laser output power [dBm]", required=False)
     m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(10,), help="Averaged period [s]", required=False)
     
+    h_speed = m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("h_speed"), help="High speed instrument setup", formatter_class=CustomArgparseFormatter)
+    h_speed.add_argument("-f", "--frequency", type=float, metavar="", dest="freq", nargs=1, default=(1,), help="Set the frequency of the signal generator [GHz]", required=False)
+
     args = parser.parse_args()
+
 
     setup(args.test, args)

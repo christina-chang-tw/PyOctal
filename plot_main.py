@@ -1,11 +1,10 @@
-# Check the python version first!
+# Perform version check before everything
 from lib.util.util import version_check
 version_check()
 
 from lib.util.plot import PlotGraphs
 from lib.util.util import get_config_dirpath
 
-import matplotlib.pyplot as plt
 import yaml
 
 

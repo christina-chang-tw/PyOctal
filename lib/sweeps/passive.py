@@ -1,5 +1,4 @@
-from lib.instruments.pas import AgilentILME
-from lib.instruments.agilent8163B import Agilent8163B
+from lib.instruments import AgilentILME, Agilent8163B
 from lib.util.file_operations import export_to_csv
 from lib.util.util import get_func_name, wait_for_next_meas
 from lib.base import BaseSweeps

@@ -2,9 +2,9 @@ from lib.base import BaseInstrument
 
 from typing import Union
 
-class KeysightE8258D(BaseInstrument):
+class KeysightE8257D(BaseInstrument):
     """
-    Keysight E8258D PSG Signal Geneartors VISA Libray
+    Keysight E8257D PSG Signal Geneartors VISA Libray
 
     Parameters
     ----------

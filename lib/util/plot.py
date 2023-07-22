@@ -39,6 +39,10 @@ class RealTimePlot(object):
     def show():
         plt.show()
 
+    @staticmethod
+    def pause(period):
+        plt.pause(period)
+
     def add(self, x, y):
         self.axis_x.append(x)
         self.axis_y.append(y)
@@ -46,6 +50,13 @@ class RealTimePlot(object):
         self.ax.set_xlim(self.axis_x[0], self.axis_x[-1] + 1e-15)
         self.ax.relim(); self.ax.autoscale_view() # rescale the y-axis
 
+    def animate(self, figure, callback, interval = 50):
+        import matplotlib.animation as animation
+        def wrapper(frame_index):
+            self.add(*callback(frame_index))
+            self.axes.relim(); self.axes.autoscale_view() # rescale the y-axis
+            return self.lineplot
+        animation.FuncAnimation(figure, wrapper, interval=interval)
     
 
 class PlotGraphs(object):
@@ -92,6 +103,17 @@ class PlotGraphs(object):
         df_avg = df.iloc[lower_rindex:upper_rindex, :].mean(axis=0).values[1:]
         return df_avg
 
+    def plot_data(self, xdata, ydata, xlabel: str="XXX", ylabel: str="YYY", title: str="Empty Title", typ: str="line"):
+        ax = self.__get_new_figure()
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.set_title(title)
+        if typ == "line":
+            ax.plot(xdata, ydata)
+        elif typ == "scatter":
+            ax.scatter(xdata, ydata)
+        else
+            raise RuntimeError("Invalid plot type")
 
     def plt_len_loss_csv(self, configs):
 

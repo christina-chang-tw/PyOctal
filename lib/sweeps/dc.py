@@ -1,8 +1,6 @@
-from lib.instruments.pas import AgilentILME
-from lib.instruments.agilentE364X import AgilentE3640A, AgilentE3645
+from lib.instruments import AgilentILME, AgilentE3640A, AgilentE3645
 from lib.base import BaseSweeps
 from lib.util.file_operations import export_to_csv
-from lib.util.util import get_func_name
 
 from typing import Union
 import pandas as pd

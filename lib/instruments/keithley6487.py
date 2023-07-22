@@ -57,7 +57,7 @@ class Keithley6487(BaseInstrument):
     def set_laser_volt(self, volt: float=0):
         if not -500 <= range <= 500:
             raise RuntimeError("Bad value")
-        self.write(f"source:voltage {volt}")
+        self.write(f"source:voltage:level {volt}")
 
     def set_laser_ilim(self, curr_lim: float=2.5e-02):
         if not -500 <= curr_lim <= 500:
@@ -65,7 +65,7 @@ class Keithley6487(BaseInstrument):
         self.write(f"source:voltage:ilimit {curr_lim}")
 
     def get_laser_volt(self):
-        return self.query(f"source:voltage?")
+        return self.query(f"source:voltage:level?")
     
 
 

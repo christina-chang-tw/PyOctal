@@ -1,15 +1,22 @@
-# Check the python version first!
+# Perform version check before everything
 from lib.util.util import version_check
 version_check()
 
 from lib.sweeps.info import TestInfo
-from lib.sweeps.passive import PASILossSweep
-from lib.sweeps.dc import DCSweeps
-from lib.instruments.agilent8163B import Agilent8163B
-from lib.instruments.agilentE364X import AgilentE3640A
-from lib.util.file_operations import create_folder
+from lib.sweeps import (
+    PASILossSweep, 
+    DCSweeps
+)
+from lib.instruments import (
+    Agilent8163B, 
+    AgilentE3640A,
+)
 from lib.util.formatter import CustomLogFormatter, CustomArgparseFormatter
-from lib.util.util import version_check, get_gpib_full_addr, get_config_dirpath
+from lib.util.util import (
+    get_gpib_full_addr, 
+    get_config_dirpath, 
+    create_folder
+)
 
 import argparse
 from datetime import datetime
