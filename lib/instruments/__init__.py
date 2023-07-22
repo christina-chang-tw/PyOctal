@@ -15,7 +15,7 @@ from .keithley6487 import Keithley6487
 from .keysight86100D import Keysight86100D
 from .keysightE8257D import KeysightE8257D
 
-from .pas import AgilentILME
+from .keysightPAS import AgilentILME
 
 from .tektronixScope import TektronixScope
 

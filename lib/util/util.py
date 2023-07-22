@@ -29,6 +29,9 @@ def version_check():
 def get_gpib_full_addr(num: int=0):
     return f"GPIB::{num}::INSTR"
 
+def get_com_full_addr(num: int=0):
+    return f"COM{num}"
+
 def get_config_dirpath():
     return f'{os.getcwd()}/config'
 

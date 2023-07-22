@@ -84,6 +84,9 @@ class BaseInstrument(object):
     def clear(self):
         self.write("*CLS")
 
+    def opc(self):
+        return self.query("*OPC?")
+
     @property
     def identity(self):
         return self._identity
