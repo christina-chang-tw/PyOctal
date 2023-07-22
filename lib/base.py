@@ -7,7 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 def list_resources():
-    """Function that prints and returns a list with all the available resources in the PC. Needs the visa library from NI"""
+    """
+    Function that prints and returns a list with all the available resources in the PC. 
+    """
     # List of the available resources
     resources = pyvisa.ResourceManager().list_resources()
     print('Available resources in the PC:')
@@ -15,7 +17,17 @@ def list_resources():
     return resources
 
 class BaseInstrument(object):
+    """
+    A base instrument class containing minimum useful and compatible functions.
 
+    Parameters
+    ----------
+    rsc_addr: str
+        The address that the instrument displayed on the computer.
+        It can be either a GPIB, RS232, USB, or an Ethernet address.
+    termination: str
+        The termination character when pyvisa is communicating with the instrument
+    """
     def __init__(self, rsc_addr, termination: str='\n'):
         # Communicate with the resource and identify it
         self._addr = rsc_addr
@@ -98,7 +110,14 @@ class BaseInstrument(object):
 
 
 class BasePAS(object):
+    """
+    A base Photonics Application Suite class
 
+    Parameters
+    ----------
+    server_addr: str
+        The address of the software
+    """
     def __init__(self, server_addr):
         self.engine_mgr = win32com.client.Dispatch(server_addr)
         self.engine = self.engine_mgr.NewEngine()
@@ -140,6 +159,14 @@ class BasePAS(object):
 
 
 class BaseSweeps(object):
+    """
+    A base sweep class
+
+    Parameters
+    ----------
+    instr: an instrument class
+        This is the instrument that is used in the sweep
+    """
     def __init__(self, instr):
         self.instr = instr
 

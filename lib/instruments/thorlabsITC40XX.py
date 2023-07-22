@@ -1,6 +1,15 @@
 from lib.base import BaseInstrument
 
 class ThorlabsITC4002QCL(BaseInstrument):
+    """
+    Thorlabs ITC4002QCL 
+    Benchtop Laser Diode/TEC Controller for QCLs VISA Library
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
 
     def __init__(self, addr):
         super().__init__(rsc_addr=addr)

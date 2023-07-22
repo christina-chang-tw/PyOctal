@@ -4,11 +4,21 @@ from typing import Union
 
 class Agilent8163B(BaseInstrument):
     """
-    Instrument: 8163B Lightwave Multimeter
-    
-    Remote control the multimeter with this library
-    """
+    Agilent 8163B Lightwave Multimeter VISA Library
 
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    src_num: int, default: 1
+        Source interface number
+    src_chan: int, default: 1
+        Source channel
+    sens_num: int, default: 2
+        Sensor interface number
+    sens_chan: int, default: 1
+        Sensor channel
+    """
     def __init__(self, addr: str, src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(rsc_addr=addr) 
         self.src_num = src_num

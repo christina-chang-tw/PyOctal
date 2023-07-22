@@ -3,6 +3,7 @@ import argparse
 import sys
 
 class CustomLogFormatter(logging.Formatter):
+    """ Format the logging better with a customised log formatter """
 
     cyan = "\x1b[34m"
     grey = "\x1b[38;20m"
@@ -28,6 +29,8 @@ class CustomLogFormatter(logging.Formatter):
     
 
 class CustomArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    """ Format the argparse helper message better with a customised argparse formatter """
+
     def _get_help_string(self, action):
         help = action.help
         if '%(default)' not in action.help:

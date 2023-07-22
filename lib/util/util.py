@@ -1,6 +1,15 @@
+""" 
+This file contains all sorts of functions
+that are used but do not belong to a specific category
+"""
+
 import inspect
 import sys
 import os
+import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_func_name():
     return inspect.stack()[1].function
@@ -25,3 +34,14 @@ def get_config_dirpath():
 
 def get_result_dirpath(folder):
     return f'{os.getcwd()}/results/{folder}'
+
+def package_info(info: dict):
+    return pd.DataFrame(info.items(), columns=['Params', 'Value'])
+
+def create_folder(folder: str="XXX"):
+    try:
+        path = f'{get_result_dirpath(folder)}'
+        if not os.path.isdir(path):
+            os.mkdir(path)
+    except:
+        sys.exit("Folder does not exist")

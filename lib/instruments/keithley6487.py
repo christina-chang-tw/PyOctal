@@ -1,6 +1,14 @@
 from lib.base import BaseInstrument
 
 class Keithley6487(BaseInstrument):
+    """
+    Keithley 6487 Picoammeter VISA Library
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
 
     def __init__(self, addr):
         super().__init__(rsc_addr=addr)

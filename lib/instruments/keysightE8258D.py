@@ -3,6 +3,14 @@ from lib.base import BaseInstrument
 from typing import Union
 
 class KeysightE8258D(BaseInstrument):
+    """
+    Keysight E8258D PSG Signal Geneartors VISA Libray
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
 
     def __init__(self, addr):
         super().__init__(rsc_addr=addr)

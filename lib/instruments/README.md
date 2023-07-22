@@ -5,8 +5,8 @@ Supported instruments are listed below:
 | ------------ | ----------- | ----------- |
 | Agilent (Keysight)      | 8163B       | Lightwave Multimeter |
 |              | E3640A      | Power Meter |
-| Ametek       | DSP7230     | DSP Lock-in Amplifier
-|              | DSP7265     | DSP Lock-in Amplifier
+| Ametek       | DSP7230     | DSP Lock-In Amplifier
+|              | DSP7265     | DSP Lock-In Amplifier
 | Keithley     | 2400        | Source Measure Unit (SMU)
 |              | 6487        | Picoammeter / Voltage Source|
 | Keysight     | DCAX86100D  | Wide-Bandwidth Oscilloscope |

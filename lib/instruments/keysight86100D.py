@@ -2,6 +2,18 @@ from lib.base import BaseInstrument
 
 from typing import Union
 class Keysight86100D(BaseInstrument):
+    """
+    Keysight 86100D Wide-Bandwidth Oscilloscope VISA Library
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    chan: int, default = 1
+        The input channel
+    clk_num: int, default = 1
+        The clock recovery number
+    """
 
     def __init__(self, addr: str, chan: int=1, clk_num: int=1):
         super().__init__(rsc_addr=addr)

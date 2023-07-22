@@ -27,12 +27,3 @@ def iloss_coeffs(df, wavelengths, lengths, no_channels: int=1, unit: str="um"):
     return df_coeff
    
 
-
-if __name__ == "__main__":
-    create_folder("XXX/")
-    info = {1 : 4, 2 : 5, 3 : 6}
-
-    df = pd.DataFrame(info.items(), columns=["10", "20"])
-
-    iloss("XXX", df, [1, 2, 3])
-

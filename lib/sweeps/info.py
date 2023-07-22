@@ -1,10 +1,13 @@
-from lib.util.file_operations import export_to_csv, package_info
-from lib.util.util import get_func_name
+from lib.util.file_operations import export_to_csv
+from lib.util.util import get_func_name, package_info
 
 class TestInfo():
-    """ Information about tests that are run and export to an info file in csv format """
+    """
+    Sweep Test Information
+    """
     @staticmethod
     def passive(chip_name, ilme, configs):
+        """ Information about passive testing """
         info = {
             "Testing Type" : "Passive insertion Loss",
             "Number of channels" : ilme.get_no_channels(),
@@ -19,6 +22,7 @@ class TestInfo():
 
     @staticmethod
     def dc(chip_name, ilme, configs):
+        """ Information about dc testing """
         info = {
             "Testing Type" : "DC Scan",
             "Number of channels" : ilme.get_no_channels(),

@@ -3,7 +3,6 @@
 ORC OCATCL is a Python package equipped with all essential sweep tests, analysis tools, and interfaces with existing equipments in ORC group.
 
 <!-- toc -->
-
 - [More About ORC OCATCL](#more-about-orc-ocatcl)
   - [Directory Structure](#directory-structure)
 - [Installation](#installation)
@@ -18,9 +17,8 @@ ORC OCATCL is a Python package equipped with all essential sweep tests, analysis
 - [Developer Guide](#developer-information)
   - [Git Bash](#git-bash-1)
   - [Expand this Library](#expand-this-library)
-
-
 <!-- tocstop -->
+
 
 ## More About ORC OCATCL
 
@@ -31,7 +29,7 @@ ORC OCATCL is a Python package equipped with all essential sweep tests, analysis
 ├── config                   # all configuration files
 ├── lib                      # core library
 ├── results                  # store testing results
-├── tests                    # contain simple instrument function tests <not implemented>
+├── tests                    # contain unittesting for functions (users please ignore)
 ├── instr.py                 # direct interface with instruments (only for simple setup cases)
 ├── logging.log              # logging the output to a file
 ├── main.py                  # interface with running sweeps

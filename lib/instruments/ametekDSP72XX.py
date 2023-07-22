@@ -4,6 +4,37 @@ import time
 from typing import Union
 
 class AmetekDSP7230(BaseInstrument):
+    """
+    Ametek DSP7230 DSP Lock-In VISA Library
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
+
+    def __init__(self, addr: str):
+        super().__init__(rsc_addr=addr)
+
+    def get_mag(self):
+        return self.query_float("mag.?")
+
+    def get_x_volt(self):
+        return self.query_float("x.?")
+    
+    def get_y_volt(self):
+        return self.query_float("y.?")
+    
+
+class AmetekDSP7265(BaseInstrument):
+    """
+    Ametek DSP7265 DSP Lock-In VISA Library
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
 
     def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
@@ -108,6 +139,3 @@ class AmetekDSP7230(BaseInstrument):
             v_sum = v_sum + volt
 
         return v_sum/points
-
-
-

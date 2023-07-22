@@ -1,3 +1,5 @@
+""" Setup a python virtual environment """
+
 import os
 import sys
 import subprocess

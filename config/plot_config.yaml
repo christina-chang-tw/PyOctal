@@ -2,12 +2,10 @@
 # This will be loaded to plot.py when it starts running
 --- # document start
 
-## var  ###########################################
+## General Variables  ###########################################
 structure: "KTN" # e.g. {structure}_iloss_data.py
 func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
 unit: "mm" # unit 
-
-## list ###########################################
 folders: # select folder name under results
   - "Chip_3"
 
@@ -17,14 +15,12 @@ sheets: # only for excel
 
 ## Length Loss Plots Only Variables #####################################
 exp_lambda: 1550 # wavelength of interest [nm]
-lambda_avgrange: 10 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
-columns_dropping:
+lambda_avgrange: 5 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
+columns_drop:
   Chip_3:
     - " 5.5"
   Chip_4:
-    -
   Chip_5:
-    -
 
 ## Wavelength Loss Plots Only Variables ################################
 columns_plot: 

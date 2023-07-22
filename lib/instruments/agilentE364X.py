@@ -2,9 +2,12 @@ from lib.base import BaseInstrument
 
 class AgilentE3640A(BaseInstrument):
     """
-    Instrument: E3640A Power Meter
-    
-    Remote control the power meter with this library
+    Agilent E3640A Power Meter VISA Library
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
     """
 
     def __init__(self, addr: str="GPIB0::4::INSTR"):

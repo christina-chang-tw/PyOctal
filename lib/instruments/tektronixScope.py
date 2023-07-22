@@ -5,7 +5,15 @@ import matplotlib.pyplot as plot
 
 
 class TektronixScope(BaseInstrument):
-    """Class to control a Tektronix series oscilloscope"""
+    """
+    Tektronix Scope Library
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
+
     def __init__(self, addr):
         super().__init__(rsc_addr=addr)
         self.name = self.get_idn()

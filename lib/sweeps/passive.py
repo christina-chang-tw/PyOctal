@@ -14,7 +14,15 @@ import time
 logger = logging.getLogger(__name__)
 
 class PASILossSweep(BaseSweeps):
-    """ This uses the ILME to sweep through the data """
+    """
+    Photonic Application Suite ILME Sweeps.
+    This uses ILME machine to obtain results about insertion loss and  wavelength
+
+    Parameters
+    ----------
+    instr: 
+        An instrument used in this sweep
+    """
     def __init__(self, instr: Agilent8163B):
         self.dev = AgilentILME()
         self.dev.activate()
@@ -44,12 +52,18 @@ class PASILossSweep(BaseSweeps):
             logger.warning("Discrepancy in wavelengths")
         
         export_to_csv(pd.concat([lf.iloc[:,0], df]), chip_name, f'{args.structure[0]}_{get_func_name()}_data')
-        # df_coeff = iloss.iloss(df, np.array(lf.iloc[:,0]), self.dev.get_no_channels())
-        # export_to_csv(df_coeff, chip_name, f'{args.structure[0]}_{get_func_name()}_coeffs')
-
+        
 
 class InstrILossSweep(BaseSweeps):
-    """ This directly uses 8163B to sweep the data """
+    """
+    Instrument Insertion Loss Sweep.
+    This directly interfaces with instruments to obtain insertion loss data
+
+    Parameters
+    ----------
+    instr: 
+        An instrument used in this sweep
+    """
     def __init__(self, instr: Agilent8163B):
         super().__init__(instr=instr)
 

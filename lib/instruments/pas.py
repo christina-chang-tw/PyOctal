@@ -10,10 +10,7 @@ logger = logging.getLogger(__name__)
 
 class AgilentILME(BasePAS):
     """
-    Instrument: Insertion Loss Measurement Engine
-    
-    Remote control the ILME programme to run tests
-    ** Not tested **
+    Keysight Insertion Loss Measurement Engine Win32com Library
     """
 
     def __init__(self):
