@@ -1,10 +1,21 @@
+# Python
 *__pycache__*
+*.pytest_cache*
 
+# VSCode
+*.vscode
+
+# Excel/CSV
+*.csv
+tests/*.xlsx
 results/*
 !results/.gitkeep
 
+# virtual env
 .venv/*
+.venv
 
+# logging information
 *.log
 
-.DS_Store
+*.DS_Store*
