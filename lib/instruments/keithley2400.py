@@ -1,4 +1,5 @@
 from lib.base import BaseInstrument
+from lib.error import *
 
 import time
 
@@ -33,12 +34,12 @@ class Keithley2400(BaseInstrument):
     # Detector
     def set_detect_vlim(self, volt: float):
         if not -210.0 < volt < 210.0:
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"sense:voltage:protection {volt}")
 
     def set_detect_ilim(self, curr: float):
         if not -1.05 < curr < 1.05:
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"sense:current:protection {curr}")
 
     def set_detect_npl_cycles(self, speed: float):
@@ -55,17 +56,17 @@ class Keithley2400(BaseInstrument):
     # Laser
     def set_laser_mode(self, mode: str):
         if mode.lower() not in ("curr", "volt", "mem"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"source:function {mode}")
 
     def set_laser_volt(self, volt):
         if not -210.0 < volt < 210.0:
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"source:voltage:level {volt}")
 
     def set_laser_curr(self, curr):
         if not -1.05 < curr < 1.05:
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"source:current:level {curr}")
 
     def get_laser_mode(self):
@@ -87,7 +88,7 @@ class Keithley2400(BaseInstrument):
 
     def set_trace_ctl(self, ctl: str):
         if ctl.lower() not in ("never", "next"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"trace:feed:control {ctl}")
 
     def get_trace_data(self):
@@ -97,14 +98,14 @@ class Keithley2400(BaseInstrument):
     # Trigger
     def set_trig_count(self, count: int):
         if not 1 <= count <= 2500:
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"trigger:count {count}")
 
 
     # Calculate
     def set_calc3_format(self, format: str="mean"):
         if format.lower() not in ("mean", "sdev", "max", "min", "pkpk"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"calculate3:format {format}")
 
     def get_calc3_data(self):

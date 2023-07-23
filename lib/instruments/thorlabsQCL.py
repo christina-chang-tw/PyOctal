@@ -1,7 +1,9 @@
 from lib.base import BaseInstrument
+from lib.error import *
+
 from collections import namedtuple
 
-class QCL(BaseInstrument):
+class ThorlabsQCL(BaseInstrument):
 
     _control = namedtuple("control", ["wn", "freq", "pw", "startwn", "stopwn", "rate", "cycles", "mode", "pause", "step", "interval"])
     _state = namedtuple("state", ["wn", "freq", "pw", "startwn", "stopwn", "rate", "cycles", "mode", "pause", "step", "whours", "scancount", "interval", "awn"])
@@ -13,20 +15,20 @@ class QCL(BaseInstrument):
 
     def set_curr(self, value):
         if not 0 < value < 925:
-            raise ValueError(f"{value} is out of range!")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f":laser:curr {value}")
 
     def set_wn(self, value):
         """ set wavenumber """
         if not self.wn_range[0] < value < self.wn_range[1]:
-            raise ValueError(f"{value} is out of range!")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"laser:set {value}")
 
             
     def set_wn2(self, value):
         """ set wavenumber """
         if not self.wn_range[0] < value < self.wn_range[1]:
-                raise ValueError(f"{value} is out of range!")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write("laser:set\s9500")
 
 

@@ -3,6 +3,7 @@ Functions related to CSV or Excel operations
 """
 
 from lib.util.util import get_result_dirpath
+from lib.error import *
 
 import pandas as pd
 import logging
@@ -18,7 +19,7 @@ def get_dataframe_from_csv(path: str, fname: str,):
 
     if os.path.isfile(path_to_file) and os.stat(path_to_file).st_size != 0:
         return pd.read_csv(path_to_file, encoding='utf-8')
-    sys.exit("File does not exist")
+    raise FileExistsError(f"Error code {FILE_NOT_EXIST_ERR}: {error_message[FILE_NOT_EXIST_ERR]}")
 
 
 def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, list]):
@@ -32,7 +33,7 @@ def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, li
             info = xl.parse(sheet_name="Overview")
             return data, info
         return data
-    sys.exit("Folder does not exist")
+    raise FileExistsError(f"Error code {FILE_NOT_EXIST_ERR}: {error_message[FILE_NOT_EXIST_ERR]}")
 
 
 

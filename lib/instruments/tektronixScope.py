@@ -1,4 +1,5 @@
 from lib.base import BaseInstrument
+from lib.error import *
 
 import numpy
 import matplotlib.pyplot as plot
@@ -82,7 +83,7 @@ class TektronixScope(BaseInstrument):
     # Data
     def set_data_format(self, format: str="asci"):
         if format.lower() not in ("asci", "rib", "rpb", "fpb", "sri", "srp", "sfp"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"data:encdg {format}")
 
     def set_data_source(self, src: str):

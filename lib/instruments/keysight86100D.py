@@ -1,4 +1,5 @@
 from lib.base import BaseInstrument
+from lib.error import *
 
 from typing import Union
 class Keysight86100D(BaseInstrument):
@@ -28,23 +29,23 @@ class Keysight86100D(BaseInstrument):
 
     def set_acq_best(self, opt: str):
         if opt.lower() not in ("thr", "flat"): # options: thruput and flatness
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"acquire:best {opt}")
         
     def set_acq_count(self, cnt: int):
         if not 1 <= cnt <= 4096:
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"acquire:count {cnt}")
 
     # Channel commands
     def set_chan_bandwidth(self, setting: str):
         if setting.lower() not in ("high", "mid", "low"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"{self.channel}:bandwidth {setting}")
 
     def set_chan_connector(self, connector: str):
         if connector.lower() not in ("a", "b"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"{self.channel}:connector {connector}")
 
     def set_chan_wavelength(self, wavelength: Union[str, float]):
@@ -64,13 +65,13 @@ class Keysight86100D(BaseInstrument):
 
     def set_clk_lbwmode(self, mode: str):
         if mode.lower() not in ("fixed", "fix", "rdependent", "rdep"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"{self.clock}:lbwmode {mode}")
 
     def set_clk_clbandwidth(self, bandwidth):
         # need to set LBWMode to fixed before running this cmd
         if not 30e+3 <= bandwidth <= 20e+06:
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"{self.clock}:clbandwidth {bandwidth}")
 
     def set_clk_crate(self, rate):
@@ -78,7 +79,7 @@ class Keysight86100D(BaseInstrument):
 
     def set_clk_input_type(self, typ):
         if typ.lower() not in ("electrical", "elec", "optical", "opt", "differential", "diff", "einverted", "einv", "auxiliary", "aux"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"{self.clock}:input {typ}")
 
     def set_clk_odratio(self, rdiv):

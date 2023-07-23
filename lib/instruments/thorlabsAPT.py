@@ -1,7 +1,7 @@
 
 from ctypes import WinDLL, pointer
 
-class TektronixAPT(object):
+class ThorlabsAPT(object):
 
     def __init__(self, serial: float=83863567):
         aptdll = WinDLL.LoadLibrary("APT.dll")
@@ -15,7 +15,7 @@ class TektronixAPT(object):
         return self._aptdll.MOT_GetPosition(self.serial, pointer(pos))
 
     def MOT_MoveAbsoluteEx(self, abs_pos):
-       self._aptdll.MOT_MoveAbsoluteEx(self.serial, abs_pos, True)
+        self._aptdll.MOT_MoveAbsoluteEx(self.serial, abs_pos, True)
 
     @property
     def aptdll(self):

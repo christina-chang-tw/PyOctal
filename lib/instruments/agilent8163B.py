@@ -1,4 +1,5 @@
 from lib.base import BaseInstrument
+from lib.error import *
 
 from typing import Union
 
@@ -92,6 +93,8 @@ class Agilent8163B(BaseInstrument):
             self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
         elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
             self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
+        else:
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
 
     def get_detect_pow(self):
         return self.query(f"read{self.sens_num}:channel{self.sens_chan}:power?")

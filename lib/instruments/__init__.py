@@ -4,8 +4,11 @@ Import all instruments here to shorten the imports
 
 from .agilent8163B import Agilent8163B
 from .agilentE364X import AgilentE3645, AgilentE3640A
+from .agilentDSO8000 import AgilentDSO8000
 
 from .ametekDSP72XX import AmetekDSP7230, AmetekDSP7265
+
+from .arroyo6301 import Arroyo6301
 
 from .dummy import DummyILME, DummyMultimeter, DummyPowerSupply
 
@@ -19,6 +22,10 @@ from .keysightPAS import AgilentILME
 
 from .tektronixScope import TektronixScope
 
-from thorlabsITC40XX import ThorlabsITC4002QCL
+from .thorlabsITC40XX import ThorlabsITC4002QCL
+from .thorlabsPM100 import ThorlabsPM100
+from .thorlabsQCL import ThorlabsQCL
+from .thorlabsAPT import ThorlabsAPT
 
-from ttiTGF3162 import TTiTGF3162
+from .ttiTGF3162 import TTiTGF3162
+

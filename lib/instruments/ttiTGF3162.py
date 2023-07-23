@@ -1,4 +1,5 @@
 from lib.base import BaseInstrument
+from lib.error import *
 
 from typing import Union
 import numpy as np
@@ -38,14 +39,14 @@ class TTiTGF3162(BaseInstrument):
 
     def set_output_state(self, state: str):
         if state.lower() not in ("on", "off", "normal", "invert"):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"output {state}")
 
     def select_channel(self, channel: int):
         # set the channel as the destination of the
         # subsequent cmds
         if channel not in (1, 2):
-            raise RuntimeError("Bad value")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"chn {channel}")
 
     def set_arb_waveform(self, array, memchan):

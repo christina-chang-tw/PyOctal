@@ -15,7 +15,8 @@ from lib.util.formatter import CustomLogFormatter, CustomArgparseFormatter
 from lib.util.util import (
     get_gpib_full_addr, 
     get_config_dirpath, 
-    create_folder
+    create_folder,
+    get_result_dirpath
 )
 
 import argparse
@@ -81,7 +82,7 @@ def test_distribution(ttype, configs):
     info = TestInfo()
     addr = get_gpib_full_addr(configs["addr"])
 
-    create_folder(folder)
+    create_folder(get_result_dirpath(folder))
     
     if ttype == "passive":
         instr = Agilent8163B(addr=addr)

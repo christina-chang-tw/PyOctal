@@ -1,4 +1,5 @@
 from lib.base import BaseInstrument
+from lib.error import *
 
 class ThorlabsITC4002QCL(BaseInstrument):
     """
@@ -22,5 +23,5 @@ class ThorlabsITC4002QCL(BaseInstrument):
     
     def set_curr(self, curr):
         if curr > self.get_curr_max():
-            raise RuntimeError("Current over safe maximum current")
+            ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"source:current {curr}")

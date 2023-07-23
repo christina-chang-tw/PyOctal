@@ -1,4 +1,5 @@
 from lib.base import BaseInstrument
+from lib.error import *
 
 import time
 from typing import Union
@@ -55,7 +56,7 @@ class AmetekDSP7265(BaseInstrument):
     
     def set_user_eq(self, eq: str):
         if not isinstance(eq, Union[list, tuple]):
-            raise RuntimeError("Bad value: equation should be a list")
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Param should be a list")
         self.write(f'defequ {[" ".join(i) for i in eq]}')
 
     def set_dual_tc(self, tc: int):
