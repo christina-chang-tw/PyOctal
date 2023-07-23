@@ -10,6 +10,7 @@ from .ametekDSP72XX import AmetekDSP7230, AmetekDSP7265
 
 from .arroyo6301 import Arroyo6301
 
+from .daylightQCL import DaylightQCL
 from .dummy import DummyILME, DummyMultimeter, DummyPowerSupply
 
 from .keithley2400 import Keithley2400
@@ -24,7 +25,6 @@ from .tektronixScope import TektronixScope
 
 from .thorlabsITC40XX import ThorlabsITC4002QCL
 from .thorlabsPM100 import ThorlabsPM100
-from .thorlabsQCL import ThorlabsQCL
 from .thorlabsAPT import ThorlabsAPT
 
 from .ttiTGF3162 import TTiTGF3162

@@ -1,5 +1,4 @@
 from lib.util.file_operations import get_result_dirpath, get_dataframe_from_csv, get_dataframe_from_excel
-from lib.analysis.iloss import iloss_coeffs
 from lib.util.file_operations import export_to_csv, export_to_excel
 
 import matplotlib.pyplot as plt 
@@ -59,6 +58,8 @@ class RealTimePlot(object):
         animation.FuncAnimation(figure, wrapper, interval=interval)
     
 
+
+
 class PlotGraphs(object):
     """
     Plot a graph for post-data processing usage.
@@ -69,19 +70,20 @@ class PlotGraphs(object):
         This dictionary contains all parameters read in from the configuration file.
     """
 
-    coeffs_name = "iloss_coeffs"
-    data_name = "iloss_data"
-    info_name = "iloss_info"
-
     def __init__(self, configs):
-        self.structure = configs["structure"]
+        self.configs = configs
         self.unit = configs["unit"]
         self.folders = configs["folders"]
+        self.no_channels = configs["no_channels"]
+        self.fname = configs["fname"]
+        self.title = configs["title"]
 
     @staticmethod
-    def __get_new_figure():
+    def __get_new_figure(title):
+        """ Obtain a new figure """
         fig = plt.figure()
         ax = fig.add_axes([0.1,0.1,0.8,0.8])
+        ax.set_title(title)
         ax.grid(which='major', color='#DDDDDD', linewidth=0.8)
         ax.grid(which='minor', color='#EEEEEE', linestyle=':', linewidth=0.5)
         ax.minorticks_on()
@@ -89,21 +91,37 @@ class PlotGraphs(object):
         return ax
 
     @staticmethod
+    def linear_regression(xdata, ydata):
+        fit = np.polyfit(xdata, ydata, deg=1)
+
+        xline = np.linspace(min(xdata), max(xdata))
+        yline = xline*fit[0] + fit[1]
+
+        return xline, yline, fit
+
+    @staticmethod
     def show():
+        """ Show plots """
         plt.show()
 
     @staticmethod
     def get_avgdata(df: pd.DataFrame, avg_range: float, target_lambda):
+        """ Average the datapoints across a wavelength range for each length """
+
+        if avg_range == 0: # only want a specific wavelength data
+            return df.iloc[(df["Wavelength"] - target_lambda).abs().argsort()[:1]].values[0][1:]
+        
         upper_lambda = target_lambda + avg_range/2
         lower_lambda = target_lambda - avg_range/2
-        upper_rindex = (df['Wavelength'] - upper_lambda).abs().argsort()[:1].values[0]
-        lower_rindex = (df['Wavelength'] - lower_lambda).abs().argsort()[:1].values[0]
+        upper_rindex = (df["Wavelength"] - upper_lambda).abs().argsort()[:1].values[0]
+        lower_rindex = (df["Wavelength"] - lower_lambda).abs().argsort()[:1].values[0]
 
         # get the row mean and remove the wavelength data
         df_avg = df.iloc[lower_rindex:upper_rindex, :].mean(axis=0).values[1:]
         return df_avg
 
     def plot_data(self, xdata, ydata, xlabel: str="XXX", ylabel: str="YYY", title: str="Empty Title", typ: str="line"):
+        """ Given x and y, plot a graph"""
         ax = self.__get_new_figure()
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
@@ -112,179 +130,187 @@ class PlotGraphs(object):
             ax.plot(xdata, ydata)
         elif typ == "scatter":
             ax.scatter(xdata, ydata)
-        else
+        else:
             raise RuntimeError("Invalid plot type")
 
-    def plt_len_loss_csv(self, configs):
+    def plt_len_loss_csv(self):
+        """ Plot a loss v.s. length graph with the data from a csv file """
+        exp_lambda = self.configs["exp_lambda"]
+        avg_range = self.configs["lambda_avgrange"]
+        no_channels = self.no_channels
 
-        exp_lambda = configs["exp_lambda"]
-        avg_range = configs["lambda_avgrange"]
-
-        ax = self.__get_new_figure()
+        ax = self.__get_new_figure(self.title)
         ax.set_xlabel(f'Length [{self.unit}]')
         ax.set_ylabel(f'Loss [dB/{self.unit}]')
-        ax.set_title('Insertion Loss of Different Chips')
 
         for name in self.folders:
             df_coeff = []
 
-            df = get_dataframe_from_csv(path=get_result_dirpath(name), fname=f'{self.structure}_{self.data_name}')
-            info = get_dataframe_from_csv(path=get_result_dirpath(name), fname=f'{self.structure}_{self.info_name}')
+            df = get_dataframe_from_csv(path=get_result_dirpath(name), fname=self.fname)
 
-            no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
-
-            if configs["columns_drop"][name] is not None:
-                df = df.loc[:, [not x for x in df.columns.str.endswith(tuple(configs["columns_drop"][name]))]]
+            # Drop the unwanted lengths
+            if self.configs["columns_drop"][name] is not None:
+                df = df.loc[:, [not x for x in df.columns.str.startswith(tuple(self.configs["columns_drop"][name]))]]
 
             for i in range(no_channels):
                 label = f'{name}' if no_channels == 1 else f'{name}_CH{i}'
-                temp = df.loc[:, df.columns.str.startswith(f'CH{i}')]
 
-                xdata = [float(i.split(" - ")[1]) for i in temp.columns.values[0:]]
+                # obtain the columns from the correct channel
+                temp = df.loc[:, df.columns.str.endswith(f'CH{i}')]
+
+                # extract the lengths out of headers
+                xdata = [float(i.split(" - ")[0]) for i in temp.columns.values[0:]] 
+                # get a loss averaged over a specified wavelength range for each length
                 ydata = self.get_avgdata(df=df, avg_range=avg_range, target_lambda=exp_lambda)
 
                 # linear regression
-                fit = np.polyfit(xdata, ydata, deg=1)
-                xline = np.linspace(min(xdata), max(xdata))
-                yline = xline*fit[0] + fit[1]
+                xline, yline, fit = self.linear_regression(xdata, ydata)
 
+                # plot data
                 ax.plot(xline, yline, ':')
                 ax.scatter(xdata, ydata, label=label)
                 print(f'{name}_CH{i} : y = {round(fit[0],4)}x {round(fit[1],4)}')
-                df_coeff = iloss_coeffs(df=temp, wavelengths=df['Wavelength'], lengths=xdata, no_channels=no_channels, unit=self.unit)
             
-            export_to_csv(data=df_coeff, path=get_result_dirpath(name), fname=f'{self.structure}_iloss_coeffs')
+            export_to_csv(data=df_coeff, path=get_result_dirpath(name), fname=f'{self.fname}_iloss_coeffs')
         ax.legend(fontsize=8)
 
     
 
-    def plt_lambda_loss(self, configs):
-        
-        ax = self.__get_new_figure()
+    def plt_lambda_loss(self):
+        """ Plot a loss v.s. wavelength graph with the data from a csv file """
+        no_channels = self.no_channels
+
+        ax = self.__get_new_figure(self.title)
         ax.set_xlabel(f'Wavelength [nm]')
         ax.set_ylabel(f'Loss [dB/{self.unit}]')
-        ax.set_title('Insertion Loss of Different Wavelengths')
 
         for name in self.folders:
 
-            df = get_dataframe_from_csv(path=get_result_dirpath(name), fname=f'{self.structure}_{self.data_name}')
-            info = get_dataframe_from_csv(path=get_result_dirpath(name), fname=f'{self.structure}_{self.info_name}')
+            df = get_dataframe_from_csv(path=get_result_dirpath(name), fname=self.fname)
 
-            no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
-            if configs["columns_plot"][name] is not None:
-                df = df.loc[:, [x for x in df.columns.str.endswith(tuple(configs["columns_plot"][name]))]]
+            # plot the wanted columns
+            if self.configs["columns_plot"][name] is not None:
+                df = df.loc[:, [x for x in df.columns.str.startswith(tuple(self.configs["columns_plot"][name]))]]
 
             xdata = df['Wavelength']
 
             for i in range(no_channels):
-                temp = df.loc[:, df.columns.str.startswith(f'CH{i}')]
+                # obtain the columns from the correct channel
+                temp = df.loc[:, df.columns.str.endswith(f'CH{i}')]
                 
                 for length in temp.columns.values:
-                    label = f'{name}_{length.split(" - ")[1]}{self.unit}' if no_channels == 1 else f'{name}_{length}{self.unit}'
+                    label = f'{name}_{length.split(" - ")[0]}{self.configs["end_of_legend"]}' if no_channels == 1 else f'{name}_{length}{self.configs["end_of_legend"]}'
                     ydata = temp.loc[:,length]
                     ax.plot(xdata, ydata, label=label)
+
         ax.legend(fontsize=8)
 
 
-    def plt_coeffs(self, _):
-        
-        ax1= self.__get_new_figure()
-        ax1.set_xlabel(f'Wavelength [nm]')
-        ax1.set_ylabel(f'Loss [dB/{self.unit}]')
-        ax1.set_title('Waveguide Loss of Different Wavelengths')
+    # def plt_coeffs(self):
+    #     """ Import from a loss coefficient file and plot the waveguide loss and insertion loss. """
+    #     no_channels = self.no_channels
 
-        ax2 = self.__get_new_figure()
-        ax2.set_xlabel(f'Wavelength [nm]')
-        ax2.set_ylabel(f'Insertion Loss [dB]')
-        ax2.set_title('Insertion Loss of Different Wavelengths')
+    #     ax1= self.__get_new_figure()
+    #     ax1.set_xlabel(f'Wavelength [nm]')
+    #     ax1.set_ylabel(f'Loss [dB/{self.unit}]')
+    #     ax1.set_title('Waveguide Loss of Different Wavelengths')
 
-        for name in self.folders:
+    #     ax2 = self.__get_new_figure()
+    #     ax2.set_xlabel(f'Wavelength [nm]')
+    #     ax2.set_ylabel(f'Insertion Loss [dB]')
+    #     ax2.set_title('Insertion Loss of Different Wavelengths')
 
-            df_coeffs = get_dataframe_from_csv(path=get_result_dirpath(name), fname=f'{self.structure}_{self.coeffs_name}')
-            info = get_dataframe_from_csv(path=get_result_dirpath(name), fname=f'{self.structure}_{self.info_name}')
-            
-            no_channels = int(info.loc[info["Params"] == "Number of channels"].loc[:,"Value"])
-            xdata = df_coeffs['Wavelength']
+    #     for name in self.folders:
 
-            for i in range(no_channels):
-                label = f'{name}' if no_channels == 1 else f'{name}_CH{i}'
-                ax1.plot(xdata, df_coeffs[f'CH{i} - loss [db/{self.unit}]'], label=label)
-                ax2.plot(xdata, df_coeffs[f"CH{i} - insertion loss [dB]"], label=label)
+    #         df_coeffs = get_dataframe_from_csv(path=get_result_dirpath(name), fname=self.fname)
+    #         xdata = df_coeffs['Wavelength']
 
-        ax1.legend(fontsize=8)
-        ax2.legend(fontsize=8)
+    #         for i in range(no_channels):
+    #             label = f'{name}' if no_channels == 1 else f'{name}_CH{i}'
+    #             ax1.plot(xdata, df_coeffs[f'CH{i} - loss [db/{self.unit}]'], label=label)
+    #             ax2.plot(xdata, df_coeffs[f"CH{i} - insertion loss [dB]"], label=label)
 
+    #     ax1.legend(fontsize=8)
+    #     ax2.legend(fontsize=8)
 
 
-    def plt_len_loss_excel(self, configs):
 
-        exp_lambda = configs["exp_lambda"]
+    def plt_len_loss_excel(self):
+        """ Plot a loss v.s. length graph with the data from a excel file """
+        exp_lambda = self.configs["exp_lambda"]
+        avg_range = self.configs["lambda_avgrange"]
+        no_channels = self.no_channels
 
-        ax = self.__get_new_figure()
+        ax = self.__get_new_figure(self.title)
         ax.set_xlabel(f'Length [{self.unit}]')
         ax.set_ylabel(f'Loss [dB/{self.unit}]')
-        ax.set_title('Insertion Loss of Different Chips')
 
         for name in self.folders:
 
-            df, info = get_dataframe_from_excel(path=get_result_dirpath(name), fname=f'{self.structure}_{self.data_name}', sheet_names=configs["sheets"])
-            for sheet in configs["sheets"]:
+            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs["sheets"])
+            
+            for sheet in self.configs["sheets"]:
                 df_dropped = df[sheet]
                 df_coeff = []
 
-                no_channels = int(info.loc[info["General:"] == "NumberOfChannels"].loc[:, "Unnamed: 1"])
-                if configs["columns_drop"][name] is not None:
-                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.endswith(tuple(configs["columns_drop"][name]))]]
-
-                wavelength = df_dropped['Wavelength']*1e+09
+                # Drop the unwanted lengths
+                if self.configs["columns_drop"][name] is not None:
+                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(self.configs["columns_drop"][name]))]]
+                
+                df_dropped["Wavelength"] = df_dropped['Wavelength']*1e+09 # make sure that wavelength is in nm
 
                 for i in range(no_channels):
                     label = f'{name}_{sheet}' if no_channels == 1 else f'{name}_{sheet}_CH{i}'
-                    temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
-           
-                    xdata = [float(i.split(" - ")[1]) for i in temp.columns.values[0:]]
-                    ydata = temp.iloc[(wavelength - exp_lambda).abs().argsort()[:1]].values[0][0:]
+                    
+                    # obtain the columns from the correct channel
+                    temp = df_dropped.loc[:, df_dropped.columns.str.endswith(f'CH{i}')]
+                    
+                    # extract the lengths out of headers
+                    xdata = [float(i.split(" - ")[0]) for i in temp.columns.values[0:]] # get the lengths from the header
+                    # get a loss averaged over a specified wavelength range for each length
+                    ydata = self.get_avgdata(df=df_dropped, avg_range=avg_range, target_lambda=exp_lambda) # get the average data
 
                     # linear regression
-                    fit = np.polyfit(xdata, ydata, deg=1)
-                    xline = np.linspace(min(xdata), max(xdata))
-                    yline = xline*fit[0] + fit[1]
+                    xline, yline, fit = self.linear_regression(xdata, ydata)
 
+                    # plot data
                     ax.plot(xline, yline, ':')
                     ax.scatter(xdata, ydata, label=label)
                     offset = f'+{round(fit[1],4)}' if fit[1] > 0 else round(fit[1], 4) if fit[1] < 0 else 0
                     print(f'{name}_CH{i} : y = {round(fit[0],4)}x {offset}')
-                    df_coeff = iloss_coeffs(df=temp, wavelengths=wavelength, lengths=xdata, no_channels=no_channels, unit=self.unit)
+                    df_coeff = iloss_coeffs(df=temp, wavelengths=df_dropped["Wavelength"], lengths=xdata, no_channels=no_channels, unit=self.unit)
                 
-                export_to_excel(data=df_coeff, path=get_result_dirpath(name), fname=f'{self.structure}_iloss_coeffs')
+                export_to_excel(data=df_coeff, path=get_result_dirpath(name), fname=f'{self.fname}_iloss_coeffs')
         ax.legend(fontsize=8)
 
 
-    def plt_lambda_loss_excel(self, configs):
-        
-        ax = self.__get_new_figure()
+    def plt_lambda_loss_excel(self):
+        """ Plot a loss v.s. wavelength graph with the data from a excel file """
+        no_channels = self.no_channels
+
+        ax = self.__get_new_figure(self.title)
         ax.set_xlabel(f'Wavelength [nm]')
         ax.set_ylabel(f'Loss [dB/{self.unit}]')
-        ax.set_title('Insertion Loss of Different Wavelengths')
 
         for name in self.folders:
             
-            df, info = get_dataframe_from_excel(path=get_result_dirpath(name), fname=f'{self.structure}_{self.data_name}', sheet_names=configs["sheets"])
+            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs["sheets"])
             
-            for sheet in configs["sheets"]:
+            for sheet in self.configs["sheets"]:
                 df_dropped = df[sheet]
                 
-                if configs["columns_drop"][name] is not None:
-                    df_dropped = df_dropped.loc[:, [x for x in df_dropped.columns.str.endswith(tuple(configs["columns_plot"][name]))]]
+                # plot the wanted columns
+                if self.configs["columns_drop"][name] is not None:
+                    df_dropped = df_dropped.loc[:, [x for x in df_dropped.columns.str.startswith(tuple(self.configs["columns_plot"][name]))]]
 
-                no_channels = int(info.loc[info["General:"] == "NumberOfChannels"].loc[:, "Unnamed: 1"])
                 xdata = df_dropped['Wavelength']*1e+09
 
                 for i in range(no_channels):
-                    temp = df_dropped.loc[:, df_dropped.columns.str.startswith(f'CH{i}')]
+                    # obtain the columns from the correct channel
+                    temp = df_dropped.loc[:, df_dropped.columns.str.endswith(f'CH{i}')]
                     
                     for length in temp.columns.values:
-                        label = f'{name}_{length.split(" - ")[1]}{self.unit}' if no_channels == 1 else f'{name}_{length}{self.unit}'
+                        label = f'{name}_{length.split(" - ")[0]}{self.configs["end_of_legend"]}' if no_channels == 1 else f'{name}_{length}{self.configs["end_of_legend"]}'
                         ydata = np.negative(temp.loc[:,length])
                         ax.plot(xdata, ydata, label=label)
         ax.legend(fontsize=8)

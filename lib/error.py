@@ -8,7 +8,8 @@ PARAM_INVALID_ERR = 0x05
 UNKNOWN_ADDR_ERR = 0x06
 CONNECTION_ERR = 0x07
 FOLDER_NOT_EXIST_ERR = 0x08
-FILE_NOT_EXIST_ERR = 0x08
+FILE_NOT_EXIST_ERR = 0x09
+FILE_EMPTY_ERR = 0x10
 
 error_message = {
     INCOMPATIBLE_OS_ERR: "OS system incompatible. Please use Windows OS.",
@@ -19,7 +20,8 @@ error_message = {
     UNKNOWN_ADDR_ERR: "Unknown address.",
     CONNECTION_ERR: "Cannot connect to the instrument.",
     FOLDER_NOT_EXIST_ERR: "Folder does not exist.",
-    FILE_NOT_EXIST_ERR: "File does not exist."
+    FILE_NOT_EXIST_ERR: "File does not exist.",
+    FILE_EMPTY_ERR: "File is empty."
 }
 
 

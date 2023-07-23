@@ -49,14 +49,14 @@ class TTiTGF3162(BaseInstrument):
             raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         self.write(f"chn {channel}")
 
+    def load_arb(self, memchan):
+        self.write(f"arbload arb{memchan}")
+
     def set_arb_waveform(self, array, memchan):
         # the array of values should be between -1 and 1
         # max length = 1024
         values = np.int16(array*pow(2, 15))
         self.write_binary_values(f"arb{memchan} ", values, is_big_endian=True, datatype='h')
-    
-    def load_arb(self, memchan):
-        self.write(f"arbload arb{memchan}")
 
     def set_arb_output(self):
         self.write("wave arb")

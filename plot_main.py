@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     func = getattr(plot, configs["func"])
     
-    func(configs)
+    func()
     plot.show()
 
     

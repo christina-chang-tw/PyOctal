@@ -3,14 +3,19 @@
 --- # document start
 
 ## General Variables  ###########################################
-structure: "KTN" # e.g. {structure}_iloss_data.py
-func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
-unit: "mm" # unit 
+fname: "KTN_chip3_ktn_trans" # <fname>.csv or <fname>.xlsx
+func: "plt_lambda_loss_excel" # Inspect PlotGraphs for available functions
+no_channels: 1 # number of channels
+
+title: "KTN Chip Transition"
+end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}
+unit: "mm" # unit (being on the y-axis)
+
 folders: # select folder name under results
   - "Chip_3"
 
 sheets: # only for excel
-  - "IL W=0.5 angle=18"
+  - "1.5um"
 
 
 ## Length Loss Plots Only Variables #####################################
@@ -18,18 +23,18 @@ exp_lambda: 1550 # wavelength of interest [nm]
 lambda_avgrange: 5 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
 columns_drop:
   Chip_3:
-    - " 5.5"
   Chip_4:
   Chip_5:
 
 ## Wavelength Loss Plots Only Variables ################################
 columns_plot: 
   Chip_3:
-    - " 1.5"
-    - " 2.5" 
-    - " 3.5"
-    - " 4.5"
-    - " 6.5"
+    - "0"
+    - "2" 
+    - "4"
+    - "6"
+    - "8"
+    - "10"
 
   Chip_4:
   Chip_5:

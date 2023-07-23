@@ -1,8 +1,8 @@
 # Instruments
 
 Supported instruments are listed below:
-| Manufacturer | Part Number | Description |
-| ------------ | ----------- | ----------- |
+| Manufacturer | Part Number | Description | Tested |
+| ------------ | ----------- | ----------- | ------ |
 | Agilent (Keysight)      | 8163B       | Lightwave Multimeter |
 |              | DSO8000     | Oscilloscopes |
 |              | E3640A      | Power Meter |
@@ -14,9 +14,9 @@ Supported instruments are listed below:
 | Keysight     | 86100D      | Wide-Bandwidth Oscilloscope |
 |              | E8257D      | PSG Signal Geneartors |
 |              | PAS         | Insertion Loss Engine
-| Tektronix    | APT         | Programming interface with Tektronix instruments
-|              | Scope       |
-| Thorlabs     | ITC4002QCL  | Benchtop Laser Diode/TEC Controller for QCLs|
+| Tektronix    | Scope       |
+| Thorlabs     | APT         | Programming interface with Tektronix instruments
+|              | ITC4002QCL  | Benchtop Laser Diode/TEC Controller for QCLs|
 |              | PM100       | Optical Power and Energy Meter |
-|              | QCL         | Programming interface with Thorlabs instruments|
+| Daylight Solutions | QCL         | Programming interface with Daylight Solutions Quantum Cascade Laser instruments|
 | TTi         | TGF3162     | Dual Channel Arbitrary Function Generator |
