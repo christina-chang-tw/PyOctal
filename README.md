@@ -27,11 +27,12 @@ This is a tool allowing you to do three things: remotely setup your instruments,
 
 ```
 .
+<folders>
 ├── config                   # all configuration files
 ├── lib                      # core library
 ├── results                  # store testing results
 ├── tests                    # contain unittesting for functions (users please ignore)
-|
+<files>
 ├── instr.py                 # direct interface with instruments (only for simple setup cases)
 ├── logging.log              # logging the output to a file
 ├── main.py                  # interface with running sweeps
