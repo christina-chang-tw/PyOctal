@@ -27,8 +27,11 @@ class KeysightE8257D(BaseInstrument):
         return self.query_float("correction:flatness:points")
     
     # Frequency subsystem (everything is in GHz)
-    def set_freq(self, freq: float):
+    def set_freq_fixed(self, freq: float):
         self.write(f"frequency:fixed {freq}GHz")
+
+    def set_freq_cw(self, freq: float):
+        self.write(f"frequency:cw {freq}GHz")
 
     def set_freq_offset(self, foffset: float):
         if not -200e+09 < foffset < 200e+09:
@@ -54,6 +57,15 @@ class KeysightE8257D(BaseInstrument):
 
     def set_freq_channel_state(self, state: Union[bool, str]):
         self.write(f"frequency:channels:state {state}")
+
+    def get_freq_fixed(self):
+        return self.query(f"frequency:fixed?")
+    
+    def get_freq_cw(self):
+        return self.query(f"frequency:cw?")
+
+    def get_freq_mode(self):
+        return self.query(f"frequency:mode?")
 
     # Power 
     def set_output_power(self, power: float):

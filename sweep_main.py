@@ -5,7 +5,8 @@ pyversion_check()
 from lib.sweeps.info import TestInfo
 from lib.sweeps import (
     PASILossSweep, 
-    DCSweeps
+    DCSweeps,
+    ACSweeps,
 )
 from lib.instruments import (
     Agilent8163B, 
