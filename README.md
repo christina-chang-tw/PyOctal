@@ -155,25 +155,27 @@ Launch the Anaconda prompt either via search result or Anaconda Navigator. Once 
 ### How to Run a Test?
 Everything is this repository should be run as a python module. It uses argparse package to parse command line information to the program. 
 
-Before you run a test, please make sure that you set all parameters correctly in the corresponding configuration file! All configuration files are stored under `config` folder.
+Before you run a test, please make sure that you set all parameters correctly in the corresponding configuration file! All configuration files should be stored under `config` folder.
 
 ```bash
 # Example: 
 # (1) General helper message
 > python -m main -h
-# (2) Run a passive test
+# (2) Run a passive test without specifying anything
 > python -m main -t passive
-# (3) Run a passive test with a logging level of debug
-> python -m main -t passive --log-lvl="DEBUG"
+# (3) Run a dc sweep test with logging level as DEBUG and specify the config file path
+# -<var>=<str> or -<var> <str> yields the same result
+> python -m sweep_main -t dc --log-lvl DEBUG --config=./config/test.yaml
 ```
-### Tests and Setup Instrument
+**Sweeps**
 
 These are the optical tests that are currently implemented by this library. These can be run by running `main.py` as a module from the root directory.
 
-| Test (-t) | Description    |
-|-----------|----------------|
-| passive   | insertion loss testing |
-| dc        | dc sweeps |
+| Tests     | Instruments  | Description    |
+| --------- | ------------ | -------------- |
+| passive   | ILME, Agilent 8163B | Insertion loss testing using PAS ILME engine |
+|           | Agilent 8163B       | Manual insertion loss testing |
+| dc        | | dc sweeps |
 
 
 Run `instr.py` as a module.

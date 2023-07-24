@@ -6,8 +6,3 @@ __author__ = 'Tzu-Yun Chang'
 __license__ = 'GNU'
 __platform__ = ("cygwin", "win32") # Windows OS system
 __python_min_version__ = (3, 6) # Minimum version Python 3.6
-
-from lib.util.util import platform_check, pyversion_check
-
-platform_check()
-pyversion_check()
