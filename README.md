@@ -1,15 +1,15 @@
-# ORC Optical Chip Automated Testing Central Library
+# ORC Optical Chip Test Automation Library
 
-ORC OCATCL is a Python package equipped with all essential sweep tests, analysis tools, and interfaces with existing equipments in ORC group.
+ORC OCTAL is a Python package equipped with all essential sweep tests, analysis tools, and interfaces with existing equipments in ORC group.
 
 <!-- toc -->
-- [More About ORC OCATCL](#more-about-orc-ocatcl)
+- [More About ORC OCTAL](#more-about-orc-octal)
   - [Directory Structure](#directory-structure)
 - [Installation](#installation)
   - [Git Bash](#git-bash)
   - [Python Environment](#python-environment)
   - [Visual Studio Code (VSCode)](#visual-studio-code-vscode)
-  - [Install ORC OCATCL](#install-orc-ocatcl)
+  - [Install ORC OCTAL](#install-orc-octal)
 - [Getting Started](#getting-started)
   - [How to Run a Test](#how-to-run-a-test)
   - [Test and Setup Instruments](#tests-and-setup-instrument)
@@ -20,7 +20,8 @@ ORC OCATCL is a Python package equipped with all essential sweep tests, analysis
 <!-- tocstop -->
 
 
-## More About ORC OCATCL
+## More About ORC OCTAL
+This is a tool allowing you to do three things: remotely setup your instruments, run standard sweeps, and analyse the results afterwards which all files should have a specific format. This is still at its infant stage so is still lacking a lot of functions which are widely used by the users. Please suggest and we would love to help!
 
 ### Directory Structure
 
@@ -30,6 +31,7 @@ ORC OCATCL is a Python package equipped with all essential sweep tests, analysis
 ├── lib                      # core library
 ├── results                  # store testing results
 ├── tests                    # contain unittesting for functions (users please ignore)
+|
 ├── instr.py                 # direct interface with instruments (only for simple setup cases)
 ├── logging.log              # logging the output to a file
 ├── main.py                  # interface with running sweeps
@@ -40,22 +42,22 @@ ORC OCATCL is a Python package equipped with all essential sweep tests, analysis
 
 ## Installation
 
-### Git Bash
+### Git Bash (Optional)
 
-Install the newest correct version of Git for your Windows system. Git is a source distributed version control system designed to handle everything from small to very large projects with speed and efficiency. 
+If you have not install Git, install the newest correct version of Git for your Windows system. Git is a source distributed version control system designed to handle everything from small to very large projects with speed and efficiency. This is a very useful tool to keep track of the newest information being pushed onto the remote Github repository.
 
-### Python Environment
+### Environment
 
 This repository only works when two conditions are satisfied:
 - Windows OS machine
 - python version >= 3.6. 
 
-**Method 1 (Preferred)**:
+**Method 1 - Install Anaconda (Preferred)**:
 
 Install the newest correct version of Anaconda from its official site and make sure all listed packages in `requirements.txt` are installed. To install packages, go to Enviornments tab, select not installed, and then search up the packages. 
 
 
-**Method 2 (Not working)**:
+**Method 2 - Use Virtual Python Environment (Not working)**:
 
 Run this in the root-directory of this repository namely `autotesting`.
 
@@ -87,15 +89,25 @@ Install VSCode for code editing or running in python terminal. This software can
 Open a new bash terminal in VSCode by going to the top tab bar and Terminal > New Terminal. Now you will have opened a terminal and ready to clone the repository down.
 
 
-### Install ORC OCATCL
+### Install ORC OCTAL
+
+For users, I recommend to update your current old repository to a newer version by cloning or downloading this repository again and delete the old ones.
+
+**Method 1 - Clone from Git (Preferred)**:
 
 Getting the repository cloned to a local direcotory
 ```bash
-# CLone this repository down to your current running directory
-> git clone https://github.com/christina-chang-tw/autotesting.git
+# Create a directory named autotesting
+> mkdir autotesting
+# Go into that directory
+> cd autotesting
+# Clone this repository down to your autotesting directory
+> git clone https://github.com/christina-chang-tw/ORC-OCTAL.git
 ```
 
-For users, I recommend to update your current old repository to a newer version by cloning this repository again and delete the old ones.
+**Method 2 - Download from Github**:
+
+You can simply download a zip file containing this repository by going to `<> Code` tab and then select `Local` and Download ZIP.
 
 ## Getting Started
 

@@ -206,7 +206,7 @@ class PlotGraphs(object):
         ax.legend(fontsize=8)
 
 
-    # def plt_coeffs(self):
+    # def plt_coeffs(self): (NOT USEFUL)
     #     """ Import from a loss coefficient file and plot the waveguide loss and insertion loss. """
     #     no_channels = self.no_channels
 

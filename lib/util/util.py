@@ -19,7 +19,7 @@ def platform_check():
     print("Using Windows OS platform...")
 
 
-def version_check():
+def pyversion_check():
     MIN_PYTHON = __python_min_version__
     CUR_PYTHON = (sys.version_info.major, sys.version_info.minor)
     if sys.version_info <= MIN_PYTHON:

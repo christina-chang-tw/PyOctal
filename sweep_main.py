@@ -1,6 +1,6 @@
 # Perform version check before everything
-from lib.util.util import version_check
-version_check()
+from lib.util.util import pyversion_check
+pyversion_check()
 
 from lib.sweeps.info import TestInfo
 from lib.sweeps import (

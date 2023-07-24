@@ -4,7 +4,7 @@ def test_platform():
     platform_check()
 
 def test_version():
-    version_check()
+    pyversion_check()
 
 def test_get_func():
     def func():
