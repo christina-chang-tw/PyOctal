@@ -33,7 +33,7 @@ class Agilent8163B(BaseInstrument):
         self.reset()
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
-        self.set_laser_pow(pow(10, power/10)/1000)
+        self.set_laser_pow(power)
         self.set_detect_avgtime(period=period) # avgtime = 200ms
         self.set_unit(source="dBm", sensor="Watt")
         self.set_laser_state(1)

@@ -49,7 +49,6 @@ def get_config_dirpath():
     return f'{os.getcwd()}/config'
 
 def get_result_dirpath(folder):
-    print(os.getcwd())
     return f'{os.getcwd()}/results/{folder}'
 
 def package_info(info: dict):

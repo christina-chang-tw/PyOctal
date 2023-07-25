@@ -1,6 +1,6 @@
 from lib.instruments import KeysightILME, Agilent8163B
 from lib.util.file_operations import export_to_csv
-from lib.util.util import get_func_name, wait_for_next_meas
+from lib.util.util import get_func_name, wait_for_next_meas, get_result_dirpath
 from lib.base import BaseSweeps
 
 import sys
@@ -44,13 +44,11 @@ class PASILossSweep(BaseSweeps):
             self.dev.start_meas()
             lf[i], temp = self.dev.get_result(length)
             df = pd.concat([df, temp], axis=1)
-            export_to_csv(df, chip_name, f'{configs["structure"]}_{get_func_name()}_data')
+            export_to_csv(df, get_result_dirpath(chip_name), f'{configs["structure"]}_{get_func_name()}_data')
 
         
         if not lf.eq(lf.iloc[:,0], axis=0).all(axis=1).all(axis=0):
             logger.warning("Discrepancy in wavelengths")
-        
-        export_to_csv(pd.concat([lf.iloc[:,0], df]), chip_name, f'{configs["structure"]}_{get_func_name()}_data')
         
 
 class InstrILossSweep(BaseSweeps):

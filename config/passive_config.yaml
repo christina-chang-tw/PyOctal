@@ -10,7 +10,7 @@ structure: "Si_wg" # the name of the file {structure}_DCSweeps_data
 
 
 ## var  ###########################################
-power: 0       # output power [dBm]
+power: 10       # output power [dBm]
 w_start: 1535  # start wavelength [nm]
 w_stop: 1575    # end wavelength [nm]
 step: 5        # sweep step [pm]
@@ -18,8 +18,13 @@ step: 5        # sweep step [pm]
 
 ## list ###########################################
 lengths:
-  - 10
+  - 24
+  - 16
+  - 4
+  - 0
   - 20
+  - 8
+  - 12
 
 
 ## dictionary #####################################

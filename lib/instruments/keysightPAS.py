@@ -54,8 +54,7 @@ class KeysightILME(BasePAS):
         ydata = IOMRGraph.YData
         ycurve = [tuple(ydata[i*data_per_curve:(i+1)*data_per_curve]) for i in range(no_channels)]
         for i in range(no_channels):
-            data[f"CH{i} - {name}"] = ycurve[i]
-        IOMRFile.release()
+            data[f"{name} - CH{i}"] = ycurve[i]
         
         return self.get_wavelength(IOMRGraph, data_per_curve), data
     
