@@ -1,8 +1,10 @@
+from lib.error import *
+
 import win32com.client
 import pyvisa
 import time
-
 import logging
+from typing import Union
 
 logger = logging.getLogger(__name__)
 
@@ -36,27 +38,45 @@ class BaseInstrument(object):
         self._rm.read_termination = termination
         
         # Connect to the device
-        if rsc_addr in self._rm.list_resources(): # Checking if the resource is available
-            self.instr = self._rm.open_resource(rsc_addr)
-            if self.instr.resource_info[3][:4] == 'ASRL':
-                #This should be changed! gpib is also a instrument type
-                if termination is not None:
-                    self.instr.read_termination = termination
-                    self.instr.write_termination = termination
-                print('You have connected succesfully with an ASRL type resource')
-            elif self.instr.resource_info[3][:4] == 'GPIB':
-                print('You have connected succesfully with an GPIB type resource')
-            elif self.instr.resource_info[3][:4] == 'USB0':
-                print('You have connected succesfully with an USB0 type resource')
+        try: 
+            if rsc_addr in self.list_resource(): # Checking if the resource is available
+                self.instr = self._rm.open_resource(rsc_addr)
+                instr_type = self.instr.resource_info[3][:4]
+                known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP", "LAN")
+
+                # make sure that we know the device type
+                if instr_type not in known_type:
+                    raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
+                print(f'You have connected succesfully with a/an {instr_type} type resource')
+
+                self._identity = self.get_idn()
             else:
-                raise Exception('Resource class not contemplated, check pyLab library')
+                raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
         
-            self._identity = self.get_idn()
-        
-        else:
-            raise Exception("Resource not know, check your ports or NI MAX")
-        
-        
+        except Exception as e:
+            print(e)
+
+    def list_resource(self):
+        return self._rm.list_resources()
+            
+    @staticmethod
+    def value_check(value, cond: Union[tuple, list]=None):
+        try:
+            if cond is None: # nothing to check for
+                pass
+            elif not isinstance(cond, Union[tuple, list]): # the condition is incorrectly set
+                raise ValueError(f"Error code {COND_INVALID_ERR:x}: {error_message[COND_INVALID_ERR]}")
+            elif len(cond) == 2:
+                if not cond[0] < value < cond[1]: # check the value is within range
+                    raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+            else:
+                if value not in cond: # check the value is in a list/tuple
+                    raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+            return
+        except Exception as e:
+            print(e)
+
+
     def write(self, cmd):
         self.instr.write(cmd)
     
