@@ -126,12 +126,15 @@ class PlotGraphs(object):
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
         ax.set_title(title)
-        if typ == "line":
-            ax.plot(xdata, ydata)
-        elif typ == "scatter":
-            ax.scatter(xdata, ydata)
-        else:
-            raise RuntimeError("Invalid plot type")
+        try:
+            if typ == "line":
+                ax.plot(xdata, ydata)
+            elif typ == "scatter":
+                ax.scatter(xdata, ydata)
+            else:
+                raise RuntimeError("Invalid plot type")
+        except Exception as e:
+            print(e)
 
     def plt_len_loss_csv(self):
         """ Plot a loss v.s. length graph with the data from a csv file """

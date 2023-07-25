@@ -64,9 +64,9 @@ class BaseInstrument(object):
         try:
             if cond is None: # nothing to check for
                 pass
-            elif not isinstance(cond, Union[tuple, list]): # the condition is incorrectly set
+            elif not isinstance(cond, Union[tuple, list]) or all(cond): # the condition is incorrectly set and they are of the same type
                 raise ValueError(f"Error code {COND_INVALID_ERR:x}: {error_message[COND_INVALID_ERR]}")
-            elif len(cond) == 2:
+            elif len(cond) == 2 and all(isinstance(n, Union[float, int]) for n in cond):
                 if not cond[0] < value < cond[1]: # check the value is within range
                     raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
             else:

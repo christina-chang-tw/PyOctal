@@ -38,15 +38,13 @@ class TTiTGF3162(BaseInstrument):
         self.write(f"zload {zload}")
 
     def set_output_state(self, state: str):
-        if state.lower() not in ("on", "off", "normal", "invert"):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(state.lower(), ("on", "off", "normal", "invert"))
         self.write(f"output {state}")
 
     def select_channel(self, channel: int):
         # set the channel as the destination of the
         # subsequent cmds
-        if channel not in (1, 2):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(channel, (1, 2))
         self.write(f"chn {channel}")
 
     def load_arb(self, memchan):

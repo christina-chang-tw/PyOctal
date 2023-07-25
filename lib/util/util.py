@@ -14,17 +14,23 @@ import logging
 logger = logging.getLogger(__name__)
 
 def platform_check():
-    if sys.platform not in __platform__:
-        raise EnvironmentError("Error code %s: %s. Current platform is %s" % (INCOMPATIBLE_OS_ERR, error_message[INCOMPATIBLE_OS_ERR], sys.platform))
-    print("Using Windows OS platform...")
+    try:
+        if sys.platform not in __platform__:
+            raise EnvironmentError("Error code %s: %s. Current platform is %s" % (INCOMPATIBLE_OS_ERR, error_message[INCOMPATIBLE_OS_ERR], sys.platform))
+        print("Using Windows OS platform...")
+    except Exception as e:
+        print(e)
 
 
 def pyversion_check():
-    MIN_PYTHON = __python_min_version__
-    CUR_PYTHON = (sys.version_info.major, sys.version_info.minor)
-    if sys.version_info <= MIN_PYTHON:
-        raise ValueError("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
-    print("Using correct Python version...")
+    try:
+        MIN_PYTHON = __python_min_version__
+        CUR_PYTHON = (sys.version_info.major, sys.version_info.minor)
+        if sys.version_info <= MIN_PYTHON:
+            raise ValueError("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
+        print("Using correct Python version...")
+    except Exception as e:
+        print(e)
 
 def get_func_name():
     return inspect.stack()[1].function
@@ -54,10 +60,11 @@ def create_folder(path: str="XXX"):
             os.mkdir(path)
     except:
         raise FileExistsError(f"Error code {FOLDER_NOT_EXIST_ERR}: {error_message[FOLDER_NOT_EXIST_ERR]}")
-    
+
 def delete_folder(path: str="XXX"):
     try:
-        os.rmdir(path) 
+        if os.path.isdir(path):
+            os.rmdir(path)
     except:
         raise FileExistsError(f"Error code {FOLDER_NOT_EXIST_ERR}: {error_message[FOLDER_NOT_EXIST_ERR]}")
     

@@ -18,8 +18,7 @@ class Keithley6487(BaseInstrument):
         self.write("initiate")
 
     def measure(self, var: str):
-        if var.lower() not in ("curr", "volt"):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(var, ("curr", "volt"))
         return self.query_float(f"measure:{var}?")
 
     def read(self):
@@ -27,16 +26,14 @@ class Keithley6487(BaseInstrument):
 
     # Detector
     def set_detect_mode(self, mode: str="current"):
-        if mode.lower() not in ("curr",):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(mode.lower(), ("curr",))
         self.write(f"sense:function {mode}")
 
     def set_detect_autorange(self, state: bool=1):
         self.write(f"sense:current:auto {state}")
 
     def set_detect_curr_range(self, r: float):
-        if not -0.021 <= r <= 0.021:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.value_check(r, (-0.021, 0.021))
         self.write(f"sense:current:range {r}")
 
     def set_detect_ohms_state(self, state: bool=1):
@@ -50,19 +47,16 @@ class Keithley6487(BaseInstrument):
     def set_laser_state(self, state: bool):
         self.write(f"source:voltage:state {state}")
 
-    def set_laser_range(self, rang: int):
-        if rang not in (10, 50, 500):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
-        self.write(f"source:voltage:range {rang}")
+    def set_laser_range(self, r: int):
+        self.value_check(r, (10, 50, 500))
+        self.write(f"source:voltage:range {r}")
                 
-    def set_laser_volt(self, volt: float=0):
-        if not -500 <= range <= 500:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+    def set_laser_volt(self, volt: float):
+        self.value_check(volt, (-500, 500))
         self.write(f"source:voltage:level {volt}")
 
-    def set_laser_ilim(self, curr_lim: float=2.5e-02):
-        if not -500 <= curr_lim <= 500:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+    def set_laser_ilim(self, curr_lim: float):
+        self.value_check(curr_lim, (-500, 500))
         self.write(f"source:voltage:ilimit {curr_lim}")
 
     def get_laser_volt(self):

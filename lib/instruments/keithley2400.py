@@ -13,7 +13,7 @@ class Keithley2400(BaseInstrument):
         The address of the instrument
     """
     
-    def __init__(self, addr):
+    def __init__(self, addr: str):
          super().__init__(rsc_addr=addr)
 
     def set_output_state(self, state: bool=1):
@@ -22,51 +22,46 @@ class Keithley2400(BaseInstrument):
     def initiate(self):
         self.write(f"initiate")
 
-    def meas_curr(self):
+    def meas_curr(self) -> float:
         data = self.query("measure:current?")
         return float(data.split(",")[1])
 
-    def meas_volt(self):
+    def meas_volt(self) -> float:
         data = self.query("measure:voltage?")
         return float(data.split(",")[0])
     
 
     # Detector
     def set_detect_vlim(self, volt: float):
-        if not -210.0 < volt < 210.0:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.value_check(volt, (-210.0, 210.0))
         self.write(f"sense:voltage:protection {volt}")
 
     def set_detect_ilim(self, curr: float):
-        if not -1.05 < curr < 1.05:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.value_check(curr, (-1.05, 1.05))
         self.write(f"sense:current:protection {curr}")
 
     def set_detect_npl_cycles(self, speed: float):
         self.write(f"sense:current:nplcycles {speed}")
 
-    def get_detect_vlim(self):
+    def get_detect_vlim(self) -> float:
         return self.query_float("sense:voltage:protection?")
     
-    def get_detect_ilim(self):
+    def get_detect_ilim(self) -> float:
         return self.query_float("sense:current:protection?")
     
     
 
     # Laser
     def set_laser_mode(self, mode: str):
-        if mode.lower() not in ("curr", "volt", "mem"):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(mode.lower(), ("curr", "volt", "mem"))
         self.write(f"source:function {mode}")
 
     def set_laser_volt(self, volt):
-        if not -210.0 < volt < 210.0:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.value_check(volt, (-210.0, 210.0))
         self.write(f"source:voltage:level {volt}")
 
     def set_laser_curr(self, curr):
-        if not -1.05 < curr < 1.05:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.value_check(curr, (-1.05, 1.05))
         self.write(f"source:current:level {curr}")
 
     def get_laser_mode(self):
@@ -87,8 +82,7 @@ class Keithley2400(BaseInstrument):
         self.write(f"trace:points {pts}")
 
     def set_trace_ctl(self, ctl: str):
-        if ctl.lower() not in ("never", "next"):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(ctl.lower(), ("never", "next"))
         self.write(f"trace:feed:control {ctl}")
 
     def get_trace_data(self):
@@ -97,15 +91,13 @@ class Keithley2400(BaseInstrument):
 
     # Trigger
     def set_trig_count(self, count: int):
-        if not 1 <= count <= 2500:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.value_check(count, (1, 2500))
         self.write(f"trigger:count {count}")
 
 
     # Calculate
     def set_calc3_format(self, format: str="mean"):
-        if format.lower() not in ("mean", "sdev", "max", "min", "pkpk"):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(format.lower(), ("mean", "sdev", "max", "min", "pkpk"))
         self.write(f"calculate3:format {format}")
 
     def get_calc3_data(self):

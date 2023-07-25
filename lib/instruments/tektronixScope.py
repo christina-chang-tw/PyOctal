@@ -82,8 +82,8 @@ class TektronixScope(BaseInstrument):
 
     # Data
     def set_data_format(self, format: str="asci"):
-        if format.lower() not in ("asci", "rib", "rpb", "fpb", "sri", "srp", "sfp"):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        types = ("asci", "rib", "rpb", "fpb", "sri", "srp", "sfp")
+        self.value_check(format.lower(), types)
         self.write(f"data:encdg {format}")
 
     def set_data_source(self, src: str):

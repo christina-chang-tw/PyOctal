@@ -15,27 +15,32 @@ logger = logging.getLogger(__name__)
 
 
 def get_dataframe_from_csv(path: str, fname: str,):
-    path_to_file = f'{path}/{fname}.csv'
-    if not os.path.isfile(path_to_file):
-        raise FileExistsError(f"Error code {FILE_NOT_EXIST_ERR}: {error_message[FILE_NOT_EXIST_ERR]}")
-    elif os.stat(path_to_file).st_size == 0:
-        raise ImportError(f"Error code {FILE_EMPTY_ERR}: {error_message[FILE_EMPTY_ERR]}")
-    return pd.read_csv(path_to_file, encoding='utf-8')
-    
+    try:
+        path_to_file = f'{path}/{fname}.csv'
+        if not os.path.isfile(path_to_file):
+            raise FileExistsError(f"Error code {FILE_NOT_EXIST_ERR}: {error_message[FILE_NOT_EXIST_ERR]}")
+        elif os.stat(path_to_file).st_size == 0:
+            raise ImportError(f"Error code {FILE_EMPTY_ERR}: {error_message[FILE_EMPTY_ERR]}")
+        return pd.read_csv(path_to_file, encoding='utf-8')
+    except Exception as e:
+        print(e)    
 
 
 def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, list]):
 
-    path_to_file = f'{path}/{fname}.xlsx'
-    if not os.path.isfile(path_to_file):
-        raise FileExistsError(f"Error code {FILE_NOT_EXIST_ERR}: {error_message[FILE_NOT_EXIST_ERR]}")
-    elif os.stat(path_to_file).st_size == 0:
-        raise ImportError(f"Error code {FILE_EMPTY_ERR}: {error_message[FILE_EMPTY_ERR]}")
+    try:
+        path_to_file = f'{path}/{fname}.xlsx'
+        if not os.path.isfile(path_to_file):
+            raise FileExistsError(f"Error code {FILE_NOT_EXIST_ERR}: {error_message[FILE_NOT_EXIST_ERR]}")
+        elif os.stat(path_to_file).st_size == 0:
+            raise ImportError(f"Error code {FILE_EMPTY_ERR}: {error_message[FILE_EMPTY_ERR]}")
 
-    xl = pd.ExcelFile(path_to_file)
-    # make a dictionary of {sheet: sheetdata}
-    data = {name: xl.parse(sheet_name=name) for name in sheet_names if name != "Overview"}
-    return data
+        xl = pd.ExcelFile(path_to_file)
+        # make a dictionary of {sheet: sheetdata}
+        data = {name: xl.parse(sheet_name=name) for name in sheet_names if name != "Overview"}
+        return data
+    except Exception as e:
+        print(e)
 
 
 

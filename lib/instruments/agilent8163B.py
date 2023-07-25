@@ -86,15 +86,18 @@ class Agilent8163B(BaseInstrument):
         self.write(f"{self.sens}:function:status {mode[0]},{mode[1]}")
     
     def set_detect_func_params(self, mode: str, params: Union[tuple,list]):
-        mode = mode.lower()
-        if mode == "logging" or "logg": # params = [data_pts, avg_time]
-            self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s") 
-        elif mode == "minmax" or "minm": # params = [mode, data_pts]
-            self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
-        elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
-            self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
-        else:
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        try: 
+            mode = mode.lower()
+            if mode == "logging" or "logg": # params = [data_pts, avg_time]
+                self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s") 
+            elif mode == "minmax" or "minm": # params = [mode, data_pts]
+                self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
+            elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
+                self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
+            else:
+                raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        except Exception as e:
+            print(e)
 
     def get_detect_pow(self):
         return self.query(f"read{self.sens_num}:channel{self.sens_chan}:power?")

@@ -34,13 +34,11 @@ class KeysightE8257D(BaseInstrument):
         self.write(f"frequency:cw {freq}GHz")
 
     def set_freq_offset(self, foffset: float):
-        if not -200e+09 < foffset < 200e+09:
-            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.value_check(foffset, (-200e+9, 200e+9))
         self.write(f"frequency:offset {foffset}GHz")
 
     def set_freq_mode(self, mode: str):
-        if mode.lower() not in ("fixed", "fix", "cw", "sweep", "swe", "list"):
-            raise  ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+        self.value_check(mode.lower(), ("fixed", "fix", "cw", "sweep", "swe", "list"))
         self.write(f"frequency:mode {mode}")
 
     def set_freq_span(self, span: float):
