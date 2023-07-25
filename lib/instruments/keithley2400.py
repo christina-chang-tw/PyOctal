@@ -2,6 +2,7 @@ from lib.base import BaseInstrument
 from lib.error import *
 
 import time
+from typing import Tuple
 
 class Keithley2400(BaseInstrument):
     """
@@ -64,13 +65,13 @@ class Keithley2400(BaseInstrument):
         self.value_check(curr, (-1.05, 1.05))
         self.write(f"source:current:level {curr}")
 
-    def get_laser_mode(self):
+    def get_laser_mode(self) -> str:
         return self.query("source:function?")
 
-    def get_laser_volt(self):
+    def get_laser_volt(self) -> float:
         return self.query_float("source:voltage:level?")
     
-    def get_laser_curr(self):
+    def get_laser_curr(self) -> float:
         return self.query_float("source:current:level?")
 
     
@@ -105,7 +106,7 @@ class Keithley2400(BaseInstrument):
 		
 
     # Complex functions
-    def meas_curr_buf(self, volt: float, n, speed):
+    def meas_curr_buf(self, volt: float, n, speed) -> Tuple[list, float]:
         """ measure current buffer """
         self.set_laser_volt(volt=volt)
         self.set_detect_npl_cycles(speed=speed)

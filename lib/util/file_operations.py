@@ -9,12 +9,12 @@ import pandas as pd
 import logging
 from typing import Union
 import os.path
-import sys
+
 
 logger = logging.getLogger(__name__)
 
 
-def get_dataframe_from_csv(path: str, fname: str,):
+def get_dataframe_from_csv(path: str, fname: str,) -> pd.DataFrame:
     try:
         path_to_file = f'{path}/{fname}.csv'
         if not os.path.isfile(path_to_file):
@@ -22,11 +22,11 @@ def get_dataframe_from_csv(path: str, fname: str,):
         elif os.stat(path_to_file).st_size == 0:
             raise ImportError(f"Error code {FILE_EMPTY_ERR}: {error_message[FILE_EMPTY_ERR]}")
         return pd.read_csv(path_to_file, encoding='utf-8')
-    except Exception as e:
-        print(e)    
+    except Exception as error:
+        raise error  
 
 
-def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, list]):
+def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, list]) -> pd.DataFrame:
 
     try:
         path_to_file = f'{path}/{fname}.xlsx'
@@ -39,8 +39,8 @@ def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, li
         # make a dictionary of {sheet: sheetdata}
         data = {name: xl.parse(sheet_name=name) for name in sheet_names if name != "Overview"}
         return data
-    except Exception as e:
-        print(e)
+    except Exception as error:
+        raise error
 
 
 

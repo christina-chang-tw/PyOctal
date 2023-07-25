@@ -1,17 +1,19 @@
 from typing import Union
+from lib.util.util import get_func_name
 
 def func(cond: Union[tuple, list] = None):
     try:
         name = "Christina"
-        name_list = None
+        name_list = "2"
 
-        if isinstance(cond, None):
+        if isinstance(cond, list):
             return
 
-        if name not in name_list:
-            raise ValueError("bad bad")
+        
 
-    except Exception as e:
-        print(e)
+    except Exception as error:
+        raise error
 
-func()
+    print(type(get_func_name()))
+
+func((1,2))

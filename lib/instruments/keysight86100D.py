@@ -81,14 +81,14 @@ class Keysight86100D(BaseInstrument):
     def set_clk_autoodratio_state(self, state: bool):
         self.write(f"{self.clock}:odratio:auto {state}")
 
-    def get_clk_arelock_state(self):
-        return self.query(f"{self.clock}:state?")
+    def get_clk_arelock_state(self) -> bool:
+        return bool(self.query(f"{self.clock}:state?"))
     
-    def get_clk_freq(self):
+    def get_clk_freq(self) -> float:
         return self.query_float(f"{self.clock}:cfrequency?")
     
-    def get_clk_clbandwidth(self):
+    def get_clk_clbandwidth(self) -> float:
         return self.query_float(f"{self.clock}:clbandwidth?")   
 
-    def get_clk_spresent(self, num: int):
+    def get_clk_spresent(self, num: int) -> bool:
         return bool(self.query(f"{self.clock}:spresent? receiver{num}")) 

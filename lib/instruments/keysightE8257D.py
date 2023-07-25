@@ -23,8 +23,8 @@ class KeysightE8257D(BaseInstrument):
     def set_corr_state(self, state: Union[bool, str]):
         self.write(f"correction:state {state}")
         
-    def get_corr_flat_points(self):
-        return self.query_float("correction:flatness:points")
+    def get_corr_flat_points(self) -> float:
+        return self.query_float("correction:flatness:points?")
     
     # Frequency subsystem (everything is in GHz)
     def set_freq_fixed(self, freq: float):
@@ -56,13 +56,13 @@ class KeysightE8257D(BaseInstrument):
     def set_freq_channel_state(self, state: Union[bool, str]):
         self.write(f"frequency:channels:state {state}")
 
-    def get_freq_fixed(self):
-        return self.query(f"frequency:fixed?")
+    def get_freq_fixed(self) -> float:
+        return self.query_float(f"frequency:fixed?")
     
-    def get_freq_cw(self):
-        return self.query(f"frequency:cw?")
+    def get_freq_cw(self) -> float:
+        return self.query_float(f"frequency:cw?")
 
-    def get_freq_mode(self):
+    def get_freq_mode(self) -> str:
         return self.query(f"frequency:mode?")
 
     # Power 

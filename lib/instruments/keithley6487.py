@@ -17,9 +17,9 @@ class Keithley6487(BaseInstrument):
     def initiate(self):
         self.write("initiate")
 
-    def measure(self, var: str):
+    def measure(self, var: str) -> str:
         self.value_check(var, ("curr", "volt"))
-        return self.query_float(f"measure:{var}?")
+        return self.query(f"measure:{var}?")
 
     def read(self):
         return self.query("read?")
@@ -59,8 +59,8 @@ class Keithley6487(BaseInstrument):
         self.value_check(curr_lim, (-500, 500))
         self.write(f"source:voltage:ilimit {curr_lim}")
 
-    def get_laser_volt(self):
-        return self.query(f"source:voltage:level?")
+    def get_laser_volt(self) -> float:
+        return self.query_float(f"source:voltage:level?")
     
 
 
@@ -75,7 +75,7 @@ class Keithley6487(BaseInstrument):
         self.write("system:zcorrect:acquire")
 
 
-    def meas_curr_zch(self):
+    def meas_curr_zch(self) -> float:
         self.reset()
         self.set_sys_zch_state(1) # Enable zero check.
         self.set_detect_curr_range(r=2e-09) # Select the 2nA range
@@ -90,7 +90,7 @@ class Keithley6487(BaseInstrument):
         return float(data.split(",")[1])
     
 		
-    def meas_curr_zch_ohm(self):
+    def meas_curr_zch_ohm(self) -> float:
         self.reset()
         self.set_sys_zch_state(1) # Enable zero check.
         self.set_detect_curr_range(r=2e-09) # Select the 2nA range
@@ -107,20 +107,20 @@ class Keithley6487(BaseInstrument):
         data = self.read() # Trigger and return one reading.
         return float(data.split(",")[1].strip('OHM'))
 
-    def meas_curr(self):
+    def meas_curr(self) -> float:
         data = self.read() # Trigger and return one reading.
         return float(data.split(",")[0][:-1])
 
 
-    def meas_resistance(self):
+    def meas_resistance(self) -> float:
         data = self.read() # Trigger and return one reading.
         return float(data.split(",")[0][:-1].strip('OHM'))
 		
 
-    def meas_curr_raw(self):
+    def meas_curr_raw(self) -> float:
         data = self.get_detect_data() # Trigger and return one reading.
         return float(data.split(",")[1])
 
-    def meas_volt(self):
+    def meas_volt(self) -> float:
         data = self.measure(var="volt")
         return float(data.split(",")[0])

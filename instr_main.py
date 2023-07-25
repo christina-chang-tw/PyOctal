@@ -8,13 +8,13 @@ from lib.instruments import (
     KeysightE8257D,
 )
 from lib.util.util import (
-    get_gpib_full_addr, 
     get_config_dirpath,
 )
 from lib.util.formatter import CustomArgparseFormatter
 
 import textwrap
 import argparse
+import yaml
 
 INSTR_TYPES = ("m_8163b", "h_speed")
 
@@ -25,21 +25,26 @@ Keysight86100D_ADDR = 1
 KeysightE8257D_ADDR = 1
 
 
-def setup(ttype, args):
+def setup(ttype, args, configs):
     if ttype == "m_8163b":
-        instr = Agilent8163B(addr=get_gpib_full_addr(GPIB_BOARD, Agilent8163B_ADDR))
+        instr = Agilent8163B(addr=configs["Agilent8163B_Addr"])
         instr.setup(wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "h_speed":
         # obtaining the device
-        siggen = KeysightE8257D(addr=get_gpib_full_addr(GPIB_BOARD, KeysightE8257D_ADDR))
-        osc = Keysight86100D(addr=get_gpib_full_addr(GPIB_BOARD, Keysight86100D_ADDR))
+        siggen = KeysightE8257D(addr=configs["KeysightE8257D_Addr"])
+        osc = Keysight86100D(addr=configs["Keysight86100D_Addr"])
         siggen.set_freq_fixed(freq=args.freq[0])
 
+
+def load_config() -> dict:
+    fpath = f"{get_config_dirpath()}/instr_config.yaml"
+    with open(fpath, 'r') as file:
+        configs = yaml.safe_load(file)
+    return configs
         
 
-
-def subparser_info(type):
+def subparser_info(type) -> str:
     info = ""
     if type == INSTR_TYPES[0]:
         info = textwrap.dedent("""\
@@ -80,4 +85,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    setup(args.test, args)
+    configs = load_config() # load the address from the config file in
+    setup(args.test, args, configs)

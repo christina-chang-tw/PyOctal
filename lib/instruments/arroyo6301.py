@@ -19,7 +19,7 @@ class Arroyo6301(BaseInstrument):
         # set duty cycle
         self.write(f"laser:dc {dcycles}")
 
-    def get_laser_curr(self):
+    def get_laser_curr(self) -> float:
         return self.query_float("laser:ldi?")
     
     

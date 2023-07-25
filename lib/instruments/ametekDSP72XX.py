@@ -17,13 +17,13 @@ class AmetekDSP7230(BaseInstrument):
     def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
 
-    def get_mag(self):
+    def get_mag(self) -> float:
         return self.query_float("mag.?")
 
-    def get_x_volt(self):
+    def get_x_volt(self) -> float:
         return self.query_float("x.?")
     
-    def get_y_volt(self):
+    def get_y_volt(self) -> float:
         return self.query_float("y.?")
     
 
@@ -59,8 +59,8 @@ class AmetekDSP7265(BaseInstrument):
             if not isinstance(eq, Union[list, tuple]):
                 raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Param should be a list")
             self.write(f'defequ {[" ".join(i) for i in eq]}')
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            raise error
 
     def set_dual_tc(self, tc: int):
         tconst_dict = {
@@ -119,21 +119,21 @@ class AmetekDSP7265(BaseInstrument):
 
 
     # get
-    def get_mag(self):
+    def get_mag(self) -> float:
         return self.query_float("mag.?")
 
-    def get_mag1(self):
+    def get_mag1(self) -> float:
         return self.query_float("mag1.?")
     
-    def get_mag2(self):
+    def get_mag2(self) -> float:
         return self.query_float("mag2.?")
     
-    def get_eq1(self):
+    def get_eq1(self) -> float:
         return self.query_float("equ1.?")
 
 
     
-    def avg_channel1(self, duration: float, wait: float):
+    def avg_channel1(self, duration: float, wait: float) -> float:
         points = int(duration/wait)
         v_sum = 0
 

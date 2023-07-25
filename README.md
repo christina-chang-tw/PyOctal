@@ -31,7 +31,7 @@ This is a tool allowing you to do three things: remotely setup your instruments,
 ├── config                   # all configuration files
 ├── lib                      # core library
 ├── results                  # store testing results
-├── tests                    # contain unittesting for functions (users please ignore)
+├── tests                    # contain unit testing for functions (users please ignore)
 <files>
 ├── instr.py                 # direct interface with instruments (only for simple setup cases)
 ├── logging.log              # logging the output to a file
@@ -59,13 +59,13 @@ This repository only works when two conditions are satisfied:
 
 The Anaconda version must
 - Support your current Windows OS system
-- Able to create a Python environment of version 3.6.\*.
+- Able to create a Python 3.6 environment
 
 Install Anaconda version which supports your OS system and make sure all listed packages in `requirements.txt` are installed.
 
 To install packages, go to Enviornments tab, select not installed, and then search up the packages. There are some packages that might not be listed because the channel which contain them are not imported upon installation. If that is the case, search up the python package and find the corresponding channel and include it in Anaconda environment. 
 
-If your Anaconda does not use Python 3.6.\* for its environment, it will fail to install `pyvisa`. Firstly, make sure that the current Anaconda python version is greater than 3.6.\* because Python only allows installing previous versions from later versions. Once the condition is satisfied, create a new environment with Anaconda Prompt and specify Python version as Python 3.6. After the new environment is successfully created, it can be viewed under Environments tab. The packages can then be installed on this new environment without errors.
+If your Anaconda does not use Python 3.6 for its environment, it will fail to install `pyvisa`. Firstly, make sure that the current Anaconda python version is at least 3.6. Once the condition is satisfied, create a new environment with Anaconda Prompt and specify Python version as Python 3.6. After the new environment is successfully created, it can be viewed under Environments tab. The packages can then be installed on this new environment without errors.
 
 ```bash
 # create a new conda environment
@@ -75,8 +75,8 @@ If your Anaconda does not use Python 3.6.\* for its environment, it will fail to
 - `pyvisa` requires "conda-forge" channel
 - `pyaml` requires "conda-forge" channel
 
-**NOTE FOR WINDOWS 7 USER:**
-If your system is running on Windows 7, please only install Anaconda versions which are equipped with Python version lesser than Python 3.8.\*. This is very important as versions since Python 3.9 do not support Windows 7. The safe option is install versions before anaconda3-2020-11. 
+**NOTE FOR WINDOWS 7 USERS:**
+If your system is running on Windows 7, please only install Anaconda versions which are equipped with Python versions older than 3.8. This is very important as versions since Python 3.9 do not support Windows 7. The safe option is install versions before anaconda3-2020-11. 
 
 If you attempt to install the later anaconda version on your Windows 7 system, you will get a "Failed to create menus" error. Refer to [Using Anaconda on older operating systems](https://docs.anaconda.com/free/anaconda/install/old-os/) for more information.
 
@@ -114,7 +114,7 @@ Install VSCode for code editing or running in python terminal. This software can
 
 Open a new bash terminal in VSCode by going to the top tab bar and Terminal > New Terminal. Now you will have opened a terminal and ready to clone the repository down.
 
-**NOTE:** If you are running on a Windows 7 OS, an alternative code editor is Atom, VSCodium, and Texteditor.
+**NOTE:** If you are running Windows 7, alternative code editors, such as Atom, VSCodium, and Texteditor are available.
 
 
 ### Install ORC OCTAL
@@ -137,7 +137,7 @@ Getting the repository cloned to a local direcotory
 
 **Method 2 - Download from Github**:
 
-You can simply download a zip file containing this repository by going to <> Code tab and then select Local and Download ZIP.
+You can download a zip file containing this repository by navigating to <> Code tab and then select Local and Download ZIP.
 
 ## Getting Started
 
@@ -213,11 +213,11 @@ Pull the newest changes down:
 > git pull https://github.com/christina-chang-tw/orcoctal.git
 ```
 
-Push your local changes to your remote branch:
+Push your local changes to the remote repository:
 ```bash
 > git add .
 > git commit -m "message" # commit your local changes with "message" as a comment
-> git push                # push your changes to remote branch
+> git push                # push your changes to the remote branch
 ```
 
 ### Expand this library

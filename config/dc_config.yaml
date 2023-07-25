@@ -3,8 +3,7 @@
 
 --- # document start
 ### General variables for testing #################
-gpib_num: 0
-addr: 20 # instrument address
+AgilentE3640A_Addr: "GPIB0::20::INSTR"
 folder: "Chip_5" # under results folder
 structure: "Si_wg" # the name of the file {structure}_DCSweeps_data
 

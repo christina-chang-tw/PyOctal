@@ -5,6 +5,7 @@ import time
 import numpy as np
 import pandas as pd
 import logging
+from typing import Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +36,10 @@ class KeysightILME(BasePAS):
     def stop_meas(self):
         self.engine.StopMeasurement()
 
-    def get_no_channels(self):
+    def get_no_channels(self) -> int:
         return self.no_channels  
 
-    def get_result(self, name: int=0):
+    def get_result(self, name: int=0) -> Tuple[tuple, tuple]:
         data = pd.DataFrame()
 
         busy = True
@@ -59,7 +60,7 @@ class KeysightILME(BasePAS):
         return self.get_wavelength(IOMRGraph, data_per_curve), data
     
     @staticmethod
-    def get_wavelength(IOMRGraph, data_per_curve):
+    def get_wavelength(IOMRGraph, data_per_curve) -> tuple:
         xstart = IOMRGraph.xStart
         xstep = IOMRGraph.xStep
         xdata = [xstart + i * xstep for i in range(data_per_curve)]

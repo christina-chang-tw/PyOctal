@@ -56,7 +56,7 @@ orc_groups = {
 }
 ```
 
-Loading above YAML example into python
+The output of the above YAML example after loaded into Python. You may be able to recognise that the Python output is syntatically identical to JSON format.
 ```python
 # Everything becomes a dictionary simply a key-value pair. To access a value, simply types in the correct key.
 {

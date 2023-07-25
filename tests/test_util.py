@@ -32,12 +32,6 @@ def test_folder_ops():
     delete_folder(path)
     assert not os.path.isdir(path)
 
-def test_address():
-    num = 5
-    gpib = get_gpib_full_addr(num)
-    com = get_com_full_addr(num)
-    assert gpib == "GPIB::5::INSTR"
-    assert com == "COM5"
 
 if __name__ == "__main__":
-    test_address()
+    pass

@@ -11,10 +11,10 @@ class ThorlabsPM100(BaseInstrument):
         # Read the PM power (as shown on the display)
         return self.query("read?")
     
-    def meas_power(self):
+    def meas_power(self) -> float:
         # Measure the PM power (as shown on the display)
         self.write("measure:power")
-        return self.query("fetch?")
+        return self.query_float("fetch?")
 
     def set_wav(self, wavelength):
         # Set the power monitor wavelength [nm]

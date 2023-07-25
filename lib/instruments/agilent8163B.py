@@ -96,19 +96,20 @@ class Agilent8163B(BaseInstrument):
                 self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
             else:
                 raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
-        except Exception as e:
-            print(e)
+        
+        except Exception as error:
+            raise error
 
-    def get_detect_pow(self):
-        return self.query(f"read{self.sens_num}:channel{self.sens_chan}:power?")
+    def get_detect_pow(self) -> float:
+        return self.query_float(f"read{self.sens_num}:channel{self.sens_chan}:power?")
     
-    def get_detect_trigno(self):
-        return self.query(f"{self.detect}:wavelength:sweep:exp?")
+    def get_detect_trigno(self) -> int:
+        return int(self.query(f"{self.detect}:wavelength:sweep:exp?"))
     
-    def get_detect_func_status(self):
-        return self.query(f"{self.detect}:function:state?")
+    def get_detect_func_state(self) -> bool:
+        return bool(self.query(f"{self.detect}:function:state?"))
     
-    def get_detect_func_result(self):
+    def get_detect_func_result(self) -> list:
         return self.query_binary_values(f"{self.detect}:function:result?")
 
 
@@ -116,12 +117,6 @@ class Agilent8163B(BaseInstrument):
     ### LASER ######################################
     def set_laser_wav(self, wavelength: float=1550):
         self.write(f"{self.laser}:wavelength {wavelength}")
-
-    def get_laser_wav_min(self):
-        return self.query(f"{self.laser}:wavelength? MIN")
-
-    def get_laser_wav_max(self):
-        return self.query(f"{self.laser}:wavelength? MAX")
     
     def set_laser_state(self, state: bool=1):
         self.write(f"{self.laser}:power:state {state}")
@@ -136,8 +131,14 @@ class Agilent8163B(BaseInstrument):
     def set_laser_unit(self, unit: str="dBm"):
         self.write(f"{self.laser}:power:unit {unit}") # set the source unit in dBm
 
-    def get_laser_data(self, mode: str="lloging"):
+    def get_laser_data(self, mode: str="lloging") -> list:
         return self.query_binary_values(f"{self.laser}:read:data? {mode}")
+    
+    def get_laser_wav_min(self) -> float:
+        return self.query_float(f"{self.laser}:wavelength? MIN")
+
+    def get_laser_wav_max(self) -> float:
+        return self.query_float(f"{self.laser}:wavelength? MAX")
     
 
 
@@ -170,8 +171,8 @@ class Agilent8163B(BaseInstrument):
     def set_sweep_tdwell(self, tdwell: float=0):
         self.write(f"{self.laser}:dwell {tdwell}s")
     
-    def get_sweep_state(self): # 0 - stop, 1 - start, 2 - pause, 3 - continue
-        return self.query(f"{self.laser}:wavelength:sweep:state?")
+    def get_sweep_state(self) -> int: # 0 - stop, 1 - start, 2 - pause, 3 - continue
+        return int(self.query(f"{self.laser}:wavelength:sweep:state?"))
         
 
 

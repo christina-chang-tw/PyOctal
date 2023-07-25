@@ -2,11 +2,19 @@
 
 --- # document start
 
-## Addresses of each devices  #####################
+## Addresses of each devices  #############################
+# NOTE: You only have to set the correct address for      #
+# instruments related to your operations                  #
+#                                                         #
+# e.g. Each of the x should be replaced                   #
+#   GPIB Device = GPIBx::x::INSTR                         #
+#   COM  Device = COMx                                    #
+# TCP/IP Device =            
+###########################################################
 
 
-## list ###########################################
-
-## dictionary #####################################
+Agilent8163B_Addr: "GPIB0::25::INSTR"
+KeysightE8257D_Addr: ""
+Keysight86100D_Addr: ""
 
 ... # document end

@@ -14,7 +14,6 @@ from lib.instruments import (
 )
 from lib.util.formatter import CustomLogFormatter, CustomArgparseFormatter
 from lib.util.util import (
-    get_gpib_full_addr, 
     get_config_dirpath, 
     create_folder,
     get_result_dirpath
@@ -81,12 +80,12 @@ def test_distribution(ttype, configs):
     """
     folder = configs["folder"]
     info = TestInfo()
-    addr = get_gpib_full_addr(addr=configs["addr"])
 
+    # create a folder for the test chip if this has not been done so
     create_folder(get_result_dirpath(folder))
     
     if ttype == "passive":
-        instr = Agilent8163B(addr=addr)
+        instr = Agilent8163B(addr=configs["Agilent8163B_Addr"])
         sweeps = PASILossSweep(instr=instr)
         info.passive(folder, configs)
         sweeps.run_sweep(folder, configs)
@@ -94,7 +93,7 @@ def test_distribution(ttype, configs):
     elif ttype == "ac":
         pass
     elif ttype == "dc":
-        instr = AgilentE3640A(addr=addr)
+        instr = AgilentE3640A(addr=configs["AgilentE3640A_Addr"])
         sweeps = DCSweeps(instr=instr)
         info.dc(folder, configs)
         sweeps.run_sweep(chip_name=folder, configs=configs)

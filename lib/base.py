@@ -53,8 +53,8 @@ class BaseInstrument(object):
             else:
                 raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
         
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            raise error
 
     def list_resource(self):
         return self._rm.list_resources()
@@ -72,9 +72,9 @@ class BaseInstrument(object):
             else:
                 if value not in cond: # check the value is in a list/tuple
                     raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
-            return
-        except Exception as e:
-            print(e)
+        
+        except Exception as error:
+            raise error
 
 
     def write(self, cmd):
@@ -83,19 +83,19 @@ class BaseInstrument(object):
     def write_binary_values(self, cmd):
         self.instr.write_binary_values(cmd)
     
-    def read(self, cmd):
+    def read(self, cmd) -> str:
         return self.instr.read(cmd).rstrip()
     
-    def query(self, cmd):
+    def query(self, cmd) -> str:
         return self.instr.query(cmd).rstrip()
     
-    def query_float(self, cmd):
+    def query_float(self, cmd) -> float:
         return float(self.instr.query(cmd).rstrip())
     
-    def query_binary_values(self, cmd):
+    def query_binary_values(self, cmd) -> list:
         return self.instr.query_binary_values(cmd, is_big_endian=False)
     
-    def get_idn(self):
+    def get_idn(self) -> str:
         return self.query("*IDN?")
 
     def reset(self):
@@ -104,15 +104,15 @@ class BaseInstrument(object):
     def clear(self):
         self.write("*CLS")
 
-    def opc(self):
+    def opc(self) -> bool:
         return self.query("*OPC?")
 
     @property
-    def identity(self):
+    def identity(self) -> str:
         return self._identity
     
     @property
-    def address(self):
+    def address(self) -> str:
         return self._addr
     
     @property
@@ -120,13 +120,13 @@ class BaseInstrument(object):
         return self._rm
     
 
-    def __get_name(self):
+    def __get_name(self) -> str:
         return self.__class__.__name__
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Instrument: {self.__get_name()} "
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__get_name()}({self.instr, self.identity})"
 
     
@@ -171,13 +171,13 @@ class BasePAS(object):
     def validate_settings(self):
         self.engine.ValidateSettings()
 
-    def __get_name(self):
+    def __get_name(self) -> str:
         return self.__class__.__name__
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Photonics Application Suite: {self.__get_name()} "
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__get_name()}({self.engine, self.identity})"
 
 
@@ -193,12 +193,12 @@ class BaseSweeps(object):
     def __init__(self, instr):
         self.instr = instr
 
-    def __get_name(self):
+    def __get_name(self) -> str:
         return self.__class__.__name__
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Sweep: {self.__get_name()} "
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__get_name()}({self.dev})"
     
