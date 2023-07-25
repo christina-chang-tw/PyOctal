@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class AgilentILME(BasePAS):
+class KeysightILME(BasePAS):
     """
     Keysight Insertion Loss Measurement Engine Win32com Library
     """

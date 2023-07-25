@@ -3,15 +3,15 @@ from lib.util.util import pyversion_check
 pyversion_check()
 
 from lib.sweeps.info import TestInfo
-# from lib.sweeps import (
-#     PASILossSweep, 
-#     DCSweeps,
-#     ACSweeps,
-# )
-# from lib.instruments import (
-#     Agilent8163B, 
-#     AgilentE3640A,
-# )
+from lib.sweeps import (
+    PASILossSweep, 
+    DCSweeps,
+    ACSweeps,
+)
+from lib.instruments import (
+    Agilent8163B, 
+    AgilentE3640A,
+)
 from lib.util.formatter import CustomLogFormatter, CustomArgparseFormatter
 from lib.util.util import (
     get_gpib_full_addr, 
@@ -34,7 +34,7 @@ class PrintSubparserInfo():
     def __init__(self, configs):
         self.configs = configs
 
-    def iloss(self):
+    def passive(self):
         print(f'{"Length [um]":<25} : {", ".join([str(round(i, 2)) for i in self.configs["lengths"]])}')
         print(f'{"Output power [dBm]":<25} : {self.configs["power"]:<6}')
         print(f'{"Wavelength start [nm]":<25} : {self.configs["w_start"]:<6}')
@@ -65,7 +65,7 @@ def print_setup_info(ttype, configs):
     print(f'{"Test Type":<25} : {ttype:<12}')
     print_info = PrintSubparserInfo(configs)
     if ttype == "passive":
-        print_info.iloss()
+        print_info.passive()
     elif ttype == "ac":
         print_info.ac()
     elif ttype == "dc":
@@ -81,23 +81,23 @@ def test_distribution(ttype, configs):
     """
     folder = configs["folder"]
     info = TestInfo()
-    addr = get_gpib_full_addr(configs["addr"])
+    addr = get_gpib_full_addr(addr=configs["addr"])
 
     create_folder(get_result_dirpath(folder))
     
-    # if ttype == "passive":
-    #     instr = Agilent8163B(addr=addr)
-    #     sweeps = PASILossSweep(instr=instr)
-    #     info.passive(folder, configs)
-    #     sweeps.run_sweep(folder, configs)
+    if ttype == "passive":
+        instr = Agilent8163B(addr=addr)
+        sweeps = PASILossSweep(instr=instr)
+        info.passive(folder, configs)
+        sweeps.run_sweep(folder, configs)
 
-    # elif ttype == "ac":
-    #     pass
-    # elif ttype == "dc":
-    #     instr = AgilentE3640A(addr=addr)
-    #     sweeps = DCSweeps(instr=instr)
-    #     info.dc(folder, configs)
-    #     sweeps.run_sweep(chip_name=folder, configs=configs)
+    elif ttype == "ac":
+        pass
+    elif ttype == "dc":
+        instr = AgilentE3640A(addr=addr)
+        sweeps = DCSweeps(instr=instr)
+        info.dc(folder, configs)
+        sweeps.run_sweep(chip_name=folder, configs=configs)
         
 
 if __name__ == "__main__":

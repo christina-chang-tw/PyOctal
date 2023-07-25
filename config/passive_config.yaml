@@ -2,18 +2,19 @@
 # This will be loaded to sweeps_main.py when it starts running
 
 --- # document start
+### General variables for testing #################
+gpib_num: 0
+addr: 20 # instrument address
+folder: "Chip_5" # under results folder
+structure: "Si_wg" # the name of the file {structure}_DCSweeps_data
+
 
 ## var  ###########################################
-folder: "Christina" # under results folder
-structure: "straight" # the name of the file {structure}_DCSweeps_data
-ext: "csv"
-
-addr: 25 # instrument address
-
 power: 0       # output power [dBm]
 w_start: 1535  # start wavelength [nm]
-w_end: 1575    # end wavelength [nm]
+w_stop: 1575    # end wavelength [nm]
 step: 5        # sweep step [pm]
+
 
 ## list ###########################################
 lengths:

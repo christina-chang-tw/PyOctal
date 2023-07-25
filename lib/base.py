@@ -42,7 +42,7 @@ class BaseInstrument(object):
             if rsc_addr in self.list_resource(): # Checking if the resource is available
                 self.instr = self._rm.open_resource(rsc_addr)
                 instr_type = self.instr.resource_info[3][:4]
-                known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP", "LAN")
+                known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
 
                 # make sure that we know the device type
                 if instr_type not in known_type:

@@ -1,4 +1,4 @@
-from lib.instruments import AgilentILME, Agilent8163B
+from lib.instruments import KeysightILME, Agilent8163B
 from lib.util.file_operations import export_to_csv
 from lib.util.util import get_func_name, wait_for_next_meas
 from lib.base import BaseSweeps
@@ -23,34 +23,34 @@ class PASILossSweep(BaseSweeps):
         An instrument used in this sweep
     """
     def __init__(self, instr: Agilent8163B):
-        self.dev = AgilentILME()
+        self.dev = KeysightILME()
         self.dev.activate()
         super().__init__(instr=instr)
 
-    def run_sweep(self, chip_name: str, args):
+    def run_sweep(self, chip_name: str, configs):
         df = pd.DataFrame()
         lf = pd.DataFrame()
         
         self.dev.sweep_params(
-                start=args.range[0],
-                stop=args.range[1],
-                step=args.step[0],
-                power=args.power[0],
+                start=configs["w_start"],
+                stop=configs["w_stop"],
+                step=configs["step"],
+                power=configs["power"],
             )
 
-        for i, length in tqdm(enumerate(args.lengths), total=len(args.lengths), desc="ILOSS Sweeps"):
+        for i, length in tqdm(enumerate(configs["lengths"]), total=len(configs["lengths"]), desc="ILOSS Sweeps"):
             self.instr.setup()
-            wait_for_next_meas(i, len(args.lengths)) # this takes an input to continue to next measurement
+            wait_for_next_meas(i, len(configs["lengths"])) # this takes an input to continue to next measurement
             self.dev.start_meas()
             lf[i], temp = self.dev.get_result(length)
             df = pd.concat([df, temp], axis=1)
-            export_to_csv(df, chip_name, f'{args.structure[0]}_{get_func_name()}_data')
+            export_to_csv(df, chip_name, f'{configs["structure"]}_{get_func_name()}_data')
 
         
         if not lf.eq(lf.iloc[:,0], axis=0).all(axis=1).all(axis=0):
             logger.warning("Discrepancy in wavelengths")
         
-        export_to_csv(pd.concat([lf.iloc[:,0], df]), chip_name, f'{args.structure[0]}_{get_func_name()}_data')
+        export_to_csv(pd.concat([lf.iloc[:,0], df]), chip_name, f'{configs["structure"]}_{get_func_name()}_data')
         
 
 class InstrILossSweep(BaseSweeps):

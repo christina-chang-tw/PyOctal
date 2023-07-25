@@ -19,26 +19,28 @@ import argparse
 INSTR_TYPES = ("m_8163b", "h_speed")
 
 # Define each instrument's address
-Agilent8163B_ADDR = 25
+GPIB_BOARD = 0
+Agilent8163B_ADDR = 20
 Keysight86100D_ADDR = 1
 KeysightE8257D_ADDR = 1
 
 
 def setup(ttype, args):
     if ttype == "m_8163b":
-        instr = Agilent8163B(addr=get_gpib_full_addr(Agilent8163B_ADDR))
-        instr.setup(wavelength=args.wavelength[0], power=args.power[0], time=args.period[0])
+        instr = Agilent8163B(addr=get_gpib_full_addr(GPIB_BOARD, Agilent8163B_ADDR))
+        instr.setup(wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "h_speed":
         # obtaining the device
-        siggen = KeysightE8257D(addr=get_gpib_full_addr(KeysightE8257D_ADDR))
-        osc = Keysight86100D(addr=get_gpib_full_addr(Keysight86100D_ADDR))
-        siggen.set_freq(freq=args.freq[0])
+        siggen = KeysightE8257D(addr=get_gpib_full_addr(GPIB_BOARD, KeysightE8257D_ADDR))
+        osc = Keysight86100D(addr=get_gpib_full_addr(GPIB_BOARD, Keysight86100D_ADDR))
+        siggen.set_freq_fixed(freq=args.freq[0])
 
         
 
 
 def subparser_info(type):
+    info = ""
     if type == INSTR_TYPES[0]:
         info = textwrap.dedent("""\
                 Multimeter M8163B Equipment:
@@ -71,12 +73,11 @@ if __name__ == "__main__":
     m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("m_8163b"), help="Multimeter M8163B equipment setup", formatter_class=CustomArgparseFormatter)
     m_8163b.add_argument("-w", "--wavelength", type=float, metavar="", dest="wavelength", nargs=1, default=(1550,), help="Sensing and output wavelength [nm]", required=False)
     m_8163b.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=(10,), help="Laser output power [dBm]", required=False)
-    m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(10,), help="Averaged period [s]", required=False)
+    m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(10e-03,), help="Averaged period [s]", required=False)
     
-    h_speed = m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("h_speed"), help="High speed instrument setup", formatter_class=CustomArgparseFormatter)
+    h_speed = subparsers.add_parser(INSTR_TYPES[1], description=subparser_info("h_speed"), help="High speed instrument setup", formatter_class=CustomArgparseFormatter)
     h_speed.add_argument("-f", "--frequency", type=float, metavar="", dest="freq", nargs=1, default=(1,), help="Set the frequency of the signal generator [GHz]", required=False)
 
     args = parser.parse_args()
-
 
     setup(args.test, args)

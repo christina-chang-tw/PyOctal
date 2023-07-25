@@ -22,7 +22,7 @@ from .keithley6487 import Keithley6487
 from .keysight86100D import Keysight86100D
 from .keysightE8257D import KeysightE8257D
 
-from .keysightPAS import AgilentILME
+from .keysightPAS import KeysightILME
 
 from .tektronixScope import TektronixScope
 
@@ -45,7 +45,7 @@ __all__ = [
     "Keithley6487",
     "Keysight86100D",
     "KeysightE8257D",
-    "AgilentILME",
+    "KeysightILME",
     "TektronixScope",
     "ThorlabsITC4002QCL",
     "ThorlabsPM100",

@@ -39,8 +39,8 @@ def wait_for_next_meas(i, total):
     print("\r")
     input("%s/%s : Press ENTER to continue" % (i, total))
 
-def get_gpib_full_addr(num: int=0):
-    return f"GPIB::{num}::INSTR"
+def get_gpib_full_addr(num: int=0, addr: int=0):
+    return f"GPIB{num}::{addr}::INSTR"
 
 def get_com_full_addr(num: int=0):
     return f"COM{num}"
@@ -49,6 +49,7 @@ def get_config_dirpath():
     return f'{os.getcwd()}/config'
 
 def get_result_dirpath(folder):
+    print(os.getcwd())
     return f'{os.getcwd()}/results/{folder}'
 
 def package_info(info: dict):

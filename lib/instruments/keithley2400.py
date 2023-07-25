@@ -108,22 +108,22 @@ class Keithley2400(BaseInstrument):
     def meas_curr_buf(self, volt: float, n, speed):
         """ measure current buffer """
         self.set_laser_volt(volt=volt)
-		self.set_detect_npl_cycles(speed=speed)
+        self.set_detect_npl_cycles(speed=speed)
         self.set_trace_source(source="sense")
         self.set_trace_points(pts=n)
         self.set_trace_ctl(ctl="next")
         self.set_trig_count(count=n)
         self.set_output_state(1)
         self.initiate()
-
-		time.sleep(0.1+1*speed+speed*n*0.06)
-		trace_data = self.get_trace_data()
+        
+        time.sleep(0.1+1*speed+speed*n*0.06)
+        trace_data = self.get_trace_data()
         self.set_calc3_format(format="mean")
 
         calc3_data = self.get_calc3_data()
         self.set_trace_ctl(ctl="never")
 
         currents = [float(trace_data.split(","[5*(i-1)+1])) for i in range(n)]
-		current = calc3_data.split(",")[1]
-
-		return currents, current
+        current = calc3_data.split(",")[1]
+        
+        return currents, current

@@ -2,14 +2,14 @@
 # This will be loaded to plot.py when it starts running
 
 --- # document start
+### General variables for testing #################
+gpib_num: 0
+addr: 20 # instrument address
+folder: "Chip_5" # under results folder
+structure: "Si_wg" # the name of the file {structure}_DCSweeps_data
+
 
 ## var  ###########################################
-folder: "Christina" # under results folder
-structure: "straight" # the name of the file {structure}_DCSweeps_data
-ext: "csv"
-
-addr: 25 # instrument address
-
 v_start: 0 # start voltage [V]
 v_stop: 5  # stop voltage [V]
 v_step: 1    # step [V]
