@@ -59,7 +59,7 @@ class AmetekDSP7265(BaseInstrument):
             if not isinstance(eq, Union[list, tuple]):
                 raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Param should be a list")
             self.write(f'defequ {[" ".join(i) for i in eq]}')
-        except Exception as error:
+        except ValueError as error:
             raise error
 
     def set_dual_tc(self, tc: int):

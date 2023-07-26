@@ -29,13 +29,18 @@ class AgilentE3640A(BaseInstrument):
     def set_params(self, volt: float=0, curr: float=0):
         self.write(f"apply {volt}, {curr}")
 
-    def read_params(self) -> list:
-        return self.query("apply?")
+    def get_output_status(self) -> bool:
+        return self.query_bool(f"output?")
 
-    def read_curr(self) -> float:
+    def get_params(self) -> list: # return [volt, curr]
+        params = self.query("apply?").split(",") # split the str up by ,
+        params = [float(i.replace('"', '')) for i in params]
+        return params
+
+    def get_curr(self) -> float:
         return self.query_float("measure:current?")
     
-    def read_volt(self) -> float:
+    def get_volt(self) -> float:
         return self.query_float("measure:voltage?")
     
 

@@ -17,7 +17,6 @@ def platform_check():
     try:
         if sys.platform not in __platform__:
             raise Exception("Error code %s: %s. Current platform is %s" % (INCOMPATIBLE_OS_ERR, error_message[INCOMPATIBLE_OS_ERR], sys.platform))
-        print("Using Windows OS platform...")
     except Exception as error:
         raise error
 
@@ -26,8 +25,7 @@ def pyversion_check():
         MIN_PYTHON = __python_min_version__
         CUR_PYTHON = (sys.version_info.major, sys.version_info.minor)
         if sys.version_info <= MIN_PYTHON:
-            raise ValueError("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
-        print("Using correct Python version...")
+            raise Exception("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
     except Exception as error:
         raise error
 

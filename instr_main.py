@@ -14,7 +14,6 @@ from lib.util.formatter import CustomArgparseFormatter
 
 import textwrap
 import argparse
-import yaml
 
 ###########################################################
 ### USER DEFINED VARIABLES ################################
@@ -31,7 +30,7 @@ import yaml
 ###########################################################
                                                           #
 CONFIGS = {                                               #
-    "Agilent8163B_Addr": "GPIB0::25::INSTR",              #
+    "Agilent8163B_Addr": "GPIB0::20::INSTR",              #
     "KeysightE8257D_Addr": "",                            #
     "Keysight86100D_Addr": "",                            #
 }                                                         #
@@ -52,12 +51,6 @@ def setup(ttype, args, configs):
         siggen.set_freq_fixed(freq=args.freq[0])
 
 
-def load_config() -> dict:
-    fpath = f"{get_config_dirpath()}/instr_config.yaml"
-    with open(fpath, 'r') as file:
-        configs = yaml.safe_load(file)
-    return configs
-        
 
 def subparser_info(type) -> str:
     info = ""
@@ -93,12 +86,10 @@ if __name__ == "__main__":
     m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("m_8163b"), help="Multimeter M8163B equipment setup", formatter_class=CustomArgparseFormatter)
     m_8163b.add_argument("-w", "--wavelength", type=float, metavar="", dest="wavelength", nargs=1, default=(1550,), help="Sensing and output wavelength [nm]", required=False)
     m_8163b.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=(10,), help="Laser output power [dBm]", required=False)
-    m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(10e-03,), help="Averaged period [s]", required=False)
+    m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(200e-03,), help="Averaged period [s]", required=False)
     
     h_speed = subparsers.add_parser(INSTR_TYPES[1], description=subparser_info("h_speed"), help="High speed instrument setup", formatter_class=CustomArgparseFormatter)
     h_speed.add_argument("-f", "--frequency", type=float, metavar="", dest="freq", nargs=1, default=(1,), help="Set the frequency of the signal generator [GHz]", required=False)
 
     args = parser.parse_args()
-
-    configs = load_config() # load the address from the config file in
     setup(args.test, args, CONFIGS)

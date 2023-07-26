@@ -133,7 +133,7 @@ class PlotGraphs(object):
                 ax.scatter(xdata, ydata)
             else:
                 raise RuntimeError("Invalid plot type")
-        except Exception as error:
+        except RuntimeError as error:
             raise error
 
     def plt_len_loss_csv(self):

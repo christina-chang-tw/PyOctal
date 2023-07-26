@@ -22,7 +22,9 @@ def get_dataframe_from_csv(path: str, fname: str,) -> pd.DataFrame:
         elif os.stat(path_to_file).st_size == 0:
             raise ImportError(f"Error code {FILE_EMPTY_ERR}: {error_message[FILE_EMPTY_ERR]}")
         return pd.read_csv(path_to_file, encoding='utf-8')
-    except Exception as error:
+    except FileExistsError as error:
+        raise error
+    except ImportError as error:
         raise error  
 
 

@@ -71,7 +71,7 @@ class BaseInstrument(object):
                 if value not in cond: # check the value is in a list/tuple
                     raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         
-        except Exception as error:
+        except ValueError as error:
             raise error
 
 
@@ -86,6 +86,9 @@ class BaseInstrument(object):
     
     def query(self, cmd) -> str:
         return self.instr.query(cmd).rstrip()
+    
+    def query_bool(self, cmd) -> bool:
+        return bool(self.instr.query(cmd).rstrip())
     
     def query_float(self, cmd) -> float:
         return float(self.instr.query(cmd).rstrip())
@@ -104,6 +107,9 @@ class BaseInstrument(object):
 
     def opc(self) -> bool:
         return self.query("*OPC?")
+    
+    def err(self) -> str:
+        return self.query("system:error?")
 
     @property
     def identity(self) -> str:

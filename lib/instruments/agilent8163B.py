@@ -97,7 +97,7 @@ class Agilent8163B(BaseInstrument):
             else:
                 raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
         
-        except Exception as error:
+        except ValueError as error:
             raise error
 
     def get_detect_pow(self) -> float:
