@@ -1,5 +1,8 @@
 """ Photonics Application Suite (PAS) Interface """
-from lib.base import BasePAS
+from lib.util.util import platform_check
+platform_check()
+
+import win32com.client
 
 import time
 import numpy as np
@@ -8,6 +11,56 @@ import logging
 from typing import Tuple
 
 logger = logging.getLogger(__name__)
+
+class BasePAS(object):
+    """
+    A base Photonics Application Suite class
+    (This base object is put in here to ensure that people can use other instruments
+    even though they are not using Windows OS)
+
+    Parameters
+    ----------
+    server_addr: str
+        The address of the software
+    """
+    def __init__(self, server_addr):
+        self.engine_mgr = win32com.client.Dispatch(server_addr)
+        self.engine = self.engine_mgr.NewEngine()
+        self.activate()
+        activating = 0
+        start = time.time()
+
+        # If the engine is not activated 
+        while activating == 0:
+            time.sleep(0.5) 
+            activating = self.engine_status()
+            if time.time() - start > 30:
+                logging.error("Timeout error: check devices connection")
+
+    def activate(self):
+        self.engine.Activate()
+
+    def deactivate(self):
+        self.engine.DeActivate()
+
+    def engine_status(self):
+        return self.engine.Active
+    
+    def quit(self):
+        self.deactivate()
+        self.engine_mgr.DeleteEngine(self.engine)
+
+    def validate_settings(self):
+        self.engine.ValidateSettings()
+
+    def __get_name(self) -> str:
+        return self.__class__.__name__
+    
+    def __str__(self) -> str:
+        return f"Photonics Application Suite: {self.__get_name()} "
+    
+    def __repr__(self) -> str:
+        return f"{self.__get_name()}({self.engine, self.identity})"
 
 class KeysightILME(BasePAS):
     """

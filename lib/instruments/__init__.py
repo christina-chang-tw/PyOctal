@@ -1,9 +1,15 @@
 """
 Import all instruments here to shorten the imports
 """
+from lib.error import *
+import sys
 
-from lib.util.util import platform_check
-platform_check()
+__platform__ = ("cygwin", "win32") # Windows OS system
+
+# Windows OS specific modules
+if sys.platform in __platform__:
+    from .keysightPAS import KeysightILME
+    from .thorlabsAPT import ThorlabsAPT
 
 from .agilent8163B import Agilent8163B
 from .agilentE364X import AgilentE3645, AgilentE3640A
@@ -22,13 +28,10 @@ from .keithley6487 import Keithley6487
 from .keysight86100D import Keysight86100D
 from .keysightE8257D import KeysightE8257D
 
-from .keysightPAS import KeysightILME
-
 from .tektronixScope import TektronixScope
 
 from .thorlabsITC40XX import ThorlabsITC4002QCL
 from .thorlabsPM100 import ThorlabsPM100
-from .thorlabsAPT import ThorlabsAPT
 
 from .ttiTGF3162 import TTiTGF3162
 
@@ -45,10 +48,8 @@ __all__ = [
     "Keithley6487",
     "Keysight86100D",
     "KeysightE8257D",
-    "KeysightILME",
     "TektronixScope",
     "ThorlabsITC4002QCL",
     "ThorlabsPM100",
-    "ThorlabsAPT",
     "TTiTGF3162",
 ]

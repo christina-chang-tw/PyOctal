@@ -3,7 +3,7 @@ This file contains all sorts of functions
 that are used but do not belong to a specific category
 """
 from lib.error import *
-from . import __platform__, __python_min_version__
+from . import __python_min_version__, __platform__
 
 import inspect
 import sys
@@ -20,7 +20,6 @@ def platform_check():
         print("Using Windows OS platform...")
     except Exception as error:
         raise error
-
 
 def pyversion_check():
     try:

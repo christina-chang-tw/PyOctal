@@ -1,9 +1,8 @@
 matplotlib
 numpy
 pandas
-pyvisa
-pywin32
+pyvisa;
 pyyaml
 tqdm
-
+pywin32; sys_platform == "cygwin" or sys_platform == "win32"
 

@@ -16,14 +16,29 @@ import textwrap
 import argparse
 import yaml
 
+###########################################################
+### USER DEFINED VARIABLES ################################
+# ONLY MODIFY THIS SECTION!                               #
+#                                                         #
+## Addresses of each devices  #############################
+# NOTE: You only have to set the correct address for      #
+# instruments related to your operations                  #
+#                                                         #
+# e.g. Each of the x should be replaced                   #
+#   GPIB Device = GPIBx::x::INSTR                         #
+#   COM  Device = COMx                                    #
+# TCP/IP Device =            
+###########################################################
+                                                          #
+CONFIGS = {                                               #
+    "Agilent8163B_Addr": "GPIB0::25::INSTR",              #
+    "KeysightE8257D_Addr": "",                            #
+    "Keysight86100D_Addr": "",                            #
+}                                                         #
+###########################################################
+###########################################################
+
 INSTR_TYPES = ("m_8163b", "h_speed")
-
-# Define each instrument's address
-GPIB_BOARD = 0
-Agilent8163B_ADDR = 20
-Keysight86100D_ADDR = 1
-KeysightE8257D_ADDR = 1
-
 
 def setup(ttype, args, configs):
     if ttype == "m_8163b":
@@ -86,4 +101,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     configs = load_config() # load the address from the config file in
-    setup(args.test, args, configs)
+    setup(args.test, args, CONFIGS)

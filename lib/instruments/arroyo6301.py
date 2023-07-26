@@ -1,10 +1,9 @@
 from lib.base import BaseInstrument
-from lib.util.util import get_com_full_addr
 
 class Arroyo6301(BaseInstrument):
 
     def __init__(self, addr):
-        super().__init__(rsc_addr=get_com_full_addr(addr))
+        super().__init__(rsc_addr=addr)
 
     def set_output_state(self, state: bool=1):
         self.write(f"output {state}")
