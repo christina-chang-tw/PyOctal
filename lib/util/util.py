@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 def platform_check():
     try:
         if sys.platform not in __platform__:
-            raise Exception("Error code %s: %s. Current platform is %s" % (INCOMPATIBLE_OS_ERR, error_message[INCOMPATIBLE_OS_ERR], sys.platform))
-    except Exception as error:
+            raise SystemError("Error code %s: %s. Current platform is %s" % (INCOMPATIBLE_OS_ERR, error_message[INCOMPATIBLE_OS_ERR], sys.platform))
+    except SystemError as error:
         raise error
 
 def pyversion_check():
@@ -25,8 +25,8 @@ def pyversion_check():
         MIN_PYTHON = __python_min_version__
         CUR_PYTHON = (sys.version_info.major, sys.version_info.minor)
         if sys.version_info <= MIN_PYTHON:
-            raise Exception("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
-    except Exception as error:
+            raise SystemError("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
+    except SystemError as error:
         raise error
 
 def get_func_name() -> str:

@@ -25,7 +25,7 @@ from .dummy import DummyILME, DummyMultimeter, DummyPowerSupply
 from .keithley2400 import Keithley2400
 from .keithley6487 import Keithley6487
 
-from .keysight86100D import Keysight86100D
+from .keysight86100D import Keysight86100D, KeysightFlexDCA
 from .keysightE8257D import KeysightE8257D
 
 from .tektronixScope import TektronixScope
@@ -52,4 +52,5 @@ __all__ = [
     "ThorlabsITC4002QCL",
     "ThorlabsPM100",
     "TTiTGF3162",
+    "KeysightFlexDCA",
 ]

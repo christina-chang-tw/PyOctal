@@ -4,7 +4,7 @@ pyversion_check()
 
 from lib.instruments import (
     Agilent8163B, 
-    Keysight86100D, 
+    KeysightFlexDCA, 
     KeysightE8257D,
 )
 from lib.util.util import (
@@ -28,12 +28,13 @@ import argparse
 #   COM  Device = COMx                                    #
 # TCP/IP Device =            
 ###########################################################
-                                                          #
-CONFIGS = {                                               #
-    "Agilent8163B_Addr": "GPIB0::20::INSTR",              #
-    "KeysightE8257D_Addr": "",                            #
-    "Keysight86100D_Addr": "",                            #
-}                                                         #
+                                                          
+CONFIGS = {                                               
+    "Agilent8163B_Addr": "GPIB0::20::INSTR",              
+    "KeysightE8257D_Addr": "",   
+    "KeysightFlexDCA_Addr": "",
+    "Keysight86100D_Addr": "",                            
+}                                                         
 ###########################################################
 ###########################################################
 
@@ -47,8 +48,9 @@ def setup(ttype, args, configs):
     elif ttype == "h_speed":
         # obtaining the device
         siggen = KeysightE8257D(addr=configs["KeysightE8257D_Addr"])
-        osc = Keysight86100D(addr=configs["Keysight86100D_Addr"])
+        osc = KeysightFlexDCA(addr=configs["KeysightFlexDCA_Addr"])
         siggen.set_freq_fixed(freq=args.freq[0])
+        
 
 
 

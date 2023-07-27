@@ -1,7 +1,4 @@
 """ Photonics Application Suite (PAS) Interface """
-from lib.util.util import platform_check
-platform_check()
-
 import win32com.client
 
 import time

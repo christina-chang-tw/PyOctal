@@ -1,7 +1,4 @@
 # Make sure that the system is Windows OS
-from lib.util.util import platform_check
-platform_check()
-
 from ctypes import WinDLL, pointer
 
 class ThorlabsAPT(object):

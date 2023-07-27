@@ -1,6 +1,7 @@
-# Top-level Python Package 
-# This is read-only not imported into any module
-
+"""
+Top-level Python Package 
+This is read-only not imported into any module
+"""
 __version__ = '0.0'
 __author__ = 'Tzu-Yun Chang'
 __license__ = 'GNU'
