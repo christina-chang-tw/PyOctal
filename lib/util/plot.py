@@ -161,9 +161,11 @@ class PlotGraphs(object):
 
                 # obtain the columns from the correct channel
                 temp = df.loc[:, df.columns.str.endswith(f'CH{i}')]
+                temp.columns = [float(t.split(" - ")[0]) for t in temp.columns.values] # replaces the index with only the length
+                temp = temp.sort_index(axis=1, ascending=True) # sort out the index in ascending order
 
                 # extract the lengths out of headers
-                xdata = [float(i.split(" - ")[0]) for i in temp.columns.values[0:]] 
+                xdata = temp.columns.values
                 # get a loss averaged over a specified wavelength range for each length
                 ydata = self.get_avgdata(df=df, avg_range=avg_range, target_lambda=exp_lambda)
 
