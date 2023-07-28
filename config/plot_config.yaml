@@ -3,19 +3,20 @@
 --- # document start
 
 ## General Variables  ###########################################
-fname: "KTN_iloss_data" # <fname>.csv or <fname>.xlsx
+fname: "KTN_chip" # <fname>.csv or <fname>.xlsx
 func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
+signal_filter: true # require filtering the signal?
 
 title: "KTN four straights"
 end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}
 unit: "mm" # unit (being on the y-axis)
 
 folders: # select folder name under results
-  - "Chip_3"
+  - "Chip_6"
 
-sheets: # only for excel
-  - "IL KTN long 2"
+sheets: # excel only
+  - "Si waveguide"
 
 
 
@@ -27,17 +28,22 @@ columns_drop:
     - "10"
     - "4"
   Chip_6:
-    - "10"
-    - "4"
+    - "24"
   Chip_4:
   Chip_5:
   Chip_3:
 
-## Wavelength Loss Plots Only Variables ################################
+
+## Wavelength Loss Plots Only Variables #################################
+# if nothing is specified then it will plot all data ####################
 columns_plot: 
   Chip_9:
   Chip_6:
   Chip_4:
   Chip_5:
+
+
+## DC Loss Plots Only Variables #################################
+dc_drop:
 
 ... # document end
