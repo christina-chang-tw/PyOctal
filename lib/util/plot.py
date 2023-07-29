@@ -1,12 +1,10 @@
 from lib.util.file_operations import get_result_dirpath, get_dataframe_from_csv, get_dataframe_from_excel
-from lib.util.file_operations import export_to_csv
 
 import matplotlib.pyplot as plt 
 import numpy as np
 import pandas as pd
 from collections import deque
 import matplotlib.animation as animation
-from scipy.signal import savgol_filter
 
 class RealTimePlot(object):
     """
@@ -124,8 +122,9 @@ class PlotGraphs(object):
         return df_avg
     
     @staticmethod
-    def signal_filter(data):
-        return savgol_filter(data, 801, 3)
+    def signal_filter(data: pd.Series, window_size: int):
+        """ Moving average filtering technique """
+        return data.rolling(window=window_size).mean()
 
 
     @staticmethod
@@ -168,7 +167,7 @@ class PlotGraphs(object):
             if "columns_drop" in self.configs.keys() and self.configs["columns_drop"].get(name):
                 df = df.loc[:, [not x for x in df.columns.str.startswith(tuple(self.configs["columns_drop"][name]))]]
 
-            df = df.apply(self.signal_filter) if self.sf else df
+            df = df.apply(lambda x: self.signal_filter(x, window_size=self.configs["window_size"])) if self.sf else df # need to filter out the noise?
 
             
             for i in range(no_channels):
@@ -220,7 +219,7 @@ class PlotGraphs(object):
                 for length in temp.columns.values:
                     label = f'{name}_{length.split(" - ")[0]}{self.configs["end_of_legend"]}' if no_channels == 1 else f'{name}_{length}{self.configs["end_of_legend"]}'
                     ydata = temp.loc[:,length]
-                    ydata = self.signal_filter(ydata) if self.sf else ydata
+                    ydata = self.signal_filter(ydata, window_size=self.configs["window_size"]) if self.sf else ydata
                     ax.plot(xdata, ydata, label=label)
 
         ax.legend(fontsize=8)
@@ -252,13 +251,12 @@ class PlotGraphs(object):
                 
                 for i in range(no_channels):
                     label = f'{name}_{sheet}' if no_channels == 1 else f'{name}_{sheet}_CH{i}'
-                    df_dropped = df_dropped.apply(self.signal_filter) if self.sf else df_dropped # need to filter out the noise?
+                    df_dropped = df_dropped.apply(lambda x: self.signal_filter(x, window_size=self.configs["window_size"])) if self.sf else df_dropped # need to filter out the noise?
                     
                     # obtain the columns from the correct channel
                     temp = df_dropped.loc[:, df_dropped.columns.str.endswith(f'CH{i}')]
                     temp.columns = [float(t.split(" - ")[0]) for t in temp.columns.values] # replaces the index with only the length
                     temp = temp.sort_index(axis=1, ascending=True) # sort out the index in ascending order
-                    print(temp)
 
                     # extract the lengths out of headers
                     xdata = temp.columns.values
@@ -306,7 +304,7 @@ class PlotGraphs(object):
                     for length in temp.columns.values:
                         label = f'{name}_{length}{self.configs["end_of_legend"]}' if no_channels == 1 else f'{name}_CH{i}_{length}{self.configs["end_of_legend"]}'
                         ydata = np.negative(temp.loc[:,length])
-                        ydata = self.signal_filter(ydata) if self.sf else ydata
+                        ydata = self.signal_filter(data=ydata, window_size=self.configs["window_size"]) if self.sf else ydata
                         ax.plot(xdata, ydata, label=label)
         ax.legend(fontsize=8)
 
@@ -339,7 +337,7 @@ class PlotGraphs(object):
                     for length in temp.columns.values:
                         label = f'{name}_{length}{self.configs["end_of_legend"]}' if no_channels == 1 else f'{name}_CH{i}_{length}{self.configs["end_of_legend"]}'
                         ydata = np.negative(temp.loc[:,length])
-                        ydata = self.signal_filter(ydata) if self.sf else ydata
+                        ydata = self.signal_filter(data=ydata, window_size=self.configs["window_size"]) if self.sf else ydata
                         ax.plot(xdata, ydata, label=label)
         ax.legend(fontsize=8)
 

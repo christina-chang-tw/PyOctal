@@ -6,7 +6,10 @@
 fname: "KTN_chip" # <fname>.csv or <fname>.xlsx
 func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
-signal_filter: true # require filtering the signal?
+
+# Filtering signal parameters - moving average #
+signal_filter: false # require filtering the signal?
+window_size: 100
 
 title: "KTN four straights"
 end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}
