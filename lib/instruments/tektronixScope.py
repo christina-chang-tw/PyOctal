@@ -16,7 +16,7 @@ class TektronixScope(BaseInstrument):
         The address of the instrument
     """
 
-    def __init__(self, addr):
+    def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
         self.name = self.get_idn()
         self.set_data_format(format="asci")

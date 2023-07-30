@@ -3,7 +3,7 @@ import time
 
 class ThorlabsPM100(BaseInstrument):
     """Class to control a Thorlabs Power Monitor PM100"""
-    def __init__(self, addr):
+    def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
         self.write("data:encd asci")
 

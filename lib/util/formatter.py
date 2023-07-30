@@ -11,15 +11,15 @@ class CustomLogFormatter(logging.Formatter):
     orange = "\x1b[38;5;214m"
     red = "\x1b[38;5;202m"
     reset = "\x1b[0m"
-    format = "%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+    fmat = "%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
 
 
     FORMATS = {
-        logging.DEBUG: cyan + format + reset,
-        logging.INFO: grey + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: orange + format + reset,
-        logging.CRITICAL: red + format + reset
+        logging.DEBUG: cyan + fmat + reset,
+        logging.INFO: grey + fmat + reset,
+        logging.WARNING: yellow + fmat + reset,
+        logging.ERROR: orange + fmat + reset,
+        logging.CRITICAL: red + fmat + reset
     }
 
     def format(self, record):
@@ -32,13 +32,13 @@ class CustomArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.R
     """ Format the argparse helper message better with a customised argparse formatter """
 
     def _get_help_string(self, action):
-        help = action.help
+        help_msg = action.help
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if action.option_strings or action.nargs in defaulting_nargs:
-                    if type(action.default) == type(sys.stdin):
-                        help += ' [default: ' + str(action.default.name) + ']'
+                    if isinstance(action.default, type(sys.stdin)):
+                        help_msg += ' [default: ' + str(action.default.name) + ']'
                     elif action.default is not None:
-                        help += f' [default: {", ".join([str(i) for i in action.default])}]'
-        return help
+                        help_msg += f' [default: {", ".join([str(i) for i in action.default])}]'
+        return help_msg

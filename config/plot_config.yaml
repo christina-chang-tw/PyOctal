@@ -11,7 +11,7 @@ no_channels: 1 # number of channels
 signal_filter: false # require filtering the signal?
 window_size: 100
 
-title: "KTN four straights"
+title: "Si Waveguide Loss"
 end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}
 unit: "mm" # unit (being on the y-axis)
 

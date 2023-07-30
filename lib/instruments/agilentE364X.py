@@ -10,7 +10,7 @@ class AgilentE3640A(BaseInstrument):
         The address of the instrument
     """
 
-    def __init__(self, addr: str="GPIB0::4::INSTR"):
+    def __init__(self, addr: str):
         super().__init__(rsc_addr=addr) 
 
     def setup(self):

@@ -6,10 +6,6 @@ import sys
 
 __platform__ = ("cygwin", "win32") # Windows OS system
 
-# Windows OS specific modules
-if sys.platform in __platform__:
-    from .keysightPAS import KeysightILME
-    from .thorlabsAPT import ThorlabsAPT
 
 from .agilent8163B import Agilent8163B
 from .agilentE364X import AgilentE3645, AgilentE3640A
@@ -36,21 +32,27 @@ from .thorlabsPM100 import ThorlabsPM100
 from .ttiTGF3162 import TTiTGF3162
 
 __all__ = [
-    "Agilent8163B",
-    "AgilentE3645",
-    "AgilentE3640A",
-    "AgilentDSO8000",
-    "AmetekDSP7230",
-    "AmetekDSP7265",
-    "Arroyo6301",
-    "DaylightQCL",
-    "Keithley2400",
-    "Keithley6487",
-    "Keysight86100D",
-    "KeysightE8257D",
-    "TektronixScope",
-    "ThorlabsITC4002QCL",
-    "ThorlabsPM100",
-    "TTiTGF3162",
-    "KeysightFlexDCA",
-]
+        "Agilent8163B",
+        "AgilentE3645",
+        "AgilentE3640A",
+        "AgilentDSO8000",
+        "AmetekDSP7230",
+        "AmetekDSP7265",
+        "Arroyo6301",
+        "DaylightQCL",
+        "Keithley2400",
+        "Keithley6487",
+        "Keysight86100D",
+        "KeysightE8257D",
+        "TektronixScope",
+        "ThorlabsITC4002QCL",
+        "ThorlabsPM100",
+        "TTiTGF3162",
+        "KeysightFlexDCA",
+    ]
+
+# Windows OS specific modules
+if sys.platform in __platform__:
+    from .keysightPAS import KeysightILME
+    from .thorlabsAPT import ThorlabsAPT
+    __all__.extend(["KeysightILME", "ThorlabsAPT"])

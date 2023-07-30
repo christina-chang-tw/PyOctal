@@ -22,9 +22,9 @@ def get_dataframe_from_csv(path: str, fname: str,) -> pd.DataFrame:
         elif os.stat(path_to_file).st_size == 0:
             raise ImportError(f"Error code {FILE_EMPTY_ERR}: {error_message[FILE_EMPTY_ERR]}")
         return pd.read_csv(path_to_file, encoding='utf-8')
-    except FileExistsError as error:
+    except [FileExistsError, ImportError] as error:
         raise error
-    except ImportError as error:
+    except Exception as error:
         raise error  
 
 
@@ -41,9 +41,10 @@ def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, li
         # make a dictionary of {sheet: sheetdata}
         data = {name: xl.parse(sheet_name=name) for name in sheet_names if name != "Overview"}
         return data
+    except [FileExistsError, ImportError] as error:
+        raise error
     except Exception as error:
         raise error
-
 
 
 def export_to_csv(data: pd.DataFrame, path: str=get_result_dirpath("XXX"), fname: str="XXX"):

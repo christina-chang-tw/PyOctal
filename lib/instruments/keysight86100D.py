@@ -122,6 +122,10 @@ class KeysightFlexDCA(BaseInstrument):
     def lock_clk(self):
         self.write(f"{self.clock}:relock")
 
+    def set_clk_rate(self, rate: float):
+        """ Set the input signal's data rate """
+        self.write(f"{self.clock}:rate {rate}")
+
     def set_clk_odratio(self, ratio: str):
         # sub1: 1:1, sub2: 1:2,...
         types = ("unit", "sub2", "sub4", "sub8", "sub16", "sub32", "sup2", "sup4", "sup8")

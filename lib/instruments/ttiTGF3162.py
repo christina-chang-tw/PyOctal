@@ -14,7 +14,7 @@ class TTiTGF3162(BaseInstrument):
         The address of the instrument
     """
 
-    def __init__(self, addr):
+    def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
 
     def set_freq(self, freq: float):

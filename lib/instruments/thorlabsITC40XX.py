@@ -12,7 +12,7 @@ class ThorlabsITC4002QCL(BaseInstrument):
         The address of the instrument
     """
 
-    def __init__(self, addr):
+    def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
 
     def get_curr(self) -> float:

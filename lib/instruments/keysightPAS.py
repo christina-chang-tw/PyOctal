@@ -20,7 +20,7 @@ class BasePAS(object):
     server_addr: str
         The address of the software
     """
-    def __init__(self, server_addr):
+    def __init__(self, server_addr: str):
         self.engine_mgr = win32com.client.Dispatch(server_addr)
         self.engine = self.engine_mgr.NewEngine()
         self.activate()

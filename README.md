@@ -83,7 +83,7 @@ If you attempt to install the later anaconda version on your Windows 7 system, y
 
 
 
-**Method 2 - Use Virtual Python Environment (Not working)**:
+**Method 2 - Use Virtual Python Environment**:
 
 Run this in the root-directory of this repository namely `autotesting`.
 
@@ -155,18 +155,6 @@ Launch the Anaconda prompt either via search result or Anaconda Navigator. Once 
 ### How to Run a Test?
 Everything is this repository should be run as a python module. It uses argparse package to parse command line information to the program. 
 
-Before you run a test, please make sure that you set all parameters correctly in the corresponding configuration file! All configuration files should be stored under `config` folder.
-
-```bash
-# Example: 
-# (1) General helper message
-> python -m main -h
-# (2) Run a passive test without specifying anything
-> python -m main -t passive
-# (3) Run a dc sweep test with logging level as DEBUG and specify the config file path
-# -<var>=<str> or -<var> <str> yields the same result
-> python -m sweep_main -t dc --log-lvl DEBUG --config=./config/test.yaml
-```
 **Sweeps**
 
 These are the optical tests that are currently implemented by this library. These can be run by running `main.py` as a module from the root directory.
@@ -177,11 +165,36 @@ These are the optical tests that are currently implemented by this library. Thes
 |           | Agilent 8163B       | Manual insertion loss testing |
 | dc        | | dc sweeps |
 
+Before you run a test, please make sure that you set all parameters correctly in the corresponding configuration file! All configuration files should be stored under `config` folder.
+
+```bash
+# Example: 
+# (1) General helper message
+> python -m sweep_main -h
+# (2) Run a passive test without specifying anything
+> python -m sweep_main -t passive
+# (3) Run a dc sweep test with logging level as DEBUG and specify the config file path
+# -<var>=<str> or -<var> <str> yields the same result
+> python -m sweep_main -t dc --log-lvl DEBUG --config=./config/test.yaml
+```
+
+**Instrument Setup**
 
 Run `instr.py` as a module.
 | Test    | Description    |
 |---------|----------------|
 | m_8163b | Setup the multimeter to the auto-range and desired wavelength and output power |
+| h_speed | Setup the clock frequency for both clock signal generator and oscilloscope |
+
+```bash
+# Example: 
+# (1) General helper message
+> python -m instr_main -h
+# (2) Helper message for specific instrument(s)
+> python -m instr_main m_8163b -h
+# (3) Setup 8163B wavelength at 1550nm and power at 10dBm
+> python -m instr_main m_8163b -w 1550 -p 10
+```
 
 ### Debugging issues
 

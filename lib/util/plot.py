@@ -91,6 +91,11 @@ class PlotGraphs(object):
         ax.minorticks_on()
         ax.grid(True)
         return ax
+    
+    @staticmethod
+    def show():
+        plt.show()
+
 
     @staticmethod
     def linear_regression(xdata, ydata):
@@ -101,9 +106,6 @@ class PlotGraphs(object):
 
         return xline, yline, fit
 
-    @staticmethod
-    def show():
-        plt.show()
 
     @staticmethod
     def get_avgdata(wavelength, df: pd.DataFrame, avg_range: float, target_lambda) -> pd.DataFrame:
@@ -121,6 +123,7 @@ class PlotGraphs(object):
         df_avg = np.negative(df.iloc[lower_rindex:upper_rindex, :].mean(axis=0).values)
         return df_avg
     
+
     @staticmethod
     def signal_filter(data: pd.Series, window_size: int):
         """ Moving average filtering technique """
@@ -302,6 +305,7 @@ class PlotGraphs(object):
                     temp = temp.sort_index(axis=1, ascending=True) # sort out the index in ascending order
                     
                     for length in temp.columns.values:
+                        
                         label = f'{name}_{length}{self.configs["end_of_legend"]}' if no_channels == 1 else f'{name}_CH{i}_{length}{self.configs["end_of_legend"]}'
                         ydata = np.negative(temp.loc[:,length])
                         ydata = self.signal_filter(data=ydata, window_size=self.configs["window_size"]) if self.sf else ydata

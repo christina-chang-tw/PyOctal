@@ -4,6 +4,5 @@ pandas
 pyvisa
 pyyaml
 tqdm
-scipy
 pywin32; sys_platform == "cygwin" or sys_platform == "win32"
 

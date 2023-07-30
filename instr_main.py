@@ -38,18 +38,23 @@ CONFIGS = {
 ###########################################################
 ###########################################################
 
+
+
 INSTR_TYPES = ("m_8163b", "h_speed")
 
-def setup(ttype, args, configs):
+def setup(ttype, args, addr):
     if ttype == "m_8163b":
-        instr = Agilent8163B(addr=configs["Agilent8163B_Addr"])
+        instr = Agilent8163B(addr=addr["Agilent8163B_Addr"])
         instr.setup(wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "h_speed":
         # obtaining the device
-        siggen = KeysightE8257D(addr=configs["KeysightE8257D_Addr"])
-        osc = KeysightFlexDCA(addr=configs["KeysightFlexDCA_Addr"])
+        siggen = KeysightE8257D(addr=addr["KeysightE8257D_Addr"])
+        osc = KeysightFlexDCA(addr=addr["KeysightFlexDCA_Addr"])
         siggen.set_freq_fixed(freq=args.freq[0])
+        osc.lock_clk()
+        osc.set_clk_odratio(ratio=args.odratio[0])
+
         
 
 
@@ -92,6 +97,7 @@ if __name__ == "__main__":
     
     h_speed = subparsers.add_parser(INSTR_TYPES[1], description=subparser_info("h_speed"), help="High speed instrument setup", formatter_class=CustomArgparseFormatter)
     h_speed.add_argument("-f", "--frequency", type=float, metavar="", dest="freq", nargs=1, default=(1,), help="Set the frequency of the signal generator [GHz]", required=False)
+    h_speed.add_argument("-r", "--odratio", type=str, metavar="", dest="odratio", nargs=1, default=("unit",), help="Set the output clock divide ratio", required=False)
 
     args = parser.parse_args()
     setup(args.test, args, CONFIGS)

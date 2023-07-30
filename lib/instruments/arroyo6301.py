@@ -2,7 +2,7 @@ from lib.base import BaseInstrument
 
 class Arroyo6301(BaseInstrument):
 
-    def __init__(self, addr):
+    def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
 
     def set_output_state(self, state: bool=1):

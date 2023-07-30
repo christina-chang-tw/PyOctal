@@ -7,21 +7,19 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-requirements = "requirements.txt"
+requirements = os.getcwd() + r"/requirements.txt"
 venv_path = os.getcwd() + r"/.venv"
-py = os.getcwd() + r"/.venv/bin/python3"
-
-if not os.path.dirname(sys.executable):
-    logger.error("Python Environment Not Found")
+venv_py = os.getcwd() + r"/.venv/bin/python3"
 
 try:
+    if not os.path.dirname(sys.executable):
+        raise SystemError("Python Environment Not Found")
     if sys.version_info[0] < 3:
         raise SystemError("Please update your Python version to 3.0 later")
     subprocess.check_call([sys.executable, '-m', 'venv', venv_path])
-    print("Created a local Virtual Environment...")
-    subprocess.check_call([py, '-m', 'pip', 'install', '-r', requirements])
-    print("Everything are successfully installed")
+    print("A local virtual environment is created...")
+    subprocess.check_call([venv_py, '-m', 'pip', 'install', '-r', requirements])
+    print("Everything is successfully installed!")
 
-except Exception as error:
-    print("Certain modules cannot be imported")
+except SystemError as error:
     raise error
