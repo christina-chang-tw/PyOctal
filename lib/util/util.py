@@ -59,3 +59,13 @@ def delete_folder(path: str="XXX"):
     except:
         raise NotADirectoryError(f"Error code {FOLDER_NOT_EXIST_ERR}: {error_message[FOLDER_NOT_EXIST_ERR]}")
     
+
+def get_callable_funcs(cls, identifier):
+    cls = type(cls) # get the class of the instance
+    funcname_list = [method for method in dir(cls) if method.startswith(identifier)]
+    func_list = [f'{i:20}:{cls.__dict__[i].__doc__}'.lstrip().rstrip() for i in funcname_list]
+    func_str = "\n".join([i for i in func_list])
+    return func_str
+
+
+    

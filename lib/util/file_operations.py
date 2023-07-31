@@ -47,7 +47,7 @@ def get_dataframe_from_excel(path: str, fname: str, sheet_names: Union[tuple, li
         raise error
 
 
-def export_to_csv(data: pd.DataFrame, path: str=get_result_dirpath("XXX"), fname: str="XXX"):
+def export_to_csv(data: Union[pd.DataFrame, pd.Series], path: str=get_result_dirpath("XXX"), fname: str="XXX"):
     path_to_file = f"{path}/{fname}.csv"
 
     with open(path_to_file, 'w', encoding='utf-8') as f:

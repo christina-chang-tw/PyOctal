@@ -5,7 +5,7 @@
 
 ## var  ###########################################
 folder: "Christina" # under results folder
-structure: "straight" # the name of the file e.g. <structure>_IVSweeps_data.csv
+fname: "straight" # the name of the file e.g. <structure>_IVSweeps_data.csv
 ext: "csv"
 
 addr: 25 # instrument address

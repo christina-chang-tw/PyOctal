@@ -135,8 +135,17 @@ class PlotGraphs(object):
         pass
 
 
+    @classmethod
+    def get_all_funcnames(cls):
+        method_list = [method for method in dir(cls) if method.startswith('__') is False or method.startswith('_') is False]
 
-    def plot_data(self, xdata, ydata, xlabel: str="XXX", ylabel: str="YYY", title: str="Empty Title", typ: str="line"):
+        # filter out specific ones
+        method_list = filter(lambda x: x.startswith("plt_"), method_list)
+        return method_list
+
+
+
+    def plt_data(self, xdata, ydata, xlabel: str="XXX", ylabel: str="YYY", title: str="Empty Title", typ: str="line"):
         """ Given x and y, plot a graph"""
         ax = self.__get_new_figure(title=title)
         ax.set_xlabel(xlabel)

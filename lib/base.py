@@ -16,6 +16,7 @@ def list_resources():
     print(resources)
     return resources
 
+
 class BaseInstrument(object):
     """
     A base instrument class containing minimum useful and compatible functions.
@@ -66,10 +67,10 @@ class BaseInstrument(object):
                 raise ValueError(f"Error code {COND_INVALID_ERR:x}: {error_message[COND_INVALID_ERR]}")
             elif len(cond) == 2 and all(isinstance(n, Union[float, int]) for n in cond):
                 if not cond[0] < value < cond[1]: # check the value is within range
-                    raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+                    raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}.\nNeed to be between {cond[0]} and {cond[1]}.")
             else:
                 if value not in cond: # check the value is in a list/tuple
-                    raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+                    raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}.\nPlease select one of the values: {[', '.join(val) for val in cond]}")
         
         except ValueError as error:
             raise error
@@ -154,4 +155,12 @@ class BaseSweeps(object):
     
     def __repr__(self) -> str:
         return f"{self.__get_name()}({self.dev})"
+    
+    @classmethod
+    def get_callable_funcs(cls):
+        method_list = [method for method in dir(cls) if method.startswith('__') is False or method.startswith('_') is False]
+
+        # filter out specific ones
+        method_list = filter(lambda x: x.startswith("run_"), method_list)
+        return method_list
     

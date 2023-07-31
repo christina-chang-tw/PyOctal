@@ -1,5 +1,5 @@
 # Perform version check before everything
-from lib.util.util import pyversion_check, platform_check
+from lib.util.util import pyversion_check, platform_check, get_callable_funcs
 platform_check()
 pyversion_check()
 
@@ -97,10 +97,10 @@ def test_distribution(ttype, configs):
         instr = AgilentE3640A(addr=configs["AgilentE3640A_Addr"])
         sweeps = DCSweeps(instr=instr)
         info.dc(folder, configs)
-        sweeps.run_sweep(chip_name=folder, configs=configs)
+        sweeps.run_sweep_ilme(chip_name=folder, configs=configs)
         
 
-if __name__ == "__main__":
+def main():
     loglvl = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 
     desc = """
@@ -148,6 +148,7 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
     )
 
     args = parser.parse_args()
+    ttype = args.test[0]
 
     logging.basicConfig(filename="logging.log",
                     filemode='w',
@@ -160,11 +161,12 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
     cmd.setFormatter(CustomLogFormatter())
     logger.addHandler(cmd)
 
-    configs = load_config(args.test[0], args.config)
-    print_setup_info(args.test[0], configs)
-    test_distribution(args.test[0], configs)
-    
+    configs = load_config(ttype, args.config)
+    print_setup_info(ttype, configs)
+    test_distribution(ttype, configs)
     
 
+if __name__ == "__main__":
+    main()
     
 

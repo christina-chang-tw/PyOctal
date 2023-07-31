@@ -2,6 +2,8 @@ from lib.base import BaseInstrument
 from lib.error import *
 
 from typing import Union
+import sys
+import time
 
 class Agilent8163B(BaseInstrument):
     """
@@ -175,7 +177,89 @@ class Agilent8163B(BaseInstrument):
         return int(self.query(f"{self.laser}:wavelength:sweep:state?"))
         
 
+    # Complicated functions
+    def run_sweep_manual(self, power: float=10.0, lambda_start: float=1535.0, lambda_stop: float=1575.0, lambda_step: float=5.0):
+        try:
+            lambda_range = (self.get_laser_wav_min(), self.get_laser_wav_min())
+            if lambda_start <= lambda_range[0] and lambda_stop >= lambda_range[1]:
+                raise ValueError(f"Wavelength out of range. Please be within {lambda_range[0]} and {lambda_range[1]}.")
+        except ValueError as error:
+            raise error
+        
+        wavelengths = []
+        powers = []
+        self.set_detect_autorange(1)
+        self.set_detect_avgtime(200e-03)
+        self.set_laser_pow(power)
 
+        #### Loop through wavelengths:
+        for wavelength in range(lambda_start, lambda_stop + lambda_step, lambda_step):
+            tolerance = 0.001 # detector stability tolerance
+            diff = prev_power = sys.maxsize # initiation
+            LOOP_MAX = 20
+
+            self.set_wavelength(wavelength)
+            
+            # Make sure that the laser power is stabalised
+            for _ in range(LOOP_MAX):
+                time.sleep(0.5)
+                detected_power = float(self.get_detect_pow())
+                diff = (detected_power - prev_power)/detected_power
+                prev_power = detected_power
+                if abs(diff) <= tolerance:
+                    break
+
+            wavelengths.append(wavelength)
+            powers.append(detected_power)
+
+            return wavelengths, powers
+        
+
+    def run_laser_sweep_auto(self, power: float=10.0, lambda_start: float=1535.0, lambda_stop: float=1575.0, lambda_step: float=5.0, cycles: int=1, tavg: float=100):
+
+        self.set_unit(source="dBm", sensor="Watt")
+
+        self.set_laser_pow(power=power)
+        self.set_laser_wav(wavelength=lambda_start)
+        self.set_laser_state(status=1)
+        
+
+        self.set_detect_wav(wavelength=1550)
+        self.set_detect_avgtime(period=1e-04)
+        self.set_detect_calibration_val(value=0)
+        self.set_detect_autorange(auto=0)
+        self.set_detect_prange(range=10)
+
+        self.set_trig_config(config=3)
+        self.set_laser_trig_response(in_rsp="ignored", out_rsp="stfinished")
+        self.set_detect_trig_response(in_rsp="smeasure", out_rsp="disabled")
+        
+        self.set_sweep_mode(mode="continuous")
+        self.set_sweep_repeat_mode(mode="oneway")
+        self.set_sweep_cycles(cycles=cycles)
+        self.set_sweep_tdwell(time=0)
+        self.set_sweep_start_stop(start=lambda_start, stop=lambda_stop)
+        self.set_sweep_step(step=lambda_step)
+        
+        self.set_detect_func_mode(mode=("logging", "stop"))
+        trigno = self.get_detect_trigno()
+        self.set_detect_func_params(mode="logging", params=(trigno, tavg*1e-06))
+        self.set_detect_func_mode(mode=("logging", "start"))
+        
+        self.set_sweep_state(state="start")
+
+        # wait for the sweep to stop
+        while self.get_sweep_state(): 
+            pass
+
+        # Wait until the detector data acquisition is completed
+        while self.get_detect_func_state().endswith("progress"): 
+            time.sleep(0.1)
+
+        results = self.get_detect_func_result()
+        self.set_detect_func_mode(mode=("logging","stop"))
+
+        return results
 
 
 
