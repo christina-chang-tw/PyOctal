@@ -181,9 +181,9 @@ Before you run a test, please make sure that you set all parameters correctly in
 **Instrument Setup**
 
 Run `instr.py` as a module.
-| Test    | Description    |
-|---------|----------------|
-| m_8163b | Setup the multimeter to the auto-range and desired wavelength and output power |
+| Test    | Instrument | Description    |
+|---------| ---------- |----------------|
+| m_8163b | Agilent 8163B | Setup the multimeter to the auto-range and desired wavelength and output power |
 | h_speed | Setup the clock frequency for both clock signal generator and oscilloscope |
 
 ```bash
