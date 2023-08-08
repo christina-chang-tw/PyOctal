@@ -6,7 +6,7 @@ from lib.instruments import __platform__
 # Windows OS specific modules
 if sys.platform in __platform__:
     from .dc import DCSweeps
-    from .passive import PASILossSweep
+    from .passive import ILossSweep
 
 from .ac import ACSweeps
 from .iv import IVSweeps

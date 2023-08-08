@@ -13,6 +13,8 @@ CONNECTION_ERR = 0x10
 FOLDER_NOT_EXIST_ERR = 0x1A
 FILE_NOT_EXIST_ERR = 0x1B
 FILE_EMPTY_ERR = 0x1C
+INSTR_NOT_EXIST = 0x1D
+INSTR_MATCH_STRING_INCOR = 0x1E
 
 error_message = {
     INCOMPATIBLE_OS_ERR: "OS system incompatible. Please use Windows OS.",
@@ -28,7 +30,9 @@ error_message = {
     CONNECTION_ERR: "Cannot connect to the instrument.",
     FOLDER_NOT_EXIST_ERR: "Folder does not exist.",
     FILE_NOT_EXIST_ERR: "File does not exist.",
-    FILE_EMPTY_ERR: "File is empty."
+    FILE_EMPTY_ERR: "File is empty.",
+    INSTR_NOT_EXIST: "Required instruments for this sweep do not exist. Check YAML file instrument address parameter correspond to the device.",
+    INSTR_MATCH_STRING_INCOR: "Match strings for instruments is incorrect.",
 }
 
 

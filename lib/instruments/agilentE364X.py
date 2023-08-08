@@ -15,10 +15,10 @@ class AgilentE3640A(BaseInstrument):
 
     def setup(self):
         self.reset()
-        self.set_output_status(status=1)
+        self.set_output_state(status=1)
 
-    def set_output_status(self, status: bool=1):
-        self.write(f"output {status}")
+    def set_output_state(self, state: bool=1):
+        self.write(f"output {state}")
 
     def set_volt(self, volt: float=0):
         self.write(f"voltage {volt}")
@@ -29,7 +29,7 @@ class AgilentE3640A(BaseInstrument):
     def set_params(self, volt: float=0, curr: float=0):
         self.write(f"apply {volt}, {curr}")
 
-    def get_output_status(self) -> bool:
+    def get_output_state(self) -> bool:
         return self.query_bool(f"output?")
 
     def get_params(self) -> list: # return [volt, curr]

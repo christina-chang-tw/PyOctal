@@ -3,10 +3,15 @@
 
 --- # document start
 ### General variables for testing #################
-AgilentE3640A_Addr: "GPIB0::4::INSTR"
 folder: "Chip_5" # under results folder
 fname: "Si_wg" # the name of the file 
-
+instr_addrs:
+  siggen:
+    - "GPIB0::25::INSTR"
+    - "GPIB0::20::INSTR"
+  osc:
+    - "GPIB0::25::INSTR"
+    - "GPIB0::20::INSTR"
 
 ## var  ###########################################
 power: 10 #dBm
@@ -14,6 +19,7 @@ power: 10 #dBm
 v_start: 0 # start voltage [V]
 v_stop: 5  # stop voltage [V]
 v_step: 1    # step [V]
+cycle: 10
 
 lambda_start: 1530 # nm
 lambda_end: 1570 # nm

@@ -3,9 +3,9 @@
 import os
 import sys
 import subprocess
-import logging
+import platform
+import warnings
 
-logger = logging.getLogger(__name__)
 
 requirements = os.getcwd() + r"/requirements.txt"
 venv_path = os.getcwd() + r"/.venv"
@@ -19,7 +19,13 @@ try:
     subprocess.check_call([sys.executable, '-m', 'venv', venv_path])
     print("A local virtual environment is created...")
     subprocess.check_call([venv_py, '-m', 'pip', 'install', '-r', requirements])
-    print("Everything is successfully installed!")
+    print()
+    if not platform.system == "Windows":
+        print("WARNING: NOT WINDOWS SYSTEM")
+        print("Cannot install win32 so please don't use classes requiring it. Otherwise, you are good to go.")
+    else:
+        print("Everything is successfully installed. Congrats!")
+    print()
 
 except SystemError as error:
     raise error

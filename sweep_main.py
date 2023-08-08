@@ -5,7 +5,7 @@ pyversion_check()
 
 from lib.sweeps.info import TestInfo
 from lib.sweeps import (
-    PASILossSweep, 
+    ILossSweep, 
     DCSweeps,
     ACSweeps,
 )
@@ -47,22 +47,25 @@ class PrintSubparserInfo():
     def ac(self):
         pass
 
-def load_config(ttype, args_config):
-    #  If a config file is defined by user then use that otherwise use the default ones
-    fpath = f"{get_config_dirpath()}/{ttype}_config.yaml" if args_config is None else args_config[0]
-    with open(fpath, 'r') as file:
-        configs = yaml.safe_load(file)
-    return configs
-
 def print_setup_info(ttype, configs):
     """Print the setup information for each test"""
     print()
     print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
-    print("----------------------------------------------")
-    print("| TEST INFORMATION:                          |")
-    print("----------------------------------------------")
-    print(f'{"Folder":<25} : {configs["folder"]:<12}')
-    print(f'{"Test Type":<25} : {ttype:<12}')
+    print("##############################################")
+    print("## TEST INFORMATION:                        ##")
+    print("##############################################")
+    print()
+    print(f'{"Folder":<10} : {configs["folder"]:<12}')
+    print(f'{"Test Type":<10} : {ttype:<12}')
+    print("-------------------------------------------")
+    print(f'| {"Dev. Types":<10} | {"No. Dev.":^8} | {"Addresses":<15} |')
+    print("-------------------------------------------")
+    for instr_type in configs["instr_addr"].keys():
+        address = configs["instr_addr"][instr_type]
+        print(f'| {instr_type:<10} | {len(address):^8} | {address}')
+    print("-------------------------------------------")
+    print()
+
     print_info = PrintSubparserInfo(configs)
     if ttype == "passive":
         print_info.passive()
@@ -73,6 +76,14 @@ def print_setup_info(ttype, configs):
     print()
 
 
+def load_config(ttype, args_config):
+    #  If a config file is defined by user then use that otherwise use the default ones
+    fpath = f"{get_config_dirpath()}/{ttype}_config.yaml" if args_config is None else args_config[0]
+    with open(fpath, 'r') as file:
+        configs = yaml.safe_load(file)
+    return configs
+
+
 def test_distribution(ttype, configs):
     """ 
     Distribute tests 
@@ -80,22 +91,21 @@ def test_distribution(ttype, configs):
         configs: containing all input arguments
     """
     folder = configs["folder"]
+    instr_addrs = configs["instr_addrs"]
     info = TestInfo()
 
     # create a folder for the test chip if this has not been done so
     create_folder(get_result_dirpath(folder))
     
     if ttype == "passive":
-        instr = Agilent8163B(addr=configs["Agilent8163B_Addr"])
-        sweeps = PASILossSweep(instr=instr)
+        sweeps = ILossSweep(instr_addrs=instr_addrs)
         info.passive(folder, configs)
-        sweeps.run_sweep(folder, configs)
+        sweeps.run_sweep_ilme(folder, configs)
 
     elif ttype == "ac":
         pass
     elif ttype == "dc":
-        instr = AgilentE3640A(addr=configs["AgilentE3640A_Addr"])
-        sweeps = DCSweeps(instr=instr)
+        sweeps = DCSweeps(instr_addrs=instr_addrs)
         info.dc(folder, configs)
         sweeps.run_sweep_ilme(chip_name=folder, configs=configs)
         

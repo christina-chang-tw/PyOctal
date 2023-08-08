@@ -2,7 +2,40 @@
 
 This folder is used for setting up parameters for different testings and graph plotting. YAML file format is used for creating all configuration files and they will be appropriately loaded to the program when a corresponding function is called.
 
-If you are a user, please do not add or remove any parameter! Leave it blank if the variable is not used.
+If you are a user, please do not add or remove any base parameter! Leave it blank if the variable is not used.
+
+### Instrument address format
+
+Follow this parameter definitions carefully! If you get an error code of `0x1D`, the parameter which you specify for storing the address of your device is incorrect.
+
+| Parameters  | Device type         | Instruments       |
+| ----------- | ------------------- | ----------------- |
+| siggen | Signal Generator         | E8257D
+| osc    | Oscilloscope             | DSO8000, 86100D
+| amp    | Amplifier                | DSP7230, DSP7265
+| mm     | Multimeter               | 8163B
+| pm     | Power Meter              | E3640A, PM100
+| cs     | ComboSource              | 6301
+| smu    | Source Measure Unit      | 2400
+| vs     | Voltage Source           | 6487
+| ld     | Laser Diode              | ITC4002QCL
+| dfg    | Dual Function Generator  | TGF3162
+
+Example
+```yaml
+# In the corresponding YAML file
+# one device
+instr_addrs:
+  vs: "GPIB0::25::INSTR"
+  osc: "GPIB0::20::INSTR"
+
+# Two devices of same type
+instr_addrs:
+  smu: 
+    - "GPIB0::25::INSTR"
+    - "GPIB0::24::INSTR"
+  dfg: "GPIB0::20::INSTR"
+```
 
 ### How to write a YAML configuration file
 **IMPORTANT:** YAML best practice is to use two spaces rather than tab for indentation as using tab may cause parsing errors.

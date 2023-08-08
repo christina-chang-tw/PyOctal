@@ -3,6 +3,7 @@ from lib.error import *
 import pyvisa
 import logging
 from typing import Union
+import textwrap
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,48 @@ def list_resources():
     print('Available resources in the PC:')
     print(resources)
     return resources
+
+
+class DeviceID:
+    """
+    Device identity
+
+    Parameters
+    ----------
+    idn: str
+        string returned from querying IDN*?
+    """
+    def __init__(self, idn: str):
+        strip_idn = idn.split(',')
+        self._vendor = strip_idn[0]
+        self._modelno = strip_idn[1]
+        self._serialno = strip_idn[2]
+        self._version = strip_idn[3]
+
+    def __repr__(self):
+        return "Device ID()"
+    
+    def __str__(self):
+        text = textwrap.dedent(f"""
+            {'Vendor':<10} : {self._vendor}
+            {'Model No.':<10} : {self._modelno}
+            {'Serial No.':<10} : {self._serialno}
+            {'Version':<10} : {self._version}
+        """)
+        return text.lstrip().rstrip()
+    
+    @property
+    def vendor(self):
+        return self._vendor
+    @property
+    def modelno(self):
+        return self._vendor
+    @property
+    def serialno(self):
+        return self._serialno
+    @property
+    def version(self):
+        return self._version
 
 
 class BaseInstrument(object):
@@ -48,7 +91,7 @@ class BaseInstrument(object):
                     raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
                 print(f'You have connected succesfully with a/an {instr_type} type resource')
 
-                self._identity = self.get_idn()
+                self._identity = DeviceID(self.get_idn())
             else:
                 raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
         
@@ -123,7 +166,6 @@ class BaseInstrument(object):
     @property
     def rm(self):
         return self._rm
-    
 
     def __get_name(self) -> str:
         return self.__class__.__name__
@@ -144,18 +186,31 @@ class BaseSweeps(object):
     instr: an instrument class
         This is the instrument that is used in the sweep
     """
-    def __init__(self, instr):
-        self.instr = instr
+    def __init__(self, instr_addrs):
+        self._addrs = instr_addrs
 
-    def __get_name(self) -> str:
-        return self.__class__.__name__
-    
     def __str__(self) -> str:
-        return f"Sweep: {self.__get_name()} "
+        return f"Sweep: {self.__class__.__name__} "
     
     def __repr__(self) -> str:
-        return f"{self.__get_name()}({self.dev})"
+        return f"{self.__class__.__name__}"
     
+    @property
+    def addrs(self):
+        return self._addrs
+    
+    @staticmethod
+    def instrment_check(match, addr_list):
+        try:
+            if isinstance(match, str) and match not in addr_list:
+                raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
+            elif isinstance(match, Union[tuple, list]) and not all([dev_type in addr_list for dev_type in match]):
+                raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
+            else:
+                raise Exception(f"Error code {INSTR_MATCH_STRING_INCOR}: {error_message[INSTR_MATCH_STRING_INCOR]}")
+        except Exception as error:
+            raise error
+
     @classmethod
     def get_callable_funcs(cls):
         method_list = [method for method in dir(cls) if method.startswith('__') is False or method.startswith('_') is False]

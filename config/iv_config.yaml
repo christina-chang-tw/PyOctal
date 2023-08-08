@@ -8,11 +8,12 @@ folder: "Christina" # under results folder
 fname: "straight" # the name of the file e.g. <structure>_IVSweeps_data.csv
 ext: "csv"
 
-addr: 25 # instrument address
+instr_addrs:
 
 v_start: 0 # start voltage [V]
 v_stop: 5 # stop voltage [V]
 v_step: 1 # step [V]
+t_step: 0.2 # s
 
 ## list ###########################################
 

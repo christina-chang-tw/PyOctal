@@ -3,10 +3,11 @@
 
 --- # document start
 ### General variables for testing #################
-Agilent8163B_Addr: "GPIB0::25::INSTR" 
 folder: "Chip_5" # under results folder
-structure: "Si_wg" # the name of the file {structure}_DCSweeps_data
+fname: "Si_wg" # the name of the file {fname}.csv
 
+instr_addrs:
+  mm: "GPIB0::25::INSTR" 
 
 ## var  ###########################################
 power: 10       # output power [dBm]

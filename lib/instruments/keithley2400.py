@@ -17,9 +17,6 @@ class Keithley2400(BaseInstrument):
     def __init__(self, addr: str):
          super().__init__(rsc_addr=addr)
 
-    def set_output_state(self, state: bool=1):
-        self.write(f"output:state {state}")
-
     def initiate(self):
         self.write(f"initiate")
 
@@ -53,6 +50,9 @@ class Keithley2400(BaseInstrument):
     
 
     # Laser
+    def set_laser_state(self, state: bool=1):
+        self.write(f"output:state {state}")
+
     def set_laser_mode(self, mode: str):
         self.value_check(mode.lower(), ("curr", "volt", "mem"))
         self.write(f"source:function {mode}")
@@ -114,7 +114,7 @@ class Keithley2400(BaseInstrument):
         self.set_trace_points(pts=n)
         self.set_trace_ctl(ctl="next")
         self.set_trig_count(count=n)
-        self.set_output_state(1)
+        self.set_laser_state(1)
         self.initiate()
         
         time.sleep(0.1+1*speed+speed*n*0.06)

@@ -1,7 +1,8 @@
-from lib.instruments import AgilentE3640A, AgilentE3645
+from lib.instruments import AgilentE3640A, Agilent8163B, KeysightILME
 from lib.base import BaseSweeps
 from lib.util.file_operations import export_to_csv
 from lib.util.util import get_result_dirpath
+from lib.error import *
 
 from typing import Union
 import pandas as pd
@@ -11,15 +12,31 @@ import time
 
 logger = logging.getLogger(__name__)
 
-class DCSweeps(BaseSweeps):
-    def __init__(self, instr: Union[AgilentE3645, AgilentE3640A]):
-        super().__init__(instr=instr)
 
-    def run_sweep_ilme(self, configs):
+class DCSweeps(BaseSweeps):
+    """
+    DC Sweeps
+
+    This sweeps through the voltage range and obtains the information
+    about the insertion loss against wavelength 
+
+    Parameters
+    ----------
+    instr_addrs:
+        A dictionary of the addresses of all instruments used in this sweep
+    """
+    def __init__(self, instr_addrs: Union[str, list, tuple, dict]):
+        # check if the required device type exist
+        super().__init__(instr_addrs=instr_addrs)
+
+
+    def run_ilme(self, configs):
         """ Run with ILME engine """
-        #dev = KeysightILME()
-        dev = 0
-        dev.activate()
+        self.instrment_check("pm", self._addrs.keys())
+
+        pm = AgilentE3640A(addr=self._addrs["pm"])
+        ilme = KeysightILME()
+        ilme.activate()
         df = pd.DataFrame()
 
         v_start = configs["v_start"]
@@ -27,19 +44,22 @@ class DCSweeps(BaseSweeps):
         v_step = configs["v_step"]
 
         for volt in tqdm(range(v_start, v_stop+v_step, v_step)):
-            self.instr.set_volt(volt)
+            pm.set_volt(volt)
             print(f"Output voltage = {volt}")
 
-            dev.start_meas()
-            temp = dev.get_result(name=volt)
+            ilme.start_meas()
+            temp = ilme.get_result(name=volt)
             df = pd.concat([df, temp], axis=1)
             export_to_csv(df, get_result_dirpath(configs["folder"]), configs["fname"])
 
-        self.instr.set_volt(0)
+        pm.set_volt(0)
 
 
-    def run_sweep_instr(self, configs):
-        """ Run only with the instrument """
+    def run_one_source(self, configs):
+        """ Run only with instrument. Require one voltage source """
+        self.instrment_check(("pm", "mm"), self._addrs.keys())
+        pm = AgilentE3640A(addr=self._addrs["pm"])
+        mm = Agilent8163B(addr=self._addrs["mm"])
 
         v_start = configs["v_start"]
         v_stop = configs["v_stop"]
@@ -48,14 +68,14 @@ class DCSweeps(BaseSweeps):
         df = pd.DataFrame()
 
         for volt in tqdm(range(v_start, v_stop+v_step, v_step)):
-            self.instr.set_volt(volt)
+            pm.set_volt(volt)
             time.sleep(0.1)
-            currents = currents.append(self.instr.get_curr()) # get the current value
+            currents = currents.append(pm.get_curr()) # get the current value
 
-            self.instr.set_volt(0)
+            pm.set_volt(0)
 
             # get the sweep value
-            df[f"{volt}V"] = self.instr.run_laser_sweep_auto(
+            df[f"{volt}V"] = mm.run_laser_sweep_auto(
                 power=configs["power"], 
                 lambda_start=configs["lambda_start"],
                 lambda_stop=configs["lambda_stop"],
@@ -66,9 +86,16 @@ class DCSweeps(BaseSweeps):
             export_to_csv(df, get_result_dirpath(configs["folder"]), configs["fname"])
             export_to_csv(pd.Series(currents), get_result_dirpath(configs["folder"]), "dc_currents")
         
-        self.instr.set_volt(0)
-        self.instr.set_laser_state(0)
+        pm.set_volt(0)
+        pm.set_output_state(0)
         
+
+    def run_dual_sources(self, configs):
+        """ Run only with instrument. Require two voltage sources """
+        v_start = configs["v_start"]
+        v_stop = configs["v_stop"]
+        v_step = configs["v_step"]
+
 
 
         
