@@ -186,8 +186,10 @@ class BaseSweeps(object):
     instr: an instrument class
         This is the instrument that is used in the sweep
     """
-    def __init__(self, instr_addrs):
+    def __init__(self, instr_addrs, folder, fname):
         self._addrs = instr_addrs
+        self.folder = folder
+        self.fname = fname
 
     def __str__(self) -> str:
         return f"Sweep: {self.__class__.__name__} "

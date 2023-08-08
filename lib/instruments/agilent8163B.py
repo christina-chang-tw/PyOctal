@@ -215,7 +215,7 @@ class Agilent8163B(BaseInstrument):
             return wavelengths, powers
         
 
-    def run_laser_sweep_auto(self, power: float=10.0, lambda_start: float=1535.0, lambda_stop: float=1575.0, lambda_step: float=5.0, cycles: int=1, tavg: float=100):
+    def run_laser_sweep_auto(self, power: float=10.0, lambda_start: float=1535.0, lambda_stop: float=1575.0, lambda_step: float=5.0, cycles: int=1, tavg: float=100, lambda_speed: float=5):
 
         self.set_unit(source="dBm", sensor="Watt")
 
@@ -240,6 +240,7 @@ class Agilent8163B(BaseInstrument):
         self.set_sweep_tdwell(time=0)
         self.set_sweep_start_stop(start=lambda_start, stop=lambda_stop)
         self.set_sweep_step(step=lambda_step)
+        self.set_sweep_speed(speed=lambda_speed)
         
         self.set_detect_func_mode(mode=("logging", "stop"))
         trigno = self.get_detect_trigno()
