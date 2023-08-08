@@ -22,9 +22,7 @@ class ThorlabsITC4002QCL(BaseInstrument):
         return self.query_float("source:current? max")
     
     def set_curr(self, curr):
-        try:
-            if curr > self.get_curr_max():
-                ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
-            self.write(f"source:current {curr}")
-        except ValueError as error:
-            raise error
+        if curr > self.get_curr_max():
+            ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+        self.write(f"source:current {curr}")
+        

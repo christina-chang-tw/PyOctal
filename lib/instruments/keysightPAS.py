@@ -28,14 +28,11 @@ class BasePAS(object):
         start = time.time()
 
         # Check engine activation status
-        try:
-            while activating == 0:
-                time.sleep(0.5) 
-                activating = self.engine_status()
-                if time.time() - start > 30:
-                    raise TimeoutError("Timeout error: check devices connection")
-        except Exception as error:
-            raise error
+        while activating == 0:
+            time.sleep(0.5) 
+            activating = self.engine_status()
+            if time.time() - start > 30:
+                raise TimeoutError("Timeout error: check devices connection")
 
     def activate(self):
         self.engine.Activate()

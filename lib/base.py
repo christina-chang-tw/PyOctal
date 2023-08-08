@@ -80,43 +80,35 @@ class BaseInstrument(object):
         self._rm.read_termination = termination
         
         # Connect to the device
-        try: 
-            if rsc_addr in self.list_resource(): # Checking if the resource is available
-                self.instr = self._rm.open_resource(rsc_addr)
-                instr_type = self.instr.resource_info[3][:4]
-                known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
+        if rsc_addr in self.list_resource(): # Checking if the resource is available
+            self.instr = self._rm.open_resource(rsc_addr)
+            instr_type = self.instr.resource_info[3][:4]
+            known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
 
-                # make sure that we know the device type
-                if instr_type not in known_type:
-                    raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
-                print(f'You have connected succesfully with a/an {instr_type} type resource')
+            # make sure that we know the device type
+            if instr_type not in known_type:
+                raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
+            print(f'You have connected succesfully with a/an {instr_type} type resource')
 
-                self._identity = DeviceID(self.get_idn())
-            else:
-                raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
-        
-        except Exception as error:
-            raise error
+            self._identity = DeviceID(self.get_idn())
+        else:
+            raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
 
     def list_resource(self):
         return self._rm.list_resources()
             
     @staticmethod
     def value_check(value, cond: Union[tuple, list]=None):
-        try:
-            if cond is None: # nothing to check for
-                pass
-            elif not isinstance(cond, Union[tuple, list]) or all(cond): # the condition is incorrectly set and they are of the same type
-                raise ValueError(f"Error code {COND_INVALID_ERR:x}: {error_message[COND_INVALID_ERR]}")
-            elif len(cond) == 2 and all(isinstance(n, Union[float, int]) for n in cond):
-                if not cond[0] < value < cond[1]: # check the value is within range
-                    raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}.\nNeed to be between {cond[0]} and {cond[1]}.")
-            else:
-                if value not in cond: # check the value is in a list/tuple
-                    raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}.\nPlease select one of the values: {[', '.join(val) for val in cond]}")
-        
-        except ValueError as error:
-            raise error
+        if cond is None: # nothing to check for
+            pass
+        elif not isinstance(cond, Union[tuple, list]) or all(cond): # the condition is incorrectly set and they are of the same type
+            raise ValueError(f"Error code {COND_INVALID_ERR:x}: {error_message[COND_INVALID_ERR]}")
+        elif len(cond) == 2 and all(isinstance(n, Union[float, int]) for n in cond):
+            if not cond[0] < value < cond[1]: # check the value is within range
+                raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}.\nNeed to be between {cond[0]} and {cond[1]}.")
+        else:
+            if value not in cond: # check the value is in a list/tuple
+                raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}.\nPlease select one of the values: {[', '.join(val) for val in cond]}")
 
 
     def write(self, cmd):
@@ -203,15 +195,12 @@ class BaseSweeps(object):
     
     @staticmethod
     def instrment_check(match, addr_list):
-        try:
-            if isinstance(match, str) and match not in addr_list:
-                raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
-            elif isinstance(match, Union[tuple, list]) and not all([dev_type in addr_list for dev_type in match]):
-                raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
-            else:
-                raise Exception(f"Error code {INSTR_MATCH_STRING_INCOR}: {error_message[INSTR_MATCH_STRING_INCOR]}")
-        except Exception as error:
-            raise error
+        if isinstance(match, str) and match not in addr_list:
+            raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
+        elif isinstance(match, Union[tuple, list]) and not all([dev_type in addr_list for dev_type in match]):
+            raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
+        else:
+            raise Exception(f"Error code {INSTR_MATCH_STRING_INCOR}: {error_message[INSTR_MATCH_STRING_INCOR]}")
 
     @classmethod
     def get_callable_funcs(cls):

@@ -13,21 +13,26 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class DictObj:
+    """ Convert a dictionary to python object """
+    def __init__(self, **dictionary):
+        for key, val in dictionary.items():
+            if isinstance(val, dict):
+                self.__dict__[key] = DictObj(**val)
+            else:
+                self.__dict__[key] = val
+
 def platform_check():
-    try:
-        if sys.platform not in __platform__:
-            raise SystemError("Error code %s: %s. Current platform is %s" % (INCOMPATIBLE_OS_ERR, error_message[INCOMPATIBLE_OS_ERR], sys.platform))
-    except SystemError as error:
-        raise error
+    if sys.platform not in __platform__:
+        raise SystemError("Error code %s: %s. Current platform is %s" % (INCOMPATIBLE_OS_ERR, error_message[INCOMPATIBLE_OS_ERR], sys.platform))
+    
 
 def pyversion_check():
-    try:
-        MIN_PYTHON = __python_min_version__
-        CUR_PYTHON = (sys.version_info.major, sys.version_info.minor)
-        if sys.version_info <= MIN_PYTHON:
-            raise SystemError("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
-    except SystemError as error:
-        raise error
+    MIN_PYTHON = __python_min_version__
+    CUR_PYTHON = (sys.version_info.major, sys.version_info.minor)
+    if sys.version_info <= MIN_PYTHON:
+        raise SystemError("Error code %s: %s. Python %s.%s or later is required. Current version: Python %s.%s\n" % (PYTHON_VER_ERROR, error_message[PYTHON_VER_ERROR], MIN_PYTHON[0], MIN_PYTHON[1], CUR_PYTHON[0], CUR_PYTHON[1]))
+
 
 def get_func_name() -> str:
     return inspect.stack()[1].function

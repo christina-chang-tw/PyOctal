@@ -4,7 +4,9 @@
 --- # document start
 ### General variables for testing #################
 folder: "Chip_5" # under results folder
-fname: "Si_wg" # the name of the file 
+fname: "Si_wg" # in csv
+func:
+
 instr_addrs:
   siggen:
     - "GPIB0::25::INSTR"

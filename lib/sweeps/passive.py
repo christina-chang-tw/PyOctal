@@ -22,17 +22,17 @@ class ILossSweep(BaseSweeps):
         A dictionary of the addresses of all instruments used in this sweep
     """
     def __init__(self, configs: dict):
-        super().__init__(instr_addrs=configs["instr_addr"], folder=configs["folder"], fname=configs["fname"])
-        self.w_start = configs["w_start"]
-        self.w_stop = configs["w_stop"]
-        self.w_step = configs["step"]
-        self.power = configs["power"]
+        super().__init__(instr_addrs=configs.instr_addrs, folder=configs.folder, fname=configs.fname)
+        self.w_start = configs.w_start
+        self.w_stop = configs.w_stop
+        self.w_step = configs.w_step
+        self.power = configs.power
 
 
-    def run_sweep_ilme(self, lengths):
+    def run_ilme(self, lengths):
         """ This uses ILME machine to obtain results about insertion loss and  wavelength """
         self.instrment_check("mm", self._addrs.keys())
-        mm = Agilent8163B(addr=self._addrs["mm"])
+        mm = Agilent8163B(addr=self._addrs.mm)
         dev = KeysightILME()
         dev.activate()
         

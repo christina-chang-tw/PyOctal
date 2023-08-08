@@ -88,19 +88,16 @@ class Agilent8163B(BaseInstrument):
         self.write(f"{self.sens}:function:status {mode[0]},{mode[1]}")
     
     def set_detect_func_params(self, mode: str, params: Union[tuple,list]):
-        try: 
-            mode = mode.lower()
-            if mode == "logging" or "logg": # params = [data_pts, avg_time]
-                self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s") 
-            elif mode == "minmax" or "minm": # params = [mode, data_pts]
-                self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
-            elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
-                self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
-            else:
-                raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
-        
-        except ValueError as error:
-            raise error
+        mode = mode.lower()
+        if mode == "logging" or "logg": # params = [data_pts, avg_time]
+            self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s") 
+        elif mode == "minmax" or "minm": # params = [mode, data_pts]
+            self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
+        elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
+            self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
+        else:
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+
 
     def get_detect_pow(self) -> float:
         return self.query_float(f"read{self.sens_num}:channel{self.sens_chan}:power?")
@@ -179,12 +176,9 @@ class Agilent8163B(BaseInstrument):
 
     # Complicated functions
     def run_sweep_manual(self, power: float=10.0, lambda_start: float=1535.0, lambda_stop: float=1575.0, lambda_step: float=5.0):
-        try:
-            lambda_range = (self.get_laser_wav_min(), self.get_laser_wav_min())
-            if lambda_start <= lambda_range[0] and lambda_stop >= lambda_range[1]:
-                raise ValueError(f"Wavelength out of range. Please be within {lambda_range[0]} and {lambda_range[1]}.")
-        except ValueError as error:
-            raise error
+        lambda_range = (self.get_laser_wav_min(), self.get_laser_wav_min())
+        if lambda_start <= lambda_range[0] and lambda_stop >= lambda_range[1]:
+            raise ValueError(f"Wavelength out of range. Please be within {lambda_range[0]} and {lambda_range[1]}.")
         
         wavelengths = []
         powers = []

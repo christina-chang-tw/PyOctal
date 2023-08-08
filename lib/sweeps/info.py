@@ -10,13 +10,13 @@ class TestInfo():
         info = {
             "Testing Type" : "Passive insertion Loss",
             "Number of channels" : 1,
-            "Power [dBm]" : configs["power"],
-            "Start wavelength [nm]" : f'{configs["w_start"]}',
-            "Stop wavelength [nm]" : f'{configs["w_stop"]}',
-            "Wavelength step [pm]" : configs["step"],
-            "Lengths [um]" : [", ".join(str(i)) for i in configs["lengths"]],
+            "Power [dBm]" : configs.power,
+            "Start wavelength [nm]" : f'{configs.w_start}',
+            "Stop wavelength [nm]" : f'{configs.w_stop}',
+            "Wavelength step [pm]" : configs.w_step,
+            "Lengths [um]" : [", ".join(str(i)) for i in configs.lengths],
         }
-        export_to_csv(package_info(info), get_result_dirpath(chip_name), f'{configs["structure"]}_{get_func_name()}_info')
+        export_to_csv(package_info(info), get_result_dirpath(chip_name), f'{configs.fname}_info')
 
 
     @staticmethod
@@ -25,9 +25,9 @@ class TestInfo():
         info = {
             "Testing Type" : "DC Scan",
             "Number of channels" : 1,
-            "Power [dBm]" : configs["power"],
-            "Start voltage [V]" : configs["v_start"],
-            "Stop voltage [V]" : configs["v_stop"],
-            "Step voltage [V]" : configs["v_step"],
+            "Power [dBm]" : configs.power,
+            "Start voltage [V]" : configs.v_start,
+            "Stop voltage [V]" : configs.v_stop,
+            "Step voltage [V]" : configs.v_step,
         }
-        export_to_csv(package_info(info), get_result_dirpath(chip_name), f'{configs["structure"]}_{get_func_name()}_info')
+        export_to_csv(package_info(info), get_result_dirpath(chip_name), f'{configs.fname}_info')

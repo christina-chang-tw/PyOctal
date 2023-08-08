@@ -5,8 +5,8 @@
 
 ## var  ###########################################
 folder: "Christina" # under results folder
-fname: "straight" # the name of the file e.g. <structure>_IVSweeps_data.csv
-ext: "csv"
+fname: "straight" # in csv
+func:
 
 instr_addrs:
 

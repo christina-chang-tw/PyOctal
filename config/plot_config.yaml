@@ -7,20 +7,23 @@ fname: "KTN_chip" # <fname>.csv or <fname>.xlsx
 func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
 
-# Filtering signal parameters - moving average #
-signal_filter: false # require filtering the signal?
-window_size: 100
-
-title: "Si Waveguide Loss"
-end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}
-unit: "mm" # unit (being on the y-axis)
-
 folders: # select folder name under results
   - "Chip_6"
 
 sheets: # excel only
   - "Si waveguide"
 
+
+## Plot Variables ###############################################
+title: "Si Waveguide Loss"
+xlabel: "Wavelength [nm]"
+ylabel: "Loss [dB/mm]"
+end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}
+
+
+# Filtering signal parameters - moving average ##################
+signal_filter: false # require filtering the signal?
+window_size: 100
 
 
 ## Length Loss Plots Only Variables #####################################

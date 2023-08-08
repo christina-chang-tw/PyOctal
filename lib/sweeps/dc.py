@@ -22,16 +22,16 @@ class DCSweeps(BaseSweeps):
     """
     def __init__(self, configs: dict):
         # check if the required device type exist
-        super().__init__(instr_addrs=configs["instr_addr"], folder=configs["folder"], fname=configs["fname"])
-        self.v_start = configs["v_start"]
-        self.v_stop = configs["v_stop"]
-        self.v_step = configs["v_step"]
-        self.cycles = configs["cycles"]
-        self.w_start=configs["lambda_start"],
-        self.w_stop=configs["lambda_stop"],
-        self.w_step=configs["lambda_step"]*pow(10, 3),
-        self.w_speed=configs["lambda_speed"]
-        self.power = configs["power"]
+        super().__init__(instr_addrs=configs.instr_addrs, folder=configs.folder, fname=configs.fname)
+        self.v_start = configs.v_start
+        self.v_stop = configs.v_stop
+        self.v_step = configs.v_step
+        self.cycles = configs.cycles
+        self.w_start=configs.lambda_start,
+        self.w_stop=configs.lambda_stop,
+        self.w_step=configs.lambda_step*pow(10, 3)
+        self.w_speed=configs.lambda_speed
+        self.power = configs.power
         self.currents = []
         self.df = pd.DataFrame()
 
@@ -40,7 +40,7 @@ class DCSweeps(BaseSweeps):
         """ Run with ILME engine """
         self.instrment_check("pm", self._addrs.keys())
 
-        pm = AgilentE3640A(addr=self._addrs["pm"])
+        pm = AgilentE3640A(addr=self._addrs.pm)
         ilme = KeysightILME()
         ilme.activate()
 
@@ -61,8 +61,8 @@ class DCSweeps(BaseSweeps):
     def run_one_source(self):
         """ Run only with instrument. Require one voltage source """
         self.instrment_check(("pm", "mm"), self._addrs.keys())
-        pm = AgilentE3640A(addr=self._addrs["pm"])
-        mm = Agilent8163B(addr=self._addrs["mm"])
+        pm = AgilentE3640A(addr=self._addrs.pm)
+        mm = Agilent8163B(addr=self._addrs.mm)
 
         for volt in tqdm(range(self.v_start, self.v_stop+self.v_step, self.v_step)):
             pm.set_volt(volt)
@@ -86,18 +86,6 @@ class DCSweeps(BaseSweeps):
         
         pm.set_volt(0)
         pm.set_output_state(0)
-        
-
-    def run_dual_sources(self):
-        """ Run only with instrument. Require two voltage sources """
-        pass
-
-
-
-class DualDCSweeps:
-
-    def __init__(self, instr):
-        pass
 
         
         

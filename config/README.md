@@ -36,6 +36,21 @@ instr_addrs:
     - "GPIB0::24::INSTR"
   dfg: "GPIB0::20::INSTR"
 ```
+### Available functions
+
+This table provides information about all callable functions for each type of sweeps. The function that you wish to call can be specified by `func` in a YMAL config file.
+
+| Sweeps      | Functions      | Instruments | Description |
+| ----------- | -------------- | ----------- | ----------- |
+| passive     | run_ilme       | Agilent8163B, KeysightILME | Use ILME Engine to control the multimeter |
+| dc          | run_ilme       | AgilentE3640A, KeysightILME | Use ILME Engine to sweep through the wavelengths and a voltage source to perform dc sweeps|
+|             | run_one_source | AgilentE3640A, Agilent8163B | Perform direct loss-wavelength measurement with the multimeter at different voltages |
+| iv          | run_7487       | Keithley6487 | Run with Keithley 6487 voltage source |
+|             | run_DSP7265    | AgilentE3640A, AmetekDSP7265 | Run with a power meter and a lock-in amplifier |
+|             | run_dual_DSP7265 | AgilentE3640Ax2, AmetekDSP7265 | Run with two power meters and a lock-in amplifier
+|             | run_E3640A | AgilentE3640A | Run with only the power meter |
+|             | run_2400   | Keithley2400  | Run with only the SMU
+
 
 ### How to write a YAML configuration file
 **IMPORTANT:** YAML best practice is to use two spaces rather than tab for indentation as using tab may cause parsing errors.
