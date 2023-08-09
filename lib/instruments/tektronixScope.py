@@ -8,7 +8,7 @@ from typing import Tuple
 
 class TektronixScope(BaseInstrument):
     """
-    Tektronix Scope Library
+    Tektronix Scope Library VISA Library.
 
     Parameters
     ----------
@@ -21,7 +21,7 @@ class TektronixScope(BaseInstrument):
         self.name = self.get_idn()
         self.set_data_format(format="asci")
 
-    def set_scope_acq_state(self, state: bool=1):
+    def set_scope_acq_state(self, state: bool):
         self.write(f"acquire:state {state}")
 
     # Measurement
@@ -82,10 +82,10 @@ class TektronixScope(BaseInstrument):
     
 
     # Data
-    def set_data_format(self, format: str="asci"):
+    def set_data_format(self, datafm: str="asci"):
         types = ("asci", "rib", "rpb", "fpb", "sri", "srp", "sfp")
-        self.value_check(format.lower(), types)
-        self.write(f"data:encdg {format}")
+        self.value_check(datafm.lower(), types)
+        self.write(f"data:encdg {datafm}")
 
     def set_data_source(self, src: str):
         self.write(f"data:source {src}")
@@ -107,7 +107,7 @@ class TektronixScope(BaseInstrument):
         return np.array(dataint)
 
 
-    def get_data(self,source):
+    def get_data(self,source: str):
         """
         Get scaled data from source where source is one of
         CH1,CH2,REFA,REFB
@@ -129,7 +129,7 @@ class TektronixScope(BaseInstrument):
         return data
 
     def get_xdata(self):
-        """Method to get the horizontal data array from a scope"""
+        """ Get the horizontal data array from a scope """
         # Get the timescale
         timescale = self.get_horizontal_scale()
 
@@ -140,22 +140,21 @@ class TektronixScope(BaseInstrument):
         return time
 
 
-    def plot_wfm(self, source):
-        "Method to plot the oscilloscope waveform"
-        x = self.get_xdata()
-        y = self.get_data(source)
+    def plot_wfm(self, source: str):
+        " Plot the oscilloscope waveform "
+        xdata = self.get_xdata()
+        ydata = self.get_data(source)
         xunit, yunit = self.get_wfmp_units()
 
         plot.xlabel("Time " + xunit)
         plot.ylabel("Voltage " + yunit)
-        plot.plot(x,y)
+        plot.plot(xdata,ydata)
         plot.show()
 
 
-    def get_mean(self, source):
-        "Method to get the waveform mean using the oscilloscope measure function"
+    def get_mean(self, source: str):
+        " Get the waveform mean using the oscilloscope measure function "
 
-        #Set the measurement source and type
         self.set_meas_source(source)
         self.set_meas_type(typ="Mean")
 

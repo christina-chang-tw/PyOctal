@@ -1,16 +1,11 @@
+import warnings
+import pandas as pd
+from tqdm import tqdm
+
 from lib.instruments import KeysightILME, Agilent8163B
 from lib.util.file_operations import export_to_csv
 from lib.util.util import wait_for_next_meas, get_result_dirpath
 from lib.base import BaseSweeps
-
-
-import pandas as pd
-from tqdm import tqdm 
-import logging
-
-
-
-logger = logging.getLogger(__name__)
 
 class ILossSweep(BaseSweeps):
     """
@@ -57,7 +52,7 @@ class ILossSweep(BaseSweeps):
 
         
         if not lf.eq(lf.iloc[:,0], axis=0).all(axis=1).all(axis=0):
-            logger.warning("Discrepancy in wavelengths")
+            warnings.warn("Discrepancy in wavelengths")
 
 
     

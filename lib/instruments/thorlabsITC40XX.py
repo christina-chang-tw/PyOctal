@@ -1,10 +1,9 @@
 from lib.base import BaseInstrument
-from lib.error import *
+from lib.error import PARAM_OUT_OF_RANGE_ERR, error_message
 
 class ThorlabsITC4002QCL(BaseInstrument):
     """
-    Thorlabs ITC4002QCL 
-    Benchtop Laser Diode/TEC Controller for QCLs VISA Library
+    Thorlabs ITC4002QCL Benchtop Laser Diode/TEC Controller for QCLs VISA Library.
 
     Parameters
     ----------
@@ -21,8 +20,8 @@ class ThorlabsITC4002QCL(BaseInstrument):
     def get_curr_max(self) -> float:
         return self.query_float("source:current? max")
     
-    def set_curr(self, curr):
+    def set_curr(self, curr: float):
         if curr > self.get_curr_max():
-            ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
+            raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: {error_message[PARAM_OUT_OF_RANGE_ERR]}")
         self.write(f"source:current {curr}")
         

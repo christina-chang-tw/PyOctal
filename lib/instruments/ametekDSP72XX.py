@@ -6,7 +6,7 @@ from typing import Union
 
 class AmetekDSP7230(BaseInstrument):
     """
-    Ametek DSP7230 DSP Lock-In VISA Library
+    Ametek DSP7230 DSP Lock-In Amplifier VISA Library.
 
     Parameters
     ----------
@@ -39,7 +39,6 @@ class AmetekDSP7265(BaseInstrument):
 
     def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)
-
 
     # Set
     def set_mag(self, mag: float):
@@ -128,15 +127,21 @@ class AmetekDSP7265(BaseInstrument):
     def get_eq1(self) -> float:
         return self.query_float("equ1.?")
 
-
-    
-    def avg_channel1(self, duration: float, wait: float) -> float:
+    def get_avgv_ch(self, chan: int, duration: float, wait: float) -> float:
+        """ Obtain the averaged voltage value of a channel """
         points = int(duration/wait)
         v_sum = 0
+        func = None
+
+        # get the correct function to call
+        if chan == 1:
+            func = self.get_mag1
+        elif chan == 2:
+            func = self.get_mag2
 
         for _ in range(points):
             time.sleep(wait)
-            volt = self.get_mag1()
+            volt = func()
             v_sum = v_sum + volt
 
         return v_sum/points

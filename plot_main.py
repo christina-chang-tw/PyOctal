@@ -2,10 +2,10 @@
 from lib.util.util import pyversion_check
 pyversion_check()
 
+import yaml
+
 from lib.util.plot import PlotGraphs
 from lib.util.util import get_config_dirpath, DictObj
-
-import yaml
 
 def main():
     config_fpath= f'{get_config_dirpath()}/plot_config.yaml'

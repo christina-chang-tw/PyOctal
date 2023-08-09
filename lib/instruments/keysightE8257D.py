@@ -5,7 +5,7 @@ from typing import Union
 
 class KeysightE8257D(BaseInstrument):
     """
-    Keysight E8257D PSG Signal Geneartors VISA Libray
+    Keysight E8257D PSG Signal Geneartors VISA Libray.
 
     Parameters
     ----------
@@ -57,13 +57,13 @@ class KeysightE8257D(BaseInstrument):
         self.write(f"frequency:channels:state {state}")
 
     def get_freq_fixed(self) -> float:
-        return self.query_float(f"frequency:fixed?")
+        return self.query_float("frequency:fixed?")
     
     def get_freq_cw(self) -> float:
-        return self.query_float(f"frequency:cw?")
+        return self.query_float("frequency:cw?")
 
     def get_freq_mode(self) -> str:
-        return self.query(f"frequency:mode?")
+        return self.query("frequency:mode?")
 
     # Power 
     def set_output_power(self, power: float):

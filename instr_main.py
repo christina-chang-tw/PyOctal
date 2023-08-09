@@ -2,6 +2,9 @@
 from lib.util.util import pyversion_check
 pyversion_check()
 
+import textwrap
+import argparse
+
 from lib.instruments import (
     Agilent8163B, 
     KeysightFlexDCA, 
@@ -12,8 +15,7 @@ from lib.util.util import (
 )
 from lib.util.formatter import CustomArgparseFormatter
 
-import textwrap
-import argparse
+
 
 ###########################################################
 ### USER DEFINED VARIABLES ################################

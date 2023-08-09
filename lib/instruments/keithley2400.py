@@ -6,7 +6,7 @@ from typing import Tuple
 
 class Keithley2400(BaseInstrument):
     """
-    Keithley 2400 Source Measure Unit VISA Library
+    Keithley 2400 Source Measure Unit VISA Library.
 
     Parameters
     ----------
@@ -18,7 +18,7 @@ class Keithley2400(BaseInstrument):
          super().__init__(rsc_addr=addr)
 
     def initiate(self):
-        self.write(f"initiate")
+        self.write("initiate")
 
     def meas_curr(self) -> float:
         data = self.query("measure:current?")
@@ -50,18 +50,18 @@ class Keithley2400(BaseInstrument):
     
 
     # Laser
-    def set_laser_state(self, state: bool=1):
+    def set_laser_state(self, state: bool):
         self.write(f"output:state {state}")
 
     def set_laser_mode(self, mode: str):
         self.value_check(mode.lower(), ("curr", "volt", "mem"))
         self.write(f"source:function {mode}")
 
-    def set_laser_volt(self, volt):
+    def set_laser_volt(self, volt: float):
         self.value_check(volt, (-210.0, 210.0))
         self.write(f"source:voltage:level {volt}")
 
-    def set_laser_curr(self, curr):
+    def set_laser_curr(self, curr: float):
         self.value_check(curr, (-1.05, 1.05))
         self.write(f"source:current:level {curr}")
 
@@ -97,34 +97,35 @@ class Keithley2400(BaseInstrument):
 
 
     # Calculate
-    def set_calc3_format(self, format: str="mean"):
-        self.value_check(format.lower(), ("mean", "sdev", "max", "min", "pkpk"))
-        self.write(f"calculate3:format {format}")
+    def set_calc3_format(self, calc3_fm: str):
+        self.value_check(calc3_fm.lower(), ("mean", "sdev", "max", "min", "pkpk"))
+        self.write(f"calculate3:format {calc3_fm}")
 
     def get_calc3_data(self):
         return self.query("calculate3:data?")
 		
 
     # Complex functions
-    def meas_curr_buf(self, volt: float, n, speed) -> Tuple[list, float]:
-        """ measure current buffer """
+    def meas_curr_buf(self, volt: float, num, speed) -> Tuple[list, float]:
+        """ measure average current? """
         self.set_laser_volt(volt=volt)
         self.set_detect_npl_cycles(speed=speed)
         self.set_trace_source(source="sense")
-        self.set_trace_points(pts=n)
+        self.set_trace_points(pts=num)
         self.set_trace_ctl(ctl="next")
-        self.set_trig_count(count=n)
+        self.set_trig_count(count=num)
         self.set_laser_state(1)
         self.initiate()
         
-        time.sleep(0.1+1*speed+speed*n*0.06)
+        time.sleep(0.1+1*speed+speed*num*0.06)
         trace_data = self.get_trace_data()
-        self.set_calc3_format(format="mean")
+        self.set_calc3_format(calc3_fm="mean")
 
         calc3_data = self.get_calc3_data()
         self.set_trace_ctl(ctl="never")
 
-        currents = [float(trace_data.split(","[5*(i-1)+1])) for i in range(n)]
+        currents = [float(trace_data.split(","[5*(i-1)+1])) for i in range(num)]
         current = calc3_data.split(",")[1]
         
         return currents, current
+    

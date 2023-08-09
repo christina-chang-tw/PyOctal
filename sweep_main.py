@@ -3,23 +3,23 @@ from lib.util.util import pyversion_check, platform_check
 platform_check()
 pyversion_check()
 
+import argparse
+from datetime import datetime
+import logging
+import yaml
+
 from lib.sweeps.info import TestInfo
 from lib.sweeps import (
     ILossSweep, 
     DCSweeps,
 )
-from lib.util.formatter import CustomLogFormatter, CustomArgparseFormatter
+from lib.util.formatter import CustomArgparseFormatter
 from lib.util.util import (
     get_config_dirpath, 
     create_folder,
     get_result_dirpath,
     DictObj
 )
-
-import argparse
-from datetime import datetime
-import logging
-import yaml
 
 TEST_TYPES = ("passive", "dc", "ac")
 
@@ -161,11 +161,6 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     level=args.loglvl[0])
-    
-    logger = logging.getLogger()
-    cmd = logging.StreamHandler()
-    cmd.setFormatter(CustomLogFormatter())
-    logger.addHandler(cmd)
 
     configs = load_config(ttype, args.config)
     print_setup_info(ttype, configs)

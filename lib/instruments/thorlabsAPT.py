@@ -1,7 +1,15 @@
 # Make sure that the system is Windows OS
 from ctypes import WinDLL, pointer
 
-class ThorlabsAPT(object):
+class ThorlabsAPT():
+    """
+    Thorlabs APT WinDLL Library.
+
+    Parameters
+    ----------
+    serial: str
+        The serial number of the instrument
+    """
 
     def __init__(self, serial: float=83863567):
         aptdll = WinDLL.LoadLibrary("APT.dll")
@@ -11,10 +19,10 @@ class ThorlabsAPT(object):
         self._aptdll = aptdll
         self.serial = serial
 
-    def MOT_GetPosition(self, pos):
+    def MOT_GetPosition(self, pos: float):
         return self._aptdll.MOT_GetPosition(self.serial, pointer(pos))
 
-    def MOT_MoveAbsoluteEx(self, abs_pos):
+    def MOT_MoveAbsoluteEx(self, abs_pos: float):
         self._aptdll.MOT_MoveAbsoluteEx(self.serial, abs_pos, True)
 
     @property

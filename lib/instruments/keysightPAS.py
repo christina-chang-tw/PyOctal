@@ -4,16 +4,14 @@ import win32com.client
 import time
 import numpy as np
 import pandas as pd
-import logging
 from typing import Tuple
-
-logger = logging.getLogger(__name__)
 
 class BasePAS(object):
     """
-    A base Photonics Application Suite class
-    (This base object is put in here to ensure that people can use other instruments
-    even though they are not using Windows OS)
+    A base Photonics Application Suite class.
+    
+    This base object is put in here to ensure that people can use other instruments
+    even though they are not using Windows OS
 
     Parameters
     ----------
@@ -57,11 +55,14 @@ class BasePAS(object):
         return f"Photonics Application Suite: {self.__get_name()} "
     
     def __repr__(self) -> str:
-        return f"{self.__get_name()}({self.engine, self.identity})"
+        return f"{self.__get_name()}()"
+
 
 class KeysightILME(BasePAS):
     """
-    Keysight Insertion Loss Measurement Engine Win32com Library
+    Keysight Insertion Loss Measurement Engine Win32com Library.
+
+    This can control Agilent 8163B.
     """
 
     def __init__(self):
@@ -77,7 +78,7 @@ class KeysightILME(BasePAS):
         self.engine.WavelengthStep = step * 1e-12 # 0.3 x sweep rate [nm/s] = step size [pm]
         self.engine.TLSPower = pow(10, (power/10)) * 1e-03
 
-    def set_num_of_scans(self, num: int=1):
+    def set_num_of_scans(self, num: int):
         self.engine.NumberOfScans = num
 
     def start_meas(self):
@@ -89,10 +90,12 @@ class KeysightILME(BasePAS):
     def get_no_channels(self) -> int:
         return self.no_channels  
 
-    def get_result(self, name: int=0) -> Tuple[tuple, tuple]:
+    def get_result(self, name: int) -> Tuple[tuple, tuple]:
         data = pd.DataFrame()
 
         busy = True
+
+        # Wait for the sweep to finish
         while busy == True:
             time.sleep(0.1)
             busy = self.engine.Busy

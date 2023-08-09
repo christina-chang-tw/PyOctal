@@ -1,11 +1,8 @@
-from lib.error import *
-
 import pyvisa
-import logging
 from typing import Union
 import textwrap
 
-logger = logging.getLogger(__name__)
+from lib.error import *
 
 def list_resources():
     """
@@ -20,8 +17,14 @@ def list_resources():
 
 class DeviceID:
     """
-    Device identity
+    Device identity.
 
+    This splits up the return IDN*? query string into a nice format where the user can easily access information about the vendor, model number, serial number, and the version.
+
+    e.g.
+        dev = DeviceID(identity)
+        dev.vendor -> vendor information
+        dev.serialno -> device serial number
     Parameters
     ----------
     idn: str
@@ -114,11 +117,8 @@ class BaseInstrument(object):
     def write(self, cmd):
         self.instr.write(cmd)
     
-    def write_binary_values(self, cmd):
-        self.instr.write_binary_values(cmd)
-    
-    def read(self, cmd) -> str:
-        return self.instr.read(cmd).rstrip()
+    def write_binary_values(self, cmd, **kwargs):
+        self.instr.write_binary_values(cmd, **kwargs)
     
     def query(self, cmd) -> str:
         return self.instr.query(cmd).rstrip()
@@ -171,7 +171,7 @@ class BaseInstrument(object):
 
 class BaseSweeps(object):
     """
-    A base sweep class
+    A base sweep class.
 
     Parameters
     ----------

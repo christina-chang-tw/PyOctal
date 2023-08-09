@@ -1,6 +1,14 @@
 from lib.base import BaseInstrument
 
 class EXFOXTA50(BaseInstrument):
+    """
+    EXFOXTA 50 VISA Library.
+    
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
 
     def __init__(self, addr: str):
         super().__init__(rsc_addr=addr)

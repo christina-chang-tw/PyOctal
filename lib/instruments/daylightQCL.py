@@ -4,6 +4,14 @@ from lib.error import *
 from collections import namedtuple
 
 class DaylightQCL(BaseInstrument):
+    """
+    Daylight QCL Control VISA Library.
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    """
 
     _rcontrol = namedtuple("rcontrol", ["wn", "curr", "freq", "pw", "mode"])
 
@@ -34,7 +42,8 @@ class DaylightQCL(BaseInstrument):
         self.write(f"pulse:width {pw}")
 
     def set_mode(self, mode: int):
-        """set scanmode.
+        """
+        Set scanmode.
 
         1 = automatic stepscan
         2 = manual stepscan
@@ -45,29 +54,29 @@ class DaylightQCL(BaseInstrument):
         self.write(f"scan:mode {mode}")
 
     def get_freq(self) -> float:
-        answer = self.query_float("pulse:freq?")
-        return answer[:-2] # remove the last cell
+        answer = self.query("pulse:freq?")
+        return float(answer[:-2]) # remove the last cell
 
     def get_curr(self) -> float:
         """ get the current laser current """
-        answer = self.query_float("laser:current:sense?")
-        return answer[:-2] # remove the last cell
+        answer = self.query("laser:current:sense?")
+        return float(answer[:-2]) # remove the last cell
 
     def get_wn(self) -> float:
         """ get the current wavenumber """
-        answer = self.query_float("laser:set?")
-        return answer[:-2]
+        answer = self.query("laser:set?")
+        return float(answer[:-2])
 
     def get_awn(self) -> float:
         """ get the current wavenumber """
-        answer = self.query_float("laser:pos?")
-        return answer[:-2]
-    
+        answer = self.query("laser:pos?")
+        return float(answer[:-2])
+
     def get_pulse_width(self) -> float:
         """ get the pulsewidth """
-        answer = self.query_float("pulse:width?")
-        return answer[:-2]
-    
+        answer = self.query("pulse:width?")
+        return float(answer[:-2])
+
     def get_mode(self) -> str:
         answer = self.query("scan:mode?")
-        return answer[:-2] 
+        return float(answer[:-2])

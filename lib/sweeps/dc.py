@@ -1,12 +1,11 @@
-from lib.instruments import AgilentE3640A, Agilent8163B, KeysightILME
-from lib.base import BaseSweeps
-from lib.util.file_operations import export_to_csv
-from lib.util.util import get_result_dirpath
-
 import pandas as pd
 from tqdm import tqdm 
 import time
 
+from lib.instruments import AgilentE3640A, Agilent8163B, KeysightILME
+from lib.base import BaseSweeps
+from lib.util.file_operations import export_to_csv
+from lib.util.util import get_result_dirpath
 
 class DCSweeps(BaseSweeps):
     """
@@ -71,7 +70,7 @@ class DCSweeps(BaseSweeps):
 
             pm.set_volt(0)
 
-            # get the sweep value
+            # get the loss v.s. wavelength
             self.df[f"{volt}V"] = mm.run_laser_sweep_auto(
                 power=self.power, 
                 lambda_start=self.w_start,

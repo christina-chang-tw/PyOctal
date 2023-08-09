@@ -5,7 +5,7 @@ from typing import Union
 
 class Keysight86100D(BaseInstrument):
     """
-    Keysight 86100D Wide-Bandwidth Oscilloscope VISA Library
+    Keysight 86100D Wide-Bandwidth Oscilloscope VISA Library.
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ class Keysight86100D(BaseInstrument):
         self.value_check(mode.lower(), ("fixed", "fix", "rdependent", "rdep"))
         self.write(f"{self.clock}:lbwmode {mode}")
 
-    def set_clk_clbandwidth(self, bandwidth):
+    def set_clk_clbandwidth(self, bandwidth: float):
         # need to set LBWMode to fixed before running this cmd
         self.value_check(bandwidth, (30e+3, 20e+6))
         self.write(f"{self.clock}:clbandwidth {bandwidth}")
@@ -81,7 +81,7 @@ class Keysight86100D(BaseInstrument):
     def set_clk_autoodratio_state(self, state: bool):
         self.write(f"{self.clock}:odratio:auto {state}")
 
-    def set_clk_odratio(self, rdiv):
+    def set_clk_odratio(self, rdiv: str):
         self.write(f"{self.clock}:odratio {rdiv}")
 
     def get_clk_arelock_state(self) -> bool:
@@ -100,7 +100,7 @@ class Keysight86100D(BaseInstrument):
 
 class KeysightFlexDCA(BaseInstrument):
     """
-    Keysight FlexDCA for controlling 86100D Wide-Bandwidth Oscilloscope VISA Library
+    Keysight FlexDCA for controlling 86100D Wide-Bandwidth Oscilloscope VISA Library.
 
     Parameters
     ----------
@@ -143,6 +143,6 @@ class KeysightFlexDCA(BaseInstrument):
 
     def get_clk_adratio(self) -> str:
         return self.query(f"{self.clock}:adratio?")
-    
+
     def get_clk_lock(self) -> bool:
         return self.query_bool(f"{self.clock}:locked?")

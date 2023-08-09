@@ -2,16 +2,15 @@
 This file contains all sorts of functions
 that are used but do not belong to a specific category
 """
-from lib.error import *
-from . import __python_min_version__, __platform__
-
 import inspect
 import sys
 import os
 import pandas as pd
-import logging
 
-logger = logging.getLogger(__name__)
+from lib.error import *
+from . import __python_min_version__, __platform__
+
+
 
 class DictObj:
     """ Convert a dictionary to python object """
@@ -39,7 +38,7 @@ def get_func_name() -> str:
 
 def wait_for_next_meas(i, total):
     print("\r")
-    input("%s/%s : Press ENTER to continue" % (i, total))
+    input(f"{i}/{total} : Press ENTER to continue")
 
 def get_config_dirpath() -> str:
     return f'{os.getcwd()}/config'
@@ -51,21 +50,15 @@ def package_info(info: dict) -> pd.DataFrame:
     return pd.DataFrame(info.items(), columns=['Params', 'Value'])
 
 def create_folder(path: str="XXX"):
-    try:
-        if not os.path.isdir(path):
-            os.mkdir(path)
-    except:
-        raise NotADirectoryError(f"Error code {FOLDER_NOT_EXIST_ERR}: {error_message[FOLDER_NOT_EXIST_ERR]}")
+    if not os.path.isdir(path):
+        os.mkdir(path)
 
 def delete_folder(path: str="XXX"):
-    try:
-        if os.path.isdir(path):
-            os.rmdir(path)
-    except:
-        raise NotADirectoryError(f"Error code {FOLDER_NOT_EXIST_ERR}: {error_message[FOLDER_NOT_EXIST_ERR]}")
-    
+    if os.path.isdir(path):
+        os.rmdir(path)
 
-def get_callable_funcs(cls, identifier):
+def get_callable_funcs(cls, identifier) -> str:
+    """ Get all callable functions of a class in a nice format style"""
     cls = type(cls) # get the class of the instance
     funcname_list = [method for method in dir(cls) if method.startswith(identifier)]
     func_list = [f'{i:20}:{cls.__dict__[i].__doc__}'.lstrip().rstrip() for i in funcname_list]

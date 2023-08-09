@@ -6,7 +6,7 @@ import numpy as np
 
 class TTiTGF3162(BaseInstrument):
     """
-    TTi TGF3162 Dual Channel Arbitrary Function Generator
+    TTi TGF3162 Dual Channel Arbitrary Function Generator VISA Library.
 
     Parameters
     ----------
@@ -47,21 +47,21 @@ class TTiTGF3162(BaseInstrument):
         self.value_check(channel, (1, 2))
         self.write(f"chn {channel}")
 
-    def load_arb(self, memchan):
+    def load_arb(self, memchan: int):
         self.write(f"arbload arb{memchan}")
 
-    def set_arb_waveform(self, array, memchan):
+    def set_arb_waveform(self, array: Union[list, tuple], memchan: int):
         # the array of values should be between -1 and 1
         # max length = 1024
         values = np.int16(array*pow(2, 15))
-        self.write_binary_values(f"arb{memchan} ", values, is_big_endian=True, datatype='h')
+        self.write_binary_values(f"arb{memchan}, {values}", is_big_endian=True, datatype='h')
 
     def set_arb_output(self):
         self.write("wave arb")
 
-    def set_arb_dc(self, memchan):
+    def set_arb_dc(self, memchan: int):
         y = 0.999*np.ones(2)
         self.set_arb_waveform(y, memchan)
 
-    def get_arb_waveform(self, memchan):
+    def get_arb_waveform(self, memchan: int) -> Union[list,tuple]:
         return self.query_binary_values(f"arb{memchan}?")

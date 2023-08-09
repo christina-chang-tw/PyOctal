@@ -1,3 +1,6 @@
+import time
+import pandas as pd
+
 from lib.instruments import (
     Keithley6487, 
     AmetekDSP7265,
@@ -7,10 +10,6 @@ from lib.instruments import (
 from lib.base import BaseSweeps
 from lib.util.util import get_result_dirpath
 from lib.util.file_operations import export_to_csv
-
-import time
-import pandas as pd
-
 
 class IVSweeps(BaseSweeps):
     """

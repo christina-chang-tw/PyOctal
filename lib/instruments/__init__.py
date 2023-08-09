@@ -8,7 +8,7 @@ __platform__ = ("cygwin", "win32") # Windows OS system
 
 
 from .agilent8163B import Agilent8163B
-from .agilentE364X import AgilentE3645, AgilentE3640A
+from .agilentE3640 import AgilentE3645, AgilentE3640A
 from .agilentDSO8000 import AgilentDSO8000
 
 from .ametekDSP72XX import AmetekDSP7230, AmetekDSP7265
