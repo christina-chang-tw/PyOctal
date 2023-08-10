@@ -8,8 +8,9 @@ import logging
 from lib.util.plot import PlotGraphs
 from lib.util.util import get_config_dirpath, setup_rootlogger
 
+LOG_FNAME = "./logging.log"
 root_logger = logging.getLogger()
-setup_rootlogger(root_logger)
+setup_rootlogger(root_logger, LOG_FNAME)
 logger = logging.getLogger(__name__)
 
 

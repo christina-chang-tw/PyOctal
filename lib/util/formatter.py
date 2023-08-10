@@ -11,7 +11,7 @@ class Colours:
     reset = "\x1b[0m"
 
 class CustomLogFileFormatter(logging.Formatter):
-    """ Format the logging better with a customised log formatter """
+    """ Format the logging output to the log file to display extra information. """
 
     fmat = "%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
 
@@ -29,7 +29,7 @@ class CustomLogFileFormatter(logging.Formatter):
         return formatter.format(record)
 
 class CustomLogConsoleFormatter(logging.Formatter):
-    """ Format the logging better with a customised log formatter """
+    """ Get a colourful terminal output for different logging level. """
 
     fmat = "%(message)s"
  
@@ -48,7 +48,7 @@ class CustomLogConsoleFormatter(logging.Formatter):
 
 
 class CustomArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
-    """ Format the argparse helper message better with a customised argparse formatter """
+    """ Display default values in the helper message. """
 
     def _get_help_string(self, action):
         help_msg = action.help
@@ -56,7 +56,6 @@ class CustomArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.R
             if action.default is not argparse.SUPPRESS:
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if action.option_strings or action.nargs in defaulting_nargs:
-                    print(type(action.default))
                     if isinstance(action.default, type(sys.stdin)):
                         help_msg += ' [default: ' + str(action.default.name) + ']'
                     elif isinstance(action.default, bool):

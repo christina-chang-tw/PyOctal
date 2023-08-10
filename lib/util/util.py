@@ -12,19 +12,6 @@ from lib.error import *
 from lib.util.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
 from . import __python_min_version__, __platform__
 
-class Tee:
-    """ Print the print statement to output and a logfile """
-    def __init__(self, *files):
-        self.files = files
-
-    def write(self, obj):
-        for file in self.files:
-            file.write(obj)
-
-    def flush(self):
-        for file in self.files:
-            file.flush()
-
 
 class DictObj:
     """ Convert a dictionary to python object """
@@ -36,10 +23,10 @@ class DictObj:
                 self.__dict__[key] = val
 
 
-def setup_rootlogger(root_logger):
+def setup_rootlogger(root_logger, fname: str):
     root_logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(filename="./logging.log", mode='w') # output loggings to logging.log
+    file_handler = logging.FileHandler(filename=fname, mode='w') # output loggings to logging.log
     file_handler.setFormatter(CustomLogFileFormatter())
     root_logger.addHandler(file_handler)
 

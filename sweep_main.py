@@ -22,9 +22,11 @@ from lib.util.util import (
     DictObj
 )
 
+LOG_FNAME = "./logging.log"
 root_logger = logging.getLogger()
-setup_rootlogger(root_logger)
+setup_rootlogger(root_logger, LOG_FNAME)
 logger = logging.getLogger(__name__)
+
 
 TEST_TYPES = ("passive", "dc", "ac")
 
@@ -47,6 +49,7 @@ class PrintSubparserInfo():
     @staticmethod
     def ac(configs):
         pass
+
 
 def log_setup_info(ttype, configs):
     """Print the setup information for each test"""
@@ -74,6 +77,7 @@ def log_setup_info(ttype, configs):
     elif ttype == "dc":
         PrintSubparserInfo.dc(configs)
     logger.info()
+
 
 
 def load_config(ttype, args_config):

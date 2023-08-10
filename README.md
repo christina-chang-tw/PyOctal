@@ -29,15 +29,15 @@ This is a tool allowing you to do three things: remotely setup your instruments,
 .
 <folders>
 ├── config                   # all configuration files
+│   └── ...                         # read the README.md
 ├── lib                      # core library
-├── results                  # store testing results
-├── tests                    # contain unit testing for functions (users please ignore)
+│   └── ...                         # read the README.md
+├── results                  # all test results should be stored here
 <files>
-├── instr.py                 # direct interface with instruments (only for simple setup cases)
-├── logging.log              # logging the output to a file
-├── main.py                  # interface with running sweeps
-├── plot.py                  # interface with plotting graphs
+├── instr_main.py            # direct interface with instruments (only for simple setup cases)
+├── plot_main.py             # plotting graphs
 ├── requirements.txt         # contain all required python packages for this repository <need to be amended>
+├── sweep_main.py            # interface for running sweeps
 └── venv_setup.py            # set up virtual environment <not working>
 ```
 
