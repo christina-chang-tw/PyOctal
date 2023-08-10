@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 ###########################################################
                                                           
 CONFIGS = {                                               
-    "Agilent8163B_Addr": "GPIB0::20::INSTR",              
+    "Agilent8163B_Addr": "GPIB0::25::INSTR",              
     "KeysightE8257D_Addr": "",   
     "KeysightFlexDCA_Addr": "",
     "Keysight86100D_Addr": "",                            
@@ -49,15 +49,15 @@ CONFIGS = {
 
 INSTR_TYPES = ("m_8163b", "h_speed")
 
-def setup(ttype, args, addr):
+def setup(ttype, args, addrs):
     if ttype == "m_8163b":
-        instr = Agilent8163B(addr=addr["Agilent8163B_Addr"])
-        instr.setup(wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
+        instr = Agilent8163B(addr=addrs["Agilent8163B_Addr"])
+        instr.setup(reset=args.reset, wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "h_speed":
         # obtaining the device
-        siggen = KeysightE8257D(addr=addr["KeysightE8257D_Addr"])
-        osc = KeysightFlexDCA(addr=addr["KeysightFlexDCA_Addr"])
+        siggen = KeysightE8257D(addr=addrs["KeysightE8257D_Addr"])
+        osc = KeysightFlexDCA(addr=addrs["KeysightFlexDCA_Addr"])
         siggen.set_freq_fixed(freq=args.freq[0])
         osc.lock_clk()
         osc.set_clk_odratio(ratio=args.odratio[0])
@@ -100,6 +100,7 @@ if __name__ == "__main__":
     m_8163b.add_argument("-w", "--wavelength", type=float, metavar="", dest="wavelength", nargs=1, default=(1550,), help="Sensing and output wavelength [nm]", required=False)
     m_8163b.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=(10,), help="Laser output power [dBm]", required=False)
     m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(200e-03,), help="Averaged period [s]", required=False)
+    m_8163b.add_argument("--reset", action='store_true', dest="reset", help="Reset the instrument", required=False)
     
     # Subparser arguments for setting up high-speed testing involving KeysightE8257D and KeysightFlexDCA
     h_speed = subparsers.add_parser(INSTR_TYPES[1], description=subparser_info("h_speed"), help="High speed instrument setup", formatter_class=CustomArgparseFormatter)

@@ -31,15 +31,17 @@ class Agilent8163B(BaseInstrument):
         self.laser = f"source{self.src_num}:channel{self.src_chan}"
         self.detect = f"sense{self.sens_num}:channel{self.sens_chan}"
 
-    def setup(self, wavelength: float=1550, power: float=10, period: float=200e-03):
+    def setup(self, reset: bool, wavelength: float=1550, power: float=10, period: float=200e-03):
         """ Make waveguide alignment easier for users """
-        self.reset()
+        if reset:
+            self.reset()
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(power)
         self.set_detect_avgtime(period=period) # avgtime = 200ms
         self.set_unit(source="dBm", sensor="Watt")
-        self.set_laser_state(1)
+        if not self.get_laser_state():
+            self.set_laser_state(1)
 
     def unlock(self):
         self.write(f"lock {0},{1234}") # unlock with code 1234
@@ -133,6 +135,9 @@ class Agilent8163B(BaseInstrument):
 
     def get_laser_data(self, mode: str) -> list:
         return self.query_binary_values(f"{self.laser}:read:data? {mode}")
+    
+    def get_laser_state(self) -> bool:
+        self.query_bool(f"{self.laser}:power:state?")
     
     def get_laser_wav_min(self) -> float:
         return self.query_float(f"{self.laser}:wavelength? MIN")

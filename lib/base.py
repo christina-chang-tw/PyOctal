@@ -84,13 +84,13 @@ class BaseInstrument(object):
         self._rm = pyvisa.ResourceManager()
         self._rm.timeout = 20000
         self._rm.read_termination = termination
-        
+
         # Connect to the device
         if rsc_addr in self.list_resource(): # Checking if the resource is available
             self.instr = self._rm.open_resource(rsc_addr)
             instr_type = self.instr.resource_info[3][:4]
             known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
-
+            
             # make sure that we know the device type
             if instr_type not in known_type:
                 raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")

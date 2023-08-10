@@ -56,8 +56,11 @@ class CustomArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.R
             if action.default is not argparse.SUPPRESS:
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if action.option_strings or action.nargs in defaulting_nargs:
+                    print(type(action.default))
                     if isinstance(action.default, type(sys.stdin)):
                         help_msg += ' [default: ' + str(action.default.name) + ']'
+                    elif isinstance(action.default, bool):
+                        help_msg += ' [default: ' + str(action.default) + ']'
                     elif action.default is not None:
                         help_msg += f' [default: {", ".join(map(str, action.default))}]'
         return help_msg
