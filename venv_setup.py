@@ -19,7 +19,7 @@ subprocess.check_call([sys.executable, '-m', 'venv', venv_path])
 print("A local virtual environment is created...")
 subprocess.check_call([venv_py, '-m', 'pip', 'install', '-r', requirements])
 print()
-if not platform.system == "Windows":
+if platform.system() != "Windows":
     print("WARNING: NOT WINDOWS SYSTEM")
     print("Cannot install win32 so please don't use classes requiring it. Otherwise, you are good to go.")
 else:

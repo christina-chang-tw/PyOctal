@@ -15,7 +15,7 @@ class TestInfo():
             "Start wavelength [nm]" : f'{configs.w_start}',
             "Stop wavelength [nm]" : f'{configs.w_stop}',
             "Wavelength step [pm]" : configs.w_step,
-            "Lengths [um]" : [", ".join(str(i)) for i in configs.lengths],
+            "Lengths [um]" : [", ".join(map(str, configs.lengths))],
         }
         export_to_csv(package_info(info), get_result_dirpath(chip_name), f'{configs.fname}_info')
 

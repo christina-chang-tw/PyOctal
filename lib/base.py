@@ -1,8 +1,11 @@
 import pyvisa
 from typing import Union
 import textwrap
+import logging
 
 from lib.error import *
+
+logger = logging.getLogger(__name__)
 
 def list_resources():
     """
@@ -10,8 +13,8 @@ def list_resources():
     """
     # List of the available resources
     resources = pyvisa.ResourceManager().list_resources()
-    print('Available resources in the PC:')
-    print(resources)
+    logger.info('Available resources in the PC:')
+    logger.info(resources)
     return resources
 
 
@@ -91,7 +94,7 @@ class BaseInstrument(object):
             # make sure that we know the device type
             if instr_type not in known_type:
                 raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
-            print(f'You have connected succesfully with a/an {instr_type} type resource')
+            logger.info(f'You have connected succesfully with a/an {instr_type} type resource')
 
             self._identity = DeviceID(self.get_idn())
         else:

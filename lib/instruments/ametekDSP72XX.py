@@ -56,7 +56,7 @@ class AmetekDSP7265(BaseInstrument):
     def set_user_eq(self, eq: str):
         if not isinstance(eq, Union[list, tuple]):
             raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Param should be a list")
-        self.write(f'defequ {[" ".join(i) for i in eq]}')
+        self.write(f'defequ {" ".join(eq)}')
 
     def set_dual_tc(self, tc: int):
         tconst_dict = {

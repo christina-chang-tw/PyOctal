@@ -5,6 +5,9 @@ import numpy as np
 import pandas as pd
 from collections import deque
 import matplotlib.animation as animation
+import logging
+
+logger = logging.getLogger(__name__)
 
 class RealTimePlot(object):
     """
@@ -73,14 +76,13 @@ class PlotGraphs(object):
 
     def __init__(self, configs):
         self.configs = configs
-        self.unit = configs.unit
-        self.folders = configs.folders
-        self.no_channels = configs.no_channels
-        self.fname = configs.fname
-        self.title = configs.title
-        self.sf = configs.signal_filter
-        self.xlabel = configs.xlabel
-        self.ylabel = configs.ylabel
+        self.folders = configs["folders"]
+        self.no_channels = configs["no_channels"]
+        self.fname = configs["fname"]
+        self.title = configs["title"]
+        self.sf = configs["signal_filter"]
+        self.xlabel = configs["xlabel"]
+        self.ylabel = configs["ylabel"]
 
     @staticmethod
     def __get_new_figure(title):
@@ -161,8 +163,8 @@ class PlotGraphs(object):
 
     def plt_len_loss_csv(self):
         """ Plot a loss v.s. length graph with the data from a csv file """
-        exp_lambda = self.configs.exp_lambda
-        avg_range = self.configs.lambda_avgrange
+        exp_lambda = self.configs["exp_lambda"]
+        avg_range = self.configs["lambda_avgrange"]
         no_channels = self.no_channels
 
         ax = self.__get_new_figure(self.title)
@@ -174,10 +176,10 @@ class PlotGraphs(object):
             wavelength = df["Wavelength"]
 
             # Drop the unwanted lengths
-            if "columns_drop" in self.configs.keys() and self.configs.columns_drop.get(name):
-                df = df.loc[:, [not x for x in df.columns.str.startswith(tuple(self.configs.columns_drop[name]))]]
+            if "columns_drop" in self.configs.keys() and self.configs["columns_drop"].get(name):
+                df = df.loc[:, [not x for x in df.columns.str.startswith(tuple(self.configs["columns_drop"][name]))]]
 
-            df = df.apply(lambda x: self.signal_filter(x, window_size=self.configs.window_size)) if self.sf else df # need to filter out the noise?
+            df = df.apply(lambda x: self.signal_filter(x, window_size=self.configs["window_size"])) if self.sf else df # need to filter out the noise?
 
             
             for i in range(no_channels):
@@ -199,7 +201,7 @@ class PlotGraphs(object):
                 # plot data
                 ax.plot(xline, yline, ':')
                 ax.scatter(xdata, ydata, label=label)
-                print(f'{name}_CH{i} : y = {round(fit[0],4)}x {round(fit[1],4)}')
+                logger.info(f'{name}_CH{i} : y = {round(fit[0],4)}x {round(fit[1],4)}')
             
         ax.legend(fontsize=8)
 
@@ -219,17 +221,18 @@ class PlotGraphs(object):
             xdata = df['Wavelength']
 
             # plot the wanted columns
-            if "columns_plot" in self.configs.keys() and self.configs.columns_plot.get(name):
-                df = df.loc[:, list(df.columns.str.startswith(tuple(self.configs.columns_plot[name])))]
+            if "columns_plot" in self.configs.keys() and self.configs["columns_plot"].get(name):
+                df = df.loc[:, list(df.columns.str.startswith(tuple(self.configs["columns_plot"][name])))]
 
             for i in range(no_channels):
                 # obtain the columns from the correct channel
                 temp = df.loc[:, df.columns.str.endswith(f'CH{i}')]
                 
                 for length in temp.columns.values:
-                    label = f'{name}_{length.split(" - ")[0]}{self.configs.end_of_legend}' if no_channels == 1 else f'{name}_{length}{self.configs.end_of_legend}'
+                    label = f'{name}_{length}' if no_channels == 1 else f'{name}_CH{i}_{length}'
+                    label = label + self.configs["end_of_legend"]
                     ydata = temp.loc[:,length]
-                    ydata = self.signal_filter(ydata, window_size=self.configs.window_size) if self.sf else ydata
+                    ydata = self.signal_filter(ydata, window_size=self.configs["window_size"]) if self.sf else ydata
                     ax.plot(xdata, ydata, label=label)
 
         ax.legend(fontsize=8)
@@ -237,8 +240,8 @@ class PlotGraphs(object):
 
     def plt_len_loss_excel(self):
         """ Plot a loss v.s. length graph with the data from a excel file """
-        exp_lambda = self.configs.exp_lambda
-        avg_range = self.configs.lambda_avgrange
+        exp_lambda = self.configs["exp_lambda"]
+        avg_range = self.configs["lambda_avgrange"]
         no_channels = self.no_channels
 
         ax = self.__get_new_figure(self.title)
@@ -247,21 +250,21 @@ class PlotGraphs(object):
 
         for name in self.folders:
 
-            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs.sheets)
+            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs["sheets"])
             
-            for sheet in self.configs.sheets:
+            for sheet in self.configs["sheets"]:
                 df_dropped = df[sheet]
                 wavelength = df_dropped["Wavelength"]*1e+09
                 df_dropped = df_dropped.drop("Wavelength", axis=1)
 
                 # Drop the unwanted lengths
-                if "columns_drop" in self.configs.keys() and self.configs.columns_drop.get(name):
-                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(self.configs.columns_drop[name]))]]
+                if "columns_drop" in self.configs.keys() and self.configs["columns_drop"].get(name):
+                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(self.configs["columns_drop"][name]))]]
                 
                 
                 for i in range(no_channels):
                     label = f'{name}_{sheet}' if no_channels == 1 else f'{name}_{sheet}_CH{i}'
-                    df_dropped = df_dropped.apply(lambda x: self.signal_filter(x, window_size=self.configs.window_size)) if self.sf else df_dropped # filter out the noise
+                    df_dropped = df_dropped.apply(lambda x: self.signal_filter(x, window_size=self.configs["window_size"])) if self.sf else df_dropped # filter out the noise
                     
                     # obtain the columns from the correct channel
                     temp = df_dropped.loc[:, df_dropped.columns.str.endswith(f'CH{i}')]
@@ -280,7 +283,7 @@ class PlotGraphs(object):
                     ax.plot(xline, yline, ':')
                     ax.scatter(xdata, ydata, label=label)
                     offset = f'+{round(fit[1],4)}' if fit[1] > 0 else round(fit[1], 4) if fit[1] < 0 else 0
-                    print(f'{name}_CH{i} : y = {round(fit[0],4)}x {offset}')
+                    logger.info(f'{name}_CH{i} : y = {round(fit[0],4)}x {offset}')
         ax.legend(fontsize=8)
 
 
@@ -294,15 +297,15 @@ class PlotGraphs(object):
 
         for name in self.folders:
             
-            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs.sheets)
+            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs["sheets"])
             
-            for sheet in self.configs.sheets:
+            for sheet in self.configs["sheets"]:
                 df_dropped = df[sheet]
                 xdata = df_dropped.loc[:,'Wavelength']*1e+09
 
                 # plot the wanted columns
-                if "columns_plot" in self.configs.keys() and self.configs.columns_plot.get(name):
-                    df_dropped = df_dropped.loc[:, list(df_dropped.columns.str.startswith(tuple(self.configs.columns_plot[name])))]
+                if "columns_plot" in self.configs.keys() and self.configs["columns_plot"].get(name):
+                    df_dropped = df_dropped.loc[:, list(df_dropped.columns.str.startswith(tuple(self.configs["columns_plot"][name])))]
 
 
                 for i in range(no_channels):
@@ -312,10 +315,10 @@ class PlotGraphs(object):
                     temp = temp.sort_index(axis=1, ascending=True) # sort out the index in ascending order
                     
                     for length in temp.columns.values:
-                        
-                        label = f'{name}_{length}{self.configs.end_of_legend}' if no_channels == 1 else f'{name}_CH{i}_{length}{self.configs.end_of_legend}'
+                        label = f'{name}_{length}' if no_channels == 1 else f'{name}_CH{i}_{length}'
+                        label = label + self.configs["end_of_legend"]
                         ydata = np.negative(temp.loc[:,length])
-                        ydata = self.signal_filter(data=ydata, window_size=self.configs.window_size) if self.sf else ydata
+                        ydata = self.signal_filter(data=ydata, window_size=self.configs["window_size"]) if self.sf else ydata
                         ax.plot(xdata, ydata, label=label)
         ax.legend(fontsize=8)
 
@@ -328,14 +331,14 @@ class PlotGraphs(object):
         ax.set_ylabel(self.ylabel)
 
         for name in self.folders:
-            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs.sheets)
+            df = get_dataframe_from_excel(path=get_result_dirpath(name), fname=self.fname, sheet_names=self.configs["sheets"])
             
-            for sheet in self.configs.sheets:
+            for sheet in self.configs["sheets"]:
                 df_dropped = df[sheet]
                 
                 # plot the wanted columns
-                if "dc_drop" in self.configs.keys() and self.configs.dc_drop.get(name):
-                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(self.configs.dc_drop[name]))]]
+                if "dc_drop" in self.configs.keys() and self.configs["dc_drop"].get(name):
+                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(self.configs["dc_drop"][name]))]]
 
                 xdata = df_dropped.loc[:,'Wavelength']*1e+09
 
@@ -346,9 +349,10 @@ class PlotGraphs(object):
                     temp = temp.sort_index(axis=1, ascending=True) # sort out the index in ascending order
                     
                     for length in temp.columns.values:
-                        label = f'{name}_{length}{self.configs.end_of_legend}' if no_channels == 1 else f'{name}_CH{i}_{length}{self.configs.end_of_legend}'
+                        label = f'{name}_{length}' if no_channels == 1 else f'{name}_CH{i}_{length}'
+                        label = label + self.configs["end_of_legend"]
                         ydata = np.negative(temp.loc[:,length])
-                        ydata = self.signal_filter(data=ydata, window_size=self.configs.window_size) if self.sf else ydata
+                        ydata = self.signal_filter(data=ydata, window_size=self.configs["window_size"]) if self.sf else ydata
                         ax.plot(xdata, ydata, label=label)
         ax.legend(fontsize=8)
 

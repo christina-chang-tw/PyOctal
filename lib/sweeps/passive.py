@@ -7,6 +7,10 @@ from lib.util.file_operations import export_to_csv
 from lib.util.util import wait_for_next_meas, get_result_dirpath
 from lib.base import BaseSweeps
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class ILossSweep(BaseSweeps):
     """
     Insertion Loss Sweeps
@@ -52,7 +56,7 @@ class ILossSweep(BaseSweeps):
 
         
         if not lf.eq(lf.iloc[:,0], axis=0).all(axis=1).all(axis=0):
-            warnings.warn("Discrepancy in wavelengths")
+            logger.warning("Discrepancy in wavelengths")
 
 
     

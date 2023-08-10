@@ -4,6 +4,7 @@ pyversion_check()
 
 import textwrap
 import argparse
+import logging
 
 from lib.instruments import (
     Agilent8163B, 
@@ -12,9 +13,13 @@ from lib.instruments import (
 )
 from lib.util.util import (
     get_config_dirpath,
+    setup_rootlogger,
 )
 from lib.util.formatter import CustomArgparseFormatter
 
+root_logger = logging.getLogger()
+setup_rootlogger(root_logger)
+logger = logging.getLogger(__name__)
 
 
 ###########################################################
@@ -59,11 +64,9 @@ def setup(ttype, args, addr):
 
         
 
-
-
-def subparser_info(type) -> str:
+def subparser_info(typ) -> str:
     info = ""
-    if type == INSTR_TYPES[0]:
+    if typ == INSTR_TYPES[0]:
         info = textwrap.dedent("""\
                 Multimeter M8163B Equipment:
 
@@ -88,15 +91,17 @@ if __name__ == "__main__":
 
     subparsers = parser.add_subparsers(
         dest="test",
-        help="Test type: " + ", ".join([meas for meas in INSTR_TYPES]),
+        help="Test type: " + ", ".join(INSTR_TYPES),
         required=True
     )
 
+    # Subparser arguments for setting up Agilent 8163B
     m_8163b = subparsers.add_parser(INSTR_TYPES[0], description=subparser_info("m_8163b"), help="Multimeter M8163B equipment setup", formatter_class=CustomArgparseFormatter)
     m_8163b.add_argument("-w", "--wavelength", type=float, metavar="", dest="wavelength", nargs=1, default=(1550,), help="Sensing and output wavelength [nm]", required=False)
     m_8163b.add_argument("-p", "--power", type=float, metavar="", dest="power", nargs=1, default=(10,), help="Laser output power [dBm]", required=False)
     m_8163b.add_argument("-t", "--avg-time", type=float, metavar="", dest="period", nargs=1, default=(200e-03,), help="Averaged period [s]", required=False)
     
+    # Subparser arguments for setting up high-speed testing involving KeysightE8257D and KeysightFlexDCA
     h_speed = subparsers.add_parser(INSTR_TYPES[1], description=subparser_info("h_speed"), help="High speed instrument setup", formatter_class=CustomArgparseFormatter)
     h_speed.add_argument("-f", "--frequency", type=float, metavar="", dest="freq", nargs=1, default=(1,), help="Set the frequency of the signal generator [GHz]", required=False)
     h_speed.add_argument("-r", "--odratio", type=str, metavar="", dest="odratio", nargs=1, default=("unit",), help="Set the output clock divide ratio", required=False)
