@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "octal"
+version = "0.0.1"
+authors = [
+    {name = "Tzu-Yun Chang", email = "tyc1g20@soton.ac.uk"}
+]
+description = "Automated testing library for a wide range of instruments"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: Microsoft :: Windows",
+    "Development Status :: 2 - Pre-Alpha",
+]
+dependencies = [
+    'matplotlib',
+    'numpy',
+    'pandas',
+    'pyvisa',
+    'pyyaml',
+    'tqdm',
+]
+
+[project.urls]
+Repository = "https://github.com/christina-chang-tw/ORCOCTAL.git"
+
+[project.optional-dependencies]
+tests = [
+    'pytest',
+    'pywin32 ; platform_system != "Windows"',
+]
+
+[tool.setuptools]
+packages = ["octal"]

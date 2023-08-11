@@ -1,3 +1,18 @@
+Metadata-Version: 2.1
+Name: octal
+Version: 0.0.1
+Summary: Automated testing library for a wide range of instruments
+Author-email: Tzu-Yun Chang <tyc1g20@soton.ac.uk>
+Project-URL: Repository, https://github.com/christina-chang-tw/ORCOCTAL.git
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Development Status :: 2 - Pre-Alpha
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Provides-Extra: tests
+License-File: LICENSE
+
 # ORC Optical Chip Test Automation Library
 
 ORC OCTAL is a Python package equipped with all essential sweep tests, analysis tools, and interfaces with existing equipments in ORC group.

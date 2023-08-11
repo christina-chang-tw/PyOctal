@@ -3,12 +3,13 @@
 --- # document start
 
 ## General Variables  ###########################################
+
 fname: "KTN_chip" # <fname>.csv or <fname>.xlsx
 func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
 
 folders: # select folder name under results
-  - "Chip_6"
+  - "./results/Chip_6"
 
 sheets: # excel only
   - "Si waveguide"
