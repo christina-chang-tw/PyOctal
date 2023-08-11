@@ -1,15 +1,15 @@
-# ORC Optical Chip Test Automation Library
+# PyOctal
 
-ORC OCTAL is a Python package equipped with all essential sweep tests, analysis tools, and interfaces with existing equipments in ORC group.
+PyOctal is a Python package equipped with sweep tests, analysis tools, and interfaces with equipments that are used primarily for optical chip testing.
 
 <!-- toc -->
-- [More About ORC OCTAL](#more-about-orc-octal)
-  - [Directory Structure](#directory-structure)
+- [More About PyOctal](#more-about-pyoctal)
+- [Directory Structure](#directory-structure)
 - [Installation](#installation)
   - [Git Bash](#git-bash)
   - [Python Environment](#python-environment)
   - [Visual Studio Code (VSCode)](#visual-studio-code-vscode)
-  - [Install ORC OCTAL](#install-orc-octal)
+  - [Install PyOctal](#install-pyoctal)
 - [Getting Started](#getting-started)
   - [How to Run a Test](#how-to-run-a-test)
   - [Test and Setup Instruments](#tests-and-setup-instrument)
@@ -20,24 +20,27 @@ ORC OCTAL is a Python package equipped with all essential sweep tests, analysis 
 <!-- tocstop -->
 
 
-## More About ORC OCTAL
-This is a tool allowing you to do three things: remotely setup your instruments, run standard sweeps, and analyse the results afterwards which all files should have a specific format. This is still at its infant stage so is still lacking a lot of functions which are widely used by the users. Please suggest and we would love to help!
+## More About PyOctal
+This is a tool allowing you to do three things: remotely setup your instruments, run different types of sweeps, and analyse the results afterwards. This is still at its infancy stage so is still lacking a lot of functions which are widely used by the users. Please suggest and we would love to help!
 
-### Directory Structure
+Take a look at [here](https://github.com/christina-chang-tw/PyOctal/blob/master/pyoctal/instruments/README.md) for detailed information of supported instruments.
 
+## Directory Structure
 ```
 .
 <folders>
 ├── config                   # all configuration files
 │   └── ...                         # read the README.md
-├── lib                      # core library
+├── pyoctal                  # core library
 │   └── ...                         # read the README.md
-├── results                  # all test results should be stored here
+├── results                  # all test results should be stored here <empty>
+├── tools                    # all test results should be stored here
+│   |── plot_main.py                # plotting graphs
+│   |── instr_main.py               # simple interface for setting up instruments
+│   └── sweep_main.py               # interface for running sweeps
 <files>
-├── instr_main.py            # direct interface with instruments (only for simple setup cases)
-├── plot_main.py             # plotting graphs
+├── pyproject.toml           # pyoctal package setup 
 ├── requirements.txt         # contain all required python packages for this repository <need to be amended>
-├── sweep_main.py            # interface for running sweeps
 └── venv_setup.py            # set up virtual environment <not working>
 ```
 
@@ -69,7 +72,11 @@ If your Anaconda does not use Python 3.6 for its environment, it will fail to in
 
 ```bash
 # create a new conda environment
-> conda create --name orc_octal python=3.6
+> conda create --name pyoctal_env python=<version>
+# activate your new environment
+> conda activate pyoctal_env
+# deactivate
+> conda deactivate
 ```
 
 - `pyvisa` requires "conda-forge" channel
@@ -79,8 +86,6 @@ If your Anaconda does not use Python 3.6 for its environment, it will fail to in
 If your system is running on Windows 7, please only install Anaconda versions which are equipped with Python versions older than 3.8. This is very important as versions since Python 3.9 do not support Windows 7. The safe option is install versions before anaconda3-2020-11. 
 
 If you attempt to install the later anaconda version on your Windows 7 system, you will get a "Failed to create menus" error. Refer to [Using Anaconda on older operating systems](https://docs.anaconda.com/free/anaconda/install/old-os/) for more information.
-
-
 
 
 **Method 2 - Use Virtual Python Environment**:
@@ -117,7 +122,7 @@ Open a new bash terminal in VSCode by going to the top tab bar and Terminal > Ne
 **NOTE:** If you are running Windows 7, alternative code editors, such as Atom, VSCodium, and Texteditor are available.
 
 
-### Install ORC OCTAL
+### Install PyOctal
 
 For users, I recommend to update your current old repository to a newer version by cloning or downloading this repository again and delete the old ones.
 
@@ -130,27 +135,25 @@ Getting the repository cloned to a local direcotory
 # Go into that directory
 > cd autotesting
 # Clone this repository down to your autotesting directory
-> git clone https://github.com/christina-chang-tw/ORCOCTAL.git
+> git clone https://github.com/christina-chang-tw/PyOctal.git
 # move into that directory
-> cd ORCOCTAL
+> cd PyOctal
 ```
 
 **Method 2 - Download from Github**:
 
 You can download a zip file containing this repository by navigating to <> Code tab and then select Local and Download ZIP.
 
-## Getting Started
+**Method 3 - Pip Installation**
 
-### Launch terminal
-
-Launch the Anaconda prompt either via search result or Anaconda Navigator. Once it is launched, activate the new environment (orc_octal). Now, you are all set to run your tests.
+This package supports installation using pip allowing users to expand the project further. The usage is just like other python packages.
 
 ```bash
-# activate your new environment
-> conda activate orc_octal
-# deactivate
-> conda deactivate
+> python -m pip install pyoctal
 ```
+
+
+## Getting Started
 
 ### How to Run a Test?
 Everything is this repository should be run as a python module. It uses argparse package to parse command line information to the program. 
@@ -174,13 +177,12 @@ Before you run a test, please make sure that you set all parameters correctly in
 # (2) Run a passive test without specifying anything
 > python -m sweep_main -t passive
 # (3) Run a dc sweep test with logging level as DEBUG and specify the config file path
-# -<var>=<str> or -<var> <str> yields the same result
-> python -m sweep_main -t dc --log-lvl DEBUG --config=./config/test.yaml
+> python -m sweep_main -t dc --config ./config/test.yaml
 ```
 
 **Instrument Setup**
 
-Run `instr_main.py` as a module.
+An interface to easily setup an instrument.
 | Test    | Instrument | Description    |
 |---------| ---------- |----------------|
 | agilent8163B | Agilent 8163B | Setup the multimeter to the auto-range and desired wavelength and output power |
@@ -191,7 +193,7 @@ Run `instr_main.py` as a module.
 # (1) General helper message
 > python -m instr_main -h
 # (2) Helper message for specific instrument(s)
-> python -m instr_main m_8163b -h
+> python -m instr_main agilent8163B -h
 # (3) Setup 8163B wavelength at 1550nm and power at 10dBm
 > python -m instr_main m_8163b -w 1550 -p 10
 ```

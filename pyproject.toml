@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "octal"
-version = "0.0.2"
+name = "pyoctal"
+version = "0.0.1"
 authors = [
     {name = "Tzu-Yun Chang", email = "tyc1g20@soton.ac.uk"}
 ]
-description = "Automated testing library for a wide range of instruments"
+description = "Optical chip automated testing library equipped with a wide range of instruments interface."
 readme = "README.md"
 requires-python = ">=3.6"
 classifiers = [
@@ -29,7 +29,7 @@ dependencies = [
 
 
 [project.urls]
-Repository = "https://github.com/christina-chang-tw/ORCOCTAL.git"
+Repository = "https://github.com/christina-chang-tw/PyOctal"
 
 
 [project.optional-dependencies]
@@ -41,8 +41,8 @@ tests = [
 
 [tool.setuptools]
 packages = [
-    "octal", 
-    "octal.instruments", 
-    "octal.util", 
-    "octal.sweeps"
+    "pyoctal", 
+    "pyoctal.instruments", 
+    "pyoctal.util", 
+    "pyoctal.sweeps"
 ]
