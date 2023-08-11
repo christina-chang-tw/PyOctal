@@ -2,9 +2,10 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+
 [project]
 name = "octal"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     {name = "Tzu-Yun Chang", email = "tyc1g20@soton.ac.uk"}
 ]
@@ -26,8 +27,10 @@ dependencies = [
     'tqdm',
 ]
 
+
 [project.urls]
 Repository = "https://github.com/christina-chang-tw/ORCOCTAL.git"
+
 
 [project.optional-dependencies]
 tests = [
@@ -35,5 +38,11 @@ tests = [
     'pywin32 ; platform_system != "Windows"',
 ]
 
+
 [tool.setuptools]
-packages = ["octal"]
+packages = [
+    "octal", 
+    "octal.instruments", 
+    "octal.util", 
+    "octal.sweeps"
+]

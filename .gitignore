@@ -20,3 +20,5 @@ results/*
 
 *.DS_Store*
 *.egg-info/*
+*.pypirc
+dist/*
