@@ -1,5 +1,5 @@
-from octal.base import BaseInstrument
-from octal.error import PARAM_OUT_OF_RANGE_ERR, error_message
+from pyoctal.base import BaseInstrument
+from pyoctal.error import PARAM_OUT_OF_RANGE_ERR, error_message
 
 class ThorlabsITC4002QCL(BaseInstrument):
     """

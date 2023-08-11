@@ -2,9 +2,9 @@ import pandas as pd
 from tqdm import tqdm 
 import time
 
-from octal.instruments import AgilentE3640A, Agilent8163B, KeysightILME
-from octal.base import BaseSweeps
-from octal.util.file_operations import export_to_csv
+from pyoctal.instruments import AgilentE3640A, Agilent8163B, KeysightILME
+from pyoctal.base import BaseSweeps
+from pyoctal.util.file_operations import export_to_csv
 
 class DCSweeps(BaseSweeps):
     """

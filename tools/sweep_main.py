@@ -1,5 +1,5 @@
 # Perform version check before everything
-from octal.util.util import pyversion_check, platform_check
+from pyoctal.util.util import pyversion_check, platform_check
 platform_check()
 pyversion_check()
 
@@ -8,13 +8,13 @@ from datetime import datetime
 import logging
 import yaml
 
-from octal.sweeps.info import TestInfo
-from octal.sweeps import (
+from pyoctal.sweeps.info import TestInfo
+from pyoctal.sweeps import (
     ILossSweep, 
     DCSweeps,
 )
-from octal.util.formatter import CustomArgparseFormatter
-from octal.util.util import (
+from pyoctal.util.formatter import CustomArgparseFormatter
+from pyoctal.util.util import (
     create_folder,
     setup_rootlogger,
     DictObj

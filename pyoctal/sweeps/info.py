@@ -1,5 +1,5 @@
-from octal.util.file_operations import export_to_csv
-from octal.util.util import package_info
+from pyoctal.util.file_operations import export_to_csv
+from pyoctal.util.util import package_info
 
 class TestInfo():
     """

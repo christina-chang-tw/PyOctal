@@ -1,4 +1,4 @@
-from octal.base import BaseInstrument
+from pyoctal.base import BaseInstrument
 
 class AgilentDSO8000(BaseInstrument):
     """ 

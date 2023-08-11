@@ -2,8 +2,8 @@ from typing import Union
 import sys
 import time
 
-from octal.base import BaseInstrument
-from octal.error import PARAM_INVALID_ERR, error_message
+from pyoctal.base import BaseInstrument
+from pyoctal.error import PARAM_INVALID_ERR, error_message
 
 class Agilent8163B(BaseInstrument):
     """

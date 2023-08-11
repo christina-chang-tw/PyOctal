@@ -1,4 +1,4 @@
-from octal.base import BaseInstrument
+from pyoctal.base import BaseInstrument
 
 class AgilentE3640A(BaseInstrument):
     """

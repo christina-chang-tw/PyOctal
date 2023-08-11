@@ -5,7 +5,7 @@ import pandas as pd
 from typing import Union
 import os.path
 
-from octal.error import FILE_NOT_EXIST_ERR, FILE_EMPTY_ERR, error_message
+from pyoctal.error import FILE_NOT_EXIST_ERR, FILE_EMPTY_ERR, error_message
 
 
 

@@ -1,14 +1,14 @@
 import time
 import pandas as pd
 
-from octal.instruments import (
+from pyoctal.instruments import (
     Keithley6487, 
     AmetekDSP7265,
     AgilentE3640A,
     Keithley2400
 )
-from octal.base import BaseSweeps
-from octal.util.file_operations import export_to_csv
+from pyoctal.base import BaseSweeps
+from pyoctal.util.file_operations import export_to_csv
 
 class IVSweeps(BaseSweeps):
     """

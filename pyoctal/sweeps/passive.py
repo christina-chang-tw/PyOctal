@@ -2,10 +2,10 @@ import warnings
 import pandas as pd
 from tqdm import tqdm
 
-from octal.instruments import KeysightILME, Agilent8163B
-from octal.util.file_operations import export_to_csv
-from octal.util.util import wait_for_next_meas
-from octal.base import BaseSweeps
+from pyoctal.instruments import KeysightILME, Agilent8163B
+from pyoctal.util.file_operations import export_to_csv
+from pyoctal.util.util import wait_for_next_meas
+from pyoctal.base import BaseSweeps
 
 import logging
 

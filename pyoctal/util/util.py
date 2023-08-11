@@ -8,8 +8,8 @@ import os
 import logging
 import pandas as pd
 
-from octal.error import *
-from octal.util.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
+from pyoctal.error import *
+from pyoctal.util.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
 from . import __python_min_version__, __platform__
 
 

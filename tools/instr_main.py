@@ -1,20 +1,20 @@
 # Perform version check before everything
-from octal.util.util import pyversion_check
+from pyoctal.util.util import pyversion_check
 pyversion_check()
 
 import textwrap
 import argparse
 import logging
 
-from octal.instruments import (
+from pyoctal.instruments import (
     Agilent8163B, 
     KeysightFlexDCA, 
     KeysightE8257D,
 )
-from octal.util.util import (
+from pyoctal.util.util import (
     setup_rootlogger,
 )
-from octal.util.formatter import CustomArgparseFormatter
+from pyoctal.util.formatter import CustomArgparseFormatter
 
 
 LOG_FNAME = "./logging.log"

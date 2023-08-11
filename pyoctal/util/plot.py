@@ -1,4 +1,4 @@
-from octal.util.file_operations import get_dataframe_from_csv, get_dataframe_from_excel
+from pyoctal.util.file_operations import get_dataframe_from_csv, get_dataframe_from_excel
 
 import matplotlib.pyplot as plt 
 import numpy as np

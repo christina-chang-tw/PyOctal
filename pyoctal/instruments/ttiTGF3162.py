@@ -1,5 +1,5 @@
-from octal.base import BaseInstrument
-from octal.error import *
+from pyoctal.base import BaseInstrument
+from pyoctal.error import *
 
 from typing import Union
 import numpy as np

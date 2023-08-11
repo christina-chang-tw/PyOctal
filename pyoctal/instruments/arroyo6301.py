@@ -1,4 +1,4 @@
-from octal.base import BaseInstrument
+from pyoctal.base import BaseInstrument
 
 class Arroyo6301(BaseInstrument):
     """

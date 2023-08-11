@@ -2,7 +2,7 @@
 Import all sweeps here to shorten the imports
 """
 import sys
-from octal.instruments import __platform__
+from pyoctal.instruments import __platform__
 # Windows OS specific modules
 if sys.platform in __platform__:
     from .dc import DCSweeps

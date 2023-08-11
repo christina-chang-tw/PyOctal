@@ -1,14 +1,14 @@
 # Perform version check before everything
-from octal.util.util import pyversion_check
+from pyoctal.util.util import pyversion_check
 pyversion_check()
 
 import yaml
 import logging
 import argparse
 
-from octal.util.plot import PlotGraphs
-from octal.util.util import setup_rootlogger
-from octal.util.formatter import CustomArgparseFormatter
+from pyoctal.util.plot import PlotGraphs
+from pyoctal.util.util import setup_rootlogger
+from pyoctal.util.formatter import CustomArgparseFormatter
 
 LOG_FNAME = "./logging.log"
 root_logger = logging.getLogger()
