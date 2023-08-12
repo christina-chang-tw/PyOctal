@@ -36,6 +36,7 @@ Repository = "https://github.com/christina-chang-tw/PyOctal"
 tests = [
     'pytest',
     'pywin32 ; platform_system != "Windows"',
+    'pyvisa-sim',
 ]
 
 
@@ -45,4 +46,9 @@ packages = [
     "pyoctal.instruments", 
     "pyoctal.util", 
     "pyoctal.sweeps"
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "."
 ]

@@ -1,0 +1,18 @@
+spec: "1.0"
+
+devices:
+  device 1:
+    eom:
+      GPIB INSTR:
+        q: "\n"
+        r: "\n"
+      
+    error: ERROR
+    dialogues:
+      - q: "*IDN?"
+        r: "PyOctal, SIM, MOCK, VERSION_1.0"
+
+
+resources:
+  GPIB::0::INSTR:
+    device: device 1

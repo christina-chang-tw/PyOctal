@@ -8,39 +8,46 @@ class EXFOXTA50(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
+    rm: str
+        Argument for resource manager (for simualated device only)
     """
 
-    def __init__(self, addr: str):
-        super().__init__(rsc_addr=addr)
+    def __init__(self, addr: str, rm: str=""):
+        super().__init__(rsc_addr=addr, rm=rm)
 
     @property
     def serial_no(self):
         return self.query("serial_number?")
     
     def set_freq(self, freq: float):
-        """ Set frequency in THz """
+        """ Set frequency [THz]. """
         self.write(f"freq={freq}")
 
-    def set_lambda(self, wavelength: float):
-        """ Set frequency in nm """
+    def set_wavelength(self, wavelength: float):
+        """ Set frequency [nm]. """
         self.write(f"lambda={wavelength}")
 
     def set_fwhm(self, fwhm: float):
-        """ Set frequency in nm """
+        """ Set frequency [nm]. """
         self.write(f"fwhm={fwhm}")
 
     def get_freq(self) -> float:
+        """ Get frequency [THz]. """
         return self.query_float("freq?")
 
     def get_fwhm(self) -> float:
+        """ Get full-width half maximum frequency. """
         return self.query_float("fwhm?")
     
-    def get_lambda(self) -> float:
+    def get_wavelength(self) -> float:
+        """ Set laser output state. """
         return self.query_float("lambda?")
     
     def is_seq_running(self) -> bool:
+        """ Check if a sequence is still being executed. """
         return self.query_bool("sequence_running?")
     
     def set_local(self):
+        """ Switch to local control. """
         self.write("local")
 

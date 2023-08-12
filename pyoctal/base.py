@@ -78,24 +78,23 @@ class BaseInstrument(object):
     termination: str
         The termination character when pyvisa is communicating with the instrument
     """
-    def __init__(self, rsc_addr, termination: str='\n'):
+    def __init__(self, rsc_addr: str, rm: str, read_termination: str='\n', write_termination: str='\n'):
         # Communicate with the resource and identify it
         self._addr = rsc_addr
-        self._rm = pyvisa.ResourceManager()
-        self._rm.timeout = 20000
-        self._rm.read_termination = termination
-
+        self._rm = pyvisa.ResourceManager(rm)
+        self._rm.timeout = 25000
+        
         # Connect to the device
         if rsc_addr in self.list_resource(): # Checking if the resource is available
-            self.instr = self._rm.open_resource(rsc_addr)
+            self.instr = self._rm.open_resource(rsc_addr, read_termination=read_termination, write_termination=write_termination)
             instr_type = self.instr.resource_info[3][:4]
+            
             known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
             
             # make sure that we know the device type
             if instr_type not in known_type:
                 raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
             logger.info(f'You have connected succesfully with a/an {instr_type} type resource')
-
             self._identity = DeviceID(self.get_idn())
         else:
             raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
@@ -107,7 +106,7 @@ class BaseInstrument(object):
     def value_check(value, cond: Union[tuple, list]=None):
         if cond is None: # nothing to check for
             pass
-        elif not isinstance(cond, Union[tuple, list]) or all(cond): # the condition is incorrectly set and they are of the same type
+        elif not (isinstance(cond, Union[tuple, list]) and all(cond)): # the condition is incorrectly set and they are of the same type
             raise ValueError(f"Error code {COND_INVALID_ERR:x}: {error_message[COND_INVALID_ERR]}")
         elif len(cond) == 2 and all(isinstance(n, Union[float, int]) for n in cond):
             if not cond[0] < value < cond[1]: # check the value is within range
@@ -149,6 +148,9 @@ class BaseInstrument(object):
     
     def err(self) -> str:
         return self.query("system:error?")
+
+    def release(self):
+        self._rm.close()
 
     @property
     def identity(self) -> str:

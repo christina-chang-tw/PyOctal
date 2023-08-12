@@ -7,7 +7,6 @@
 
 # Excel/CSV
 *.csv
-tests/*.xlsx
 results/*
 !results/.gitkeep
 

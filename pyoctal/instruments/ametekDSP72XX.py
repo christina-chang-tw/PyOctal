@@ -12,18 +12,23 @@ class AmetekDSP7230(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
+    rm: str
+        Argument for resource manager (for simualated device only)
     """
 
-    def __init__(self, addr: str):
-        super().__init__(rsc_addr=addr)
+    def __init__(self, addr: str, rm: str=""):
+        super().__init__(rsc_addr=addr, rm=rm)
 
     def get_mag(self) -> float:
+        """ Get the magnitude. """
         return self.query_float("mag.?")
 
     def get_x_volt(self) -> float:
+        """ Get the module x voltage. """
         return self.query_float("x.?")
     
     def get_y_volt(self) -> float:
+        """ Get the module y voltage. """
         return self.query_float("y.?")
     
 
@@ -42,18 +47,23 @@ class AmetekDSP7265(BaseInstrument):
 
     # Set
     def set_mag(self, mag: float):
+        """ Get the magnitude. """
         self.write(f"mag {mag}")
 
     def set_mag1(self, mag: float):
+        """ Get the magnitude of module 1. """
         self.write(f"mag1 {mag}")
 
     def set_mag2(self, mag: float):
+        """ Get the magnitude of module 2. """
         self.write(f"mag2 {mag}")
 
     def set_osc(self, freq: float):
-        self.write(f"of. {freq}")
+        """ Set the frequency. """
+        self.write(f"of {freq}")
     
     def set_user_eq(self, eq: str):
+        """ Set the equation. """
         if not isinstance(eq, Union[list, tuple]):
             raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Param should be a list")
         self.write(f'defequ {" ".join(eq)}')
@@ -116,15 +126,19 @@ class AmetekDSP7265(BaseInstrument):
 
     # get
     def get_mag(self) -> float:
+        """ Get the magnitude. """
         return self.query_float("mag.?")
 
     def get_mag1(self) -> float:
+        """ Get the magnitude of module 1. """
         return self.query_float("mag1.?")
     
     def get_mag2(self) -> float:
+        """ Get the magnitude of module 2. """
         return self.query_float("mag2.?")
     
     def get_eq1(self) -> float:
+        """ Get the equation 1. """
         return self.query_float("equ1.?")
 
     def get_avgv_ch(self, chan: int, duration: float, wait: float) -> float:

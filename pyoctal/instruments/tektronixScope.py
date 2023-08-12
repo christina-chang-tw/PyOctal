@@ -14,37 +14,43 @@ class TektronixScope(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
+    rm: str
+        Argument for resource manager (for simualated device only)
     """
 
-    def __init__(self, addr: str):
-        super().__init__(rsc_addr=addr)
+    def __init__(self, addr: str, rm: str=""):
+        super().__init__(rsc_addr=addr, rm=rm)
         self.name = self.get_idn()
         self.set_data_format(format="asci")
 
     def set_scope_acq_state(self, state: bool):
+        """ Set the acquire state. """
         self.write(f"acquire:state {state}")
 
     # Measurement
     def set_meas_source(self, src: str):
+        """ Set measurement source number. """
         self.write(f"measurement:immed:source {src}")
     
     def set_meas_type(self, typ: str):
+        """ Set measurement source type. """
         self.write(f"measurement:immed:type {typ}")
 
     def get_meas_data(self):
+        """ Get measurement data. """
         return self.query("measurement:immed:value?")
 
     # Wfmoutpre
     def get_wfmo_ymult(self) -> float:
-        # get voltage scale
+        """ Get voltage scale. """
         return self.query_float("wfmoutpre:ymult?")
     
     def get_wfmo_yoff(self) -> float:
-        # get voltage offset
+        """ Get voltage offset. """
         return self.query_float("wfmoutpre:yoff?")
     
     def get_wfmo_yzero(self) -> float:
-        # get voltage zero
+        """ Get voltage zero. """
         return self.query_float("wfmoutpre:yzero?")
     
     # Wfmp
@@ -53,11 +59,11 @@ class TektronixScope(BaseInstrument):
         return self.query_float(f"wfmp:{src}:ymult?")
     
     def get_wfmp_yoff(self, src: str) -> float:
-        # get voltage offset
+        """ Get voltage offset. """
         return self.query_float(f"wfmp:{src}:yoff?")
     
     def get_wfmp_yzero(self, src: str) -> float:
-        # get voltage zero
+        """ Get voltage zero. """
         return self.query_float(f"wfmp:{src}:yzero?")
     
     def get_wfmp_xunit(self) -> str:
@@ -83,14 +89,17 @@ class TektronixScope(BaseInstrument):
 
     # Data
     def set_data_format(self, datafm: str="asci"):
+        """ Set data encoding format. """
         types = ("asci", "rib", "rpb", "fpb", "sri", "srp", "sfp")
         self.value_check(datafm.lower(), types)
         self.write(f"data:encdg {datafm}")
 
     def set_data_source(self, src: str):
+        """ Set data source number. """
         self.write(f"data:source {src}")
 
     def get_curve(self):
+        """ Get the curve data. """
         return self.query("curve?")
 
     def read_data(self) -> np.array:

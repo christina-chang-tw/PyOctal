@@ -13,6 +13,8 @@ class Agilent8163B(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
+    rm: str
+        Argument for resource manager (for simualated device only)
     src_num: int, default: 1
         Source interface number
     src_chan: int, default: 1
@@ -22,8 +24,8 @@ class Agilent8163B(BaseInstrument):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
-        super().__init__(rsc_addr=addr)
+    def __init__(self, addr: str, rm: str="", src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+        super().__init__(rsc_addr=addr, rm=rm)
         self.src_num = src_num
         self.src_chan = src_chan
         self.sens_num = sens_num
@@ -43,54 +45,67 @@ class Agilent8163B(BaseInstrument):
         if not self.get_laser_state():
             self.set_laser_state(1)
 
-    def unlock(self):
-        self.write(f"lock {0},{1234}") # unlock with code 1234
+    def unlock(self, code: str):
+        """ Unlock the instrument with a code. """
+        self.write(f"lock {0},{code}") # code = 1234
 
     def set_wavelength(self, wavelength: float):
+        """ Set both laser and detector wavelength [nm]. """
         wavelength = wavelength * 1e-09
         self.set_detect_wav(wavelength)
         self.set_laser_wav(wavelength)
 
     def set_unit(self, source: str, sensor: str):
+        """ Set the power unit of the laser and detector. """
         self.write(f"power:unit {source}") # set the source unit in dBm
         self.write(f"sense:power:unit {sensor}") # set sensor unit
 
     def set_trig_config(self, config: int):
+        """ Set the configuration of trigger. """
         self.write(f"trigger:conf {config}")
 
-    def set_trig_continuous_mode(self, status: bool):
-        self.write(f"initiate{self.sens_num}:channel{self.sens_chan}:continuous {status}")
+    def set_trig_contmode_state(self, state: bool):
+        """ Set the trigger continuous mode state. """
+        self.write(f"initiate{self.sens_num}:channel{self.sens_chan}:continuous {state}")
 
 
 
     ### DETECTOR COMMANDS ###############################
     def set_detect_avgtime(self, period: float):
+        """ Set the detector average time. """
         self.write(f"{self.detect}:power:atime {period}s")
 
     def set_detect_wav(self, wavelength: float):
+        """ Set the detector wavelength. """
         self.write(f"{self.detect}:power:wavelength {wavelength}")
 
     def set_detect_prange(self, prange: float):
-        # set power range
+        """ Set the detector power range. """
         self.write(f"{self.detect}:power:range {prange}dBm")
 
     def set_detect_autorange(self, auto: bool):
+        """ Set the detector power autorange. """
         self.write(f"{self.detect}:power:range:auto {auto}")
 
     def set_detect_unit(self, unit: str):
+        """ Set the detector power unit. """
         self.write(f"{self.detect}:power:unit {unit}") # set detector unit
 
     def set_detect_calibration_val(self, value: float):
+        """ Set the detector calibration value. """
         self.write(f"{self.detect}:correction {value}dB")
 
     def set_detect_trig_response(self, in_rsp: str, out_rsp: str):
+        """ Set the detector trigger response for both input and output. """
         self.write(f"trigger{self.sens_num}:channel{self.sens_chan}:input {in_rsp}")
         self.write(f"trigger{self.src_num}:channel{self.sens_chan}:output {out_rsp}")
 
     def set_detect_func_mode(self, mode: Union[tuple,list]):
+        """ Set the detector function status. """
         self.write(f"{self.laser}:function:status {mode[0]},{mode[1]}")
     
     def set_detect_func_params(self, mode: str, params: Union[tuple,list]):
+        """ Set the detector function parameters. """
         mode = mode.lower()
         if mode == "logging" or "logg": # params = [data_pts, avg_time]
             self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s") 
@@ -103,80 +118,103 @@ class Agilent8163B(BaseInstrument):
 
 
     def get_detect_pow(self) -> float:
+        """ Get the detector power. """
         return self.query_float(f"read{self.sens_num}:channel{self.sens_chan}:power?")
     
     def get_detect_trigno(self) -> int:
+        """ Get the detector trigger number. """
         return int(self.query(f"{self.detect}:wavelength:sweep:exp?"))
     
     def get_detect_func_state(self) -> bool:
+        """ Get the detector function state. """
         return bool(self.query(f"{self.detect}:function:state?"))
     
     def get_detect_func_result(self) -> list:
+        """ Get the detector function result. """
         return self.query_binary_values(f"{self.detect}:function:result?")
 
 
 
     ### LASER COMMANDS ###################################
     def set_laser_wav(self, wavelength: float):
+        """ Set the laser wavelength. """
         self.write(f"{self.laser}:wavelength {wavelength}")
     
     def set_laser_state(self, state: bool):
+        """ Set the laser output state. """
         self.write(f"{self.laser}:power:state {state}")
 
     def set_laser_pow(self, power: float):
+        """ Set the laser power [dBm]. """
         self.write(f"{self.laser}:power:level:immediate:amplitude {power}dBm")
 
     def set_laser_trig_response(self, in_rsp: str, out_rsp: str):
+        """ Set the laser trigger response. """
         self.write(f"trigger{self.src_num}:channel{self.src_chan}:input {in_rsp}")
         self.write(f"trigger{self.src_num}:channel{self.src_chan}:output {out_rsp}")
 
     def set_laser_unit(self, unit: str):
+        """ Set the laser unit. """
         self.write(f"{self.laser}:power:unit {unit}") # set the source unit in dBm
 
     def get_laser_data(self, mode: str) -> list:
+        """ Get the laser data. """
         return self.query_binary_values(f"{self.laser}:read:data? {mode}")
     
     def get_laser_state(self) -> bool:
+        """ Get the laser output state. """
         self.query_bool(f"{self.laser}:power:state?")
     
     def get_laser_wav_min(self) -> float:
+        """ Get the laser's minimum wavelength. """
         return self.query_float(f"{self.laser}:wavelength? MIN")
 
     def get_laser_wav_max(self) -> float:
+        """ Get the laser's maximum wavelength. """
         return self.query_float(f"{self.laser}:wavelength? MAX")
     
 
 
     ### SWEEP COMMANDS ####################################
     def set_sweep_mode(self, mode: str): # STEP, MAN, CONT
+        """ Set the sweep mode. """
         self.write(f"{self.laser}:sweep:mode {mode}")
 
     def set_sweep_state(self, state: Union[int, str]): # 0 - stop, 1 - start, 2 - pause, 3 - continue
+        """ Set the sweep state. """
         self.write(f"{self.laser}:wavelength:sweep:state {state}")
 
     def set_sweep_speed(self, speed: float):
+        """ Set the sweep speed [nm/s]. """
         self.write(f"{self.laser}:wavelength:sweep:speed {speed}nm/s")
 
     def set_sweep_step(self, step: float):
+        """ Set the sweep step [pm]. """
         self.write(f"{self.laser}:wavelength:sweep:step {step}pm")
 
     def set_sweep_start_stop(self, start: float, stop: float):
+        """ Set the start and stop wavelength sweep [nm]. """
         self.write(f"{self.laser}:wavelength:sweep:start {start}nm")
         self.write(f"{self.laser}:wavelength:sweep:stop {stop}nm")
     
     def set_sweep_wav_logging(self, status: bool):
+        """ Set the logging for the sweep. """
         self.write(f"{self.laser}:wavelength:sweep:llogging {status}")
 
     def set_sweep_repeat_mode(self, mode: str):
+        """ Set the sweep repeat mode. """
         self.write(f"{self.laser}:wavelength:sweep:repeat {mode}")
 
     def set_sweep_cycles(self, cycles: int):
+        """ Set the sweep cycles. """
         self.write(f"{self.laser}:wavelength:sweep:cycles {cycles}")
 
     def set_sweep_tdwell(self, tdwell: float):
+        """ Set the dwelling time for the laser. """
         self.write(f"{self.laser}:dwell {tdwell}s")
     
     def get_sweep_state(self) -> int: # 0 - stop, 1 - start, 2 - pause, 3 - continue
+        """ Get the sweep state. """
         return int(self.query(f"{self.laser}:wavelength:sweep:state?"))
         
 

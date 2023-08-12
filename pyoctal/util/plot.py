@@ -79,7 +79,7 @@ class PlotGraphs(object):
         self.folders = configs["folders"]
         self.no_channels = configs["no_channels"]
         self.fname = configs["fname"]
-        self.title = configs["title"]
+        self.title = configs["title"] if configs["title"] != "" else configs["fname"]
         self.sf = configs["signal_filter"]
         self.xlabel = configs["xlabel"]
         self.ylabel = configs["ylabel"]
@@ -175,13 +175,14 @@ class PlotGraphs(object):
             wavelength = df["Wavelength"]
 
             # Drop the unwanted lengths
-            if "columns_drop" in self.configs.keys() and self.configs["columns_drop"].get(name):
-                df = df.loc[:, [not x for x in df.columns.str.startswith(tuple(self.configs["columns_drop"][name]))]]
+            if "columns_drop" in self.configs.keys() and self.configs["columns_drop"] is not None and self.configs["columns_drop"].get(name):
+                df = df.loc[:, [not x for x in df.columns.str.startswith(tuple(map(str, self.configs["columns_drop"][name])))]]
 
             df = df.apply(lambda x: self.signal_filter(x, window_size=self.configs["window_size"])) if self.sf else df # need to filter out the noise?
 
             
             for i in range(no_channels):
+                name = name.split('/')[-1]
                 label = f'{name}' if no_channels == 1 else f'{name}_CH{i}'
 
                 # obtain the columns from the correct channel
@@ -220,14 +221,15 @@ class PlotGraphs(object):
             xdata = df['Wavelength']
 
             # plot the wanted columns
-            if "columns_plot" in self.configs.keys() and self.configs["columns_plot"].get(name):
-                df = df.loc[:, list(df.columns.str.startswith(tuple(self.configs["columns_plot"][name])))]
+            if "columns_plot" in self.configs.keys() and self.configs["columns_plot"] is not None and self.configs["columns_plot"].get(name):
+                df = df.loc[:, list(df.columns.str.startswith(tuple(map(str, self.configs["columns_plot"][name]))))]
 
             for i in range(no_channels):
                 # obtain the columns from the correct channel
                 temp = df.loc[:, df.columns.str.endswith(f'CH{i}')]
                 
                 for length in temp.columns.values:
+                    name = name.split('/')[-1]
                     label = f'{name}_{length}' if no_channels == 1 else f'{name}_CH{i}_{length}'
                     label = label + self.configs["end_of_legend"]
                     ydata = temp.loc[:,length]
@@ -257,8 +259,8 @@ class PlotGraphs(object):
                 df_dropped = df_dropped.drop("Wavelength", axis=1)
 
                 # Drop the unwanted lengths
-                if "columns_drop" in self.configs.keys() and self.configs["columns_drop"].get(name):
-                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(self.configs["columns_drop"][name]))]]
+                if "columns_drop" in self.configs.keys() and self.configs["columns_drop"] is not None and self.configs["columns_drop"].get(name):
+                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(map(str, self.configs["columns_drop"][name])))]]
                 
                 
                 for i in range(no_channels):
@@ -304,8 +306,8 @@ class PlotGraphs(object):
                 xdata = df_dropped.loc[:,'Wavelength']*1e+09
 
                 # plot the wanted columns
-                if "columns_plot" in self.configs.keys() and self.configs["columns_plot"].get(name):
-                    df_dropped = df_dropped.loc[:, list(df_dropped.columns.str.startswith(tuple(self.configs["columns_plot"][name])))]
+                if "columns_plot" in self.configs.keys() and self.configs["columns_plot"] is not None and self.configs["columns_plot"].get(name):
+                    df_dropped = df_dropped.loc[:, list(df_dropped.columns.str.startswith(tuple(map(str, self.configs["columns_plot"][name]))))]
 
 
                 for i in range(no_channels):
@@ -315,6 +317,7 @@ class PlotGraphs(object):
                     temp = temp.sort_index(axis=1, ascending=True) # sort out the index in ascending order
                     
                     for length in temp.columns.values:
+                        name = name.split('/')[-1]
                         label = f'{name}_{length}' if no_channels == 1 else f'{name}_CH{i}_{length}'
                         label = label + self.configs["end_of_legend"]
                         ydata = np.negative(temp.loc[:,length])
@@ -337,8 +340,8 @@ class PlotGraphs(object):
                 df_dropped = df[sheet]
                 
                 # plot the wanted columns
-                if "dc_drop" in self.configs.keys() and self.configs["dc_drop"].get(name):
-                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(self.configs["dc_drop"][name]))]]
+                if "dc_drop" in self.configs.keys() and self.configs["dc_drop"] is not None and self.configs["dc_drop"].get(name):
+                    df_dropped = df_dropped.loc[:, [not x for x in df_dropped.columns.str.startswith(tuple(map(str, self.configs["dc_drop"][name])))]]
 
                 xdata = df_dropped.loc[:,'Wavelength']*1e+09
 
@@ -349,6 +352,7 @@ class PlotGraphs(object):
                     temp = temp.sort_index(axis=1, ascending=True) # sort out the index in ascending order
                     
                     for length in temp.columns.values:
+                        name = name.split('/')[-1]
                         label = f'{name}_{length}' if no_channels == 1 else f'{name}_CH{i}_{length}'
                         label = label + self.configs["end_of_legend"]
                         ydata = np.negative(temp.loc[:,length])
