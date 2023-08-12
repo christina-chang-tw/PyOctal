@@ -2,7 +2,7 @@ from pyoctal.base import BaseInstrument
 
 class ThorlabsPM100(BaseInstrument):
     """
-    Thorlabs Power Monitor PM100 VISA Library
+    Thorlabs Power Monitor PM100 VISA Library.
 
     Parameters
     ----------
@@ -14,7 +14,6 @@ class ThorlabsPM100(BaseInstrument):
 
     def __init__(self, addr: str, rm: str=""):
         super().__init__(rsc_addr=addr, rm=rm)
-        self.write("data:encd asci")
 
     def read(self):
         """ Read the PM power (as shown on the display). """
@@ -24,6 +23,9 @@ class ThorlabsPM100(BaseInstrument):
         """ Measure the PM power (as shown on the display). """
         self.write("measure:power")
         return self.query_float("fetch?")
+    
+    def set_data_encd(self, enc_type: str):
+        self.write(f"data:encd {enc_type}")
 
     def set_wavelength(self, wavelength: float):
         """ Set the power monitor wavelength [nm] """

@@ -40,6 +40,12 @@ class DeviceID:
         self._serialno = strip_idn[2]
         self._version = strip_idn[3]
 
+    def __eq__(self, other):
+        """ Compare equality. """
+        if not isinstance(other, DeviceID):
+            return NotImplemented
+        return self.__dict__ == other.__dict__
+
     def __repr__(self):
         return "Device ID()"
     
@@ -149,7 +155,7 @@ class BaseInstrument(object):
     def err(self) -> str:
         return self.query("system:error?")
 
-    def release(self):
+    def close(self):
         self._rm.close()
 
     @property

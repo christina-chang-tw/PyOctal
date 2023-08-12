@@ -10,8 +10,12 @@ devices:
     error: ERROR
     dialogues:
       - q: "*IDN?"
-        r: "PyOctal, SIM, MOCK, VERSION_1.0"
-
+        r: "PyOctal,SIM,MOCK,VERSION_1.0"
+    properties:
+      encoding type:
+        default: "asci"
+        setter:
+          q: "data:encd {:s}"
 
 resources:
   GPIB::0::INSTR:

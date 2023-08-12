@@ -20,8 +20,6 @@ class TektronixScope(BaseInstrument):
 
     def __init__(self, addr: str, rm: str=""):
         super().__init__(rsc_addr=addr, rm=rm)
-        self.name = self.get_idn()
-        self.set_data_format(format="asci")
 
     def set_scope_acq_state(self, state: bool):
         """ Set the acquire state. """
@@ -88,11 +86,11 @@ class TektronixScope(BaseInstrument):
     
 
     # Data
-    def set_data_format(self, datafm: str="asci"):
+    def set_data_format(self, datafmt: str="asci"):
         """ Set data encoding format. """
         types = ("asci", "rib", "rpb", "fpb", "sri", "srp", "sfp")
-        self.value_check(datafm.lower(), types)
-        self.write(f"data:encdg {datafm}")
+        self.value_check(datafmt.lower(), types)
+        self.write(f"data:encdg {datafmt}")
 
     def set_data_source(self, src: str):
         """ Set data source number. """

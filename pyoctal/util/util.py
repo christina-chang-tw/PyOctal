@@ -76,13 +76,17 @@ def delete_folder(path: str="XXX"):
     if os.path.isdir(path):
         os.rmdir(path)
 
-def get_callable_funcs(cls, identifier) -> str:
-    """ Get all callable functions of a class in a nice format style. """ 
-    cls = type(cls) # get the class of the instance
-    funcname_list = [method for method in dir(cls) if method.startswith(identifier)]
-    func_list = [f'{i:20}:{cls.__dict__[i].__doc__}'.lstrip().rstrip() for i in funcname_list]
-    func_str = "\n".join(func_list)
-    return func_str
+def get_callable_funcs(obj, identifier: str="") -> str:
+    """ Get all callable (unhidden) functions of a class in a nice format style. """ 
+
+    func, _ = zip(*inspect.getmembers(object=obj, predicate=inspect.isfunction))
+    
+    correct_func = []
+    for obj in func:
+        if not obj.startswith('__') and not obj.startswith('_'):
+            correct_func.append(obj)
+
+    return correct_func
 
 
     

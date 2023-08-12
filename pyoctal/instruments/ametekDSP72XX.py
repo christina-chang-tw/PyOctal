@@ -34,7 +34,7 @@ class AmetekDSP7230(BaseInstrument):
 
 class AmetekDSP7265(BaseInstrument):
     """
-    Ametek DSP7265 DSP Lock-In VISA Library
+    Ametek DSP7265 DSP Lock-In VISA Library.
 
     Parameters
     ----------
@@ -42,8 +42,8 @@ class AmetekDSP7265(BaseInstrument):
         The address of the instrument
     """
 
-    def __init__(self, addr: str):
-        super().__init__(rsc_addr=addr)
+    def __init__(self, addr: str, rm: str="rm"):
+        super().__init__(rsc_addr=addr, rm=rm)
 
     # Set
     def set_mag(self, mag: float):
