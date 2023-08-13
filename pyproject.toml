@@ -34,7 +34,7 @@ Repository = "https://github.com/christina-chang-tw/PyOctal"
 
 [project.optional-dependencies]
 tests = [
-    'pytest',
+    'pytest >= 7.1.2',
     'pywin32 ; platform_system != "Windows"',
     'pyvisa-sim',
 ]
