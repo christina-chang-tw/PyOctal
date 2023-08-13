@@ -11,6 +11,8 @@ from pyoctal.util.util import get_callable_funcs
 class TestClassCalls:
     sim_fpath = './tests/sim_dev.yaml'
     sim_rm = sim_fpath + '@sim'
+    untestable_files = ("thorlabsAPT", 'keysightPAS')
+    untestable_modules = ['BaseInstrument','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT']
     
     def test_instr_initialization(self):
         """ Test that the instruments can all be connected. """
@@ -30,14 +32,14 @@ class TestClassCalls:
             name = os.path.splitext(os.path.basename(file))[0]
             print(name)
             # ignore the two classes as they are not inherited from BaseInstrument class
-            if name in ("thorlabsAPT", 'keysightPAS'):
+            if name in self.untestable_files:
                 continue
             module = f'pyoctal.instruments.{name}'
 
             # perform dynamic import
             for member, cls in inspect.getmembers(importlib.import_module(module), inspect.isclass):
                 print(member)
-                if member in ['BaseInstrument','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT'] + tested_module or member.__str__().startswith('__'):
+                if member in self.untestable_modules + tested_module or member.__str__().startswith('__'):
                     continue
                 tested_module.append(member)
                 # initialise a device
@@ -64,12 +66,12 @@ class TestClassCalls:
         for file in glob(os.path.join("./pyoctal/instruments" + "/*.py")):
             name = os.path.splitext(os.path.basename(file))[0]
             # ignore the two classes as they are not inherited from BaseInstrument class
-            if name in ("thorlabsAPT", 'keysightPAS'):
+            if name in self.untestable_files:
                 continue
             module = f'pyoctal.instruments.{name}'
             # perform dynamic import
             for member, cls in inspect.getmembers(importlib.import_module(module), inspect.isclass):
-                if member in ['BaseInstrument','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT'] + tested_module or member.__str__().startswith('__'):
+                if member in self.untestable_modules + tested_module or member.__str__().startswith('__'):
                     continue
                 
                 # make sure that tested modules won't be tested again

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyoctal"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     {name = "Tzu-Yun Chang", email = "tyc1g20@soton.ac.uk"}
 ]
