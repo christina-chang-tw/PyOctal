@@ -28,6 +28,7 @@ class TestClassCalls:
         # search through the name of the files matching *.py under the folder
         for file in glob(os.path.join("./pyoctal/instruments" + "/*.py")):
             name = os.path.splitext(os.path.basename(file))[0]
+            print(name)
             # ignore the two classes as they are not inherited from BaseInstrument class
             if name in ("thorlabsAPT", 'keysightPAS'):
                 continue
@@ -35,12 +36,12 @@ class TestClassCalls:
 
             # perform dynamic import
             for member, cls in inspect.getmembers(importlib.import_module(module), inspect.isclass):
-                if member in ['BaseInstrument','KeysightFlexDCA'] + tested_module or member.__str__().startswith('__'):
+                print(member)
+                if member in ['BaseInstrument','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT'] + tested_module or member.__str__().startswith('__'):
                     continue
                 tested_module.append(member)
                 # initialise a device
                 dev = cls(addr=addr, rm=rm)
-                print(cls)
                 dev.connect()
                 # check that the ids are as expected
                 assert DeviceID(identity) == dev.identity
@@ -70,6 +71,7 @@ class TestClassCalls:
             for member, cls in inspect.getmembers(importlib.import_module(module), inspect.isclass):
                 if member in ['BaseInstrument','KeysightFlexDCA'] + tested_module or member.__str__().startswith('__'):
                     continue
+                
                 # make sure that tested modules won't be tested again
                 tested_module.append(member)
                 

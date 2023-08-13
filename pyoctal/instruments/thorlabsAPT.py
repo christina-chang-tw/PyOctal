@@ -1,7 +1,7 @@
 # Make sure that the system is Windows OS
 from ctypes import WinDLL, pointer
 
-class ThorlabsAPT():
+class ThorlabsAPT:
     """
     Thorlabs APT WinDLL Library.
 
