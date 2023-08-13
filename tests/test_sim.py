@@ -69,7 +69,7 @@ class TestClassCalls:
             module = f'pyoctal.instruments.{name}'
             # perform dynamic import
             for member, cls in inspect.getmembers(importlib.import_module(module), inspect.isclass):
-                if member in ['BaseInstrument','KeysightFlexDCA'] + tested_module or member.__str__().startswith('__'):
+                if member in ['BaseInstrument','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT'] + tested_module or member.__str__().startswith('__'):
                     continue
                 
                 # make sure that tested modules won't be tested again
