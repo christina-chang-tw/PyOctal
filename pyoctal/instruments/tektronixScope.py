@@ -14,11 +14,11 @@ class TektronixScope(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
-    rm: str
-        Argument for resource manager (for simualated device only)
+    rm:
+        Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm: str=""):
+    def __init__(self, addr: str, rm):
         super().__init__(rsc_addr=addr, rm=rm)
 
     def set_scope_acq_state(self, state: bool):

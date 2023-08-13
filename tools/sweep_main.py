@@ -1,12 +1,8 @@
-# Perform version check before everything
-from pyoctal.util.util import pyversion_check, platform_check
-platform_check()
-pyversion_check()
-
 import argparse
 from datetime import datetime
 import logging
 import yaml
+import pyvisa
 
 from pyoctal.sweeps.info import TestInfo
 from pyoctal.sweeps import (
@@ -93,19 +89,20 @@ def test_distribution(ttype, configs):
         configs: containing all input arguments
     """
     folder = configs.folder
+    rm = pyvisa.ResourceManager()
 
     # create a folder for the test chip if this has not been done so
     create_folder(folder)
     
     if ttype == "passive":
-        sweeps = ILossSweep(configs=configs)
+        sweeps = ILossSweep(configs=configs, rm=rm)
         TestInfo.passive(folder, configs)
         sweeps.run_ilme(configs.lengths)
 
     elif ttype == "ac":
         pass
     elif ttype == "dc":
-        sweeps = DCSweeps(configs=configs)
+        sweeps = DCSweeps(configs=configs, rm=rm)
         TestInfo.dc(folder, configs)
         sweeps.run_ilme()
         

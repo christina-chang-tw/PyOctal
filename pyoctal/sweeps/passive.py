@@ -17,11 +17,13 @@ class ILossSweep(BaseSweeps):
 
     Parameters
     ----------
-    instr_addrs:
-        A dictionary of the addresses of all instruments used in this sweep
+    configs:
+        A map containing all parameters. Should be read from a yaml file
+    rm:
+        Pyvisa resource manager
     """
-    def __init__(self, configs: dict):
-        super().__init__(instr_addrs=configs.instr_addrs, folder=configs.folder, fname=configs.fname)
+    def __init__(self, configs: dict, rm):
+        super().__init__(instr_addrs=configs.instr_addrs, rm=rm, folder=configs.folder, fname=configs.fname)
         self.w_start = configs.w_start
         self.w_stop = configs.w_stop
         self.w_step = configs.w_step
@@ -31,7 +33,7 @@ class ILossSweep(BaseSweeps):
     def run_ilme(self, lengths):
         """ This uses ILME machine to obtain results about insertion loss and  wavelength """
         self.instrment_check("mm", self._addrs.keys())
-        mm = Agilent8163B(addr=self._addrs.mm)
+        mm = Agilent8163B(addr=self._addrs.mm, rm=self._rm)
         dev = KeysightILME()
         dev.activate()
         

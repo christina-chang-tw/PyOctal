@@ -72,7 +72,7 @@ class DeviceID:
         return self._version
 
 
-class BaseInstrument(object):
+class BaseInstrument:
     """
     A base instrument class containing minimum useful and compatible functions.
 
@@ -84,15 +84,23 @@ class BaseInstrument(object):
     termination: str
         The termination character when pyvisa is communicating with the instrument
     """
-    def __init__(self, rsc_addr: str, rm: str, read_termination: str='\n', write_termination: str='\n'):
+    def __init__(self, rsc_addr: str, rm):
         # Communicate with the resource and identify it
         self._addr = rsc_addr
-        self._rm = pyvisa.ResourceManager(rm)
-        self._rm.timeout = 25000
+        self._rm = rm
+        self._rm.timeout = 25e+03
+        # check which type of resources it is connecting to and automatically determine the read and write termination 
+        # character based on the resource address
+        self._read_termination = "\n" if not rsc_addr.startswith("ASRL") else "\r\n"
+        self._write_termination = "\n"
+            
         
+    def connect(self):
         # Connect to the device
-        if rsc_addr in self.list_resource(): # Checking if the resource is available
-            self.instr = self._rm.open_resource(rsc_addr, read_termination=read_termination, write_termination=write_termination)
+        if self._addr in self.list_resource(): # Checking if the resource is available
+            self.instr = self._rm.open_resource(self._addr)
+            self.instr.read_termination = self._read_termination
+            self.instr.write_termination = self._write_termination
             instr_type = self.instr.resource_info[3][:4]
             
             known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
@@ -155,9 +163,6 @@ class BaseInstrument(object):
     def err(self) -> str:
         return self.query("system:error?")
 
-    def close(self):
-        self._rm.close()
-
     @property
     def identity(self) -> str:
         return self._identity
@@ -186,10 +191,17 @@ class BaseSweeps(object):
 
     Parameters
     ----------
-    instr: an instrument class
-        This is the instrument that is used in the sweep
+    instr_addrs: list, tuple, str
+        All instrument addresses that need to be connected
+    rm:
+        Pyvisa resource manager
+    folder: str
+        Folder name
+    fname: str
+        Filename 
     """
-    def __init__(self, instr_addrs, folder, fname):
+    def __init__(self, instr_addrs: Union[tuple,list,str], rm, folder: str, fname: str):
+        self._rm = rm
         self._addrs = instr_addrs
         self.folder = folder
         self.fname = fname

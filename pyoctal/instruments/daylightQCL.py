@@ -11,13 +11,13 @@ class DaylightQCL(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
-    rm: str
-        Argument for resource manager (for simualated device only)
+    rm:
+        Pyvisa resource manager
     """
 
     _rcontrol = namedtuple("rcontrol", ["wn", "curr", "freq", "pw", "mode"])
 
-    def __init__(self, addr: str, rm: str=""):
+    def __init__(self, addr: str, rm):
         super().__init__(rsc_addr=addr, rm=rm)
         self._range = self._rcontrol(wn=(9260.0, 9999.0), curr=(0.0, 925.0), freq=(1.0, 100.0), pw=(0.04, 0.5), mode=(1.0, 4.0))
 

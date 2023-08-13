@@ -1,10 +1,7 @@
-# Perform version check before everything
-from pyoctal.util.util import pyversion_check
-pyversion_check()
-
 import textwrap
 import argparse
 import logging
+import pyvisa
 
 from pyoctal.instruments import (
     Agilent8163B, 
@@ -50,7 +47,6 @@ INSTR_TYPES = ("agilent8163B", "h_speed")
 
         
 class SubparserInfo:
-
     @staticmethod
     def agilent8163B_info() -> str:
         info = textwrap.dedent("""
@@ -86,19 +82,21 @@ class SubparserInfo:
 
 
 def setup(ttype, args, addrs):
+    rm = pyvisa.ResourceManager()
     if ttype == "agilent8163B":
         SubparserInfo.agilent8163B_print(args)
-        instr = Agilent8163B(addr=addrs["Agilent8163B_Addr"])
+        instr = Agilent8163B(addr=addrs["Agilent8163B_Addr"], rm=rm)
         instr.setup(reset=args.reset, wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "h_speed":
         # obtaining the device
         SubparserInfo.h_speed_print(args)
-        siggen = KeysightE8257D(addr=addrs["KeysightE8257D_Addr"])
-        osc = KeysightFlexDCA(addr=addrs["KeysightFlexDCA_Addr"])
+        siggen = KeysightE8257D(addr=addrs["KeysightE8257D_Addr"], rm=rm)
+        osc = KeysightFlexDCA(addr=addrs["KeysightFlexDCA_Addr"], rm=rm)
         siggen.set_freq_fixed(freq=args.freq[0])
         osc.lock_clk()
         osc.set_clk_odratio(ratio=args.odratio[0])
+    rm.close()
 
 def main():
 

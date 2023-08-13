@@ -11,15 +11,15 @@ class Keysight86100D(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
-    rm: str
-        Argument for resource manager (for simualated device only)
+    rm:
+        Pyvisa resource manager
     chan: int, default = 1
         The input channel
     clk_num: int, default = 1
         The clock recovery number
     """
 
-    def __init__(self, addr: str, rm: str="", chan: int=1, clk_num: int=1):
+    def __init__(self, addr: str, rm, chan: int=1, clk_num: int=1):
         super().__init__(rsc_addr=addr, rm=rm)
         self.chan = chan
         self.clk_num = clk_num

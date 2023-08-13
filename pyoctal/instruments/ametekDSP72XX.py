@@ -12,11 +12,11 @@ class AmetekDSP7230(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
-    rm: str
-        Argument for resource manager (for simualated device only)
+    rm:
+        Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm: str=""):
+    def __init__(self, addr: str, rm):
         super().__init__(rsc_addr=addr, rm=rm)
 
     def get_mag(self) -> float:
@@ -40,9 +40,11 @@ class AmetekDSP7265(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
+    rm:
+        Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm: str="rm"):
+    def __init__(self, addr: str, rm):
         super().__init__(rsc_addr=addr, rm=rm)
 
     # Set

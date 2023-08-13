@@ -1,7 +1,3 @@
-# Perform version check before everything
-from pyoctal.util.util import pyversion_check
-pyversion_check()
-
 import yaml
 import logging
 import argparse

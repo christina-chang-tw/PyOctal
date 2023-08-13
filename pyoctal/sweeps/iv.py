@@ -19,12 +19,14 @@ class IVSweeps(BaseSweeps):
 
     Parameters
     ----------
-    instr_addrs:
-        A dictionary of the addresses of all instruments used in this sweep
+    configs:
+        A map containing all parameters. Should be read from a yaml file
+    rm:
+        Pyvisa resource manager
     """
 
-    def __init__(self, configs: dict):
-        super().__init__(instr_addrs=configs.instr_addrs, folder=configs.folder, fname=configs.fname)
+    def __init__(self, configs: dict, rm):
+        super().__init__(instr_addrs=configs.instr_addrs, rm=rm, folder=configs.folder, fname=configs.fname)
         
         self.v_start = configs.v_start
         self.v_stop = configs.v_stop
@@ -37,7 +39,7 @@ class IVSweeps(BaseSweeps):
 
     def run_6487(self):
         self.instrment_check("vs", self._addrs.keys())
-        vs = Keithley6487(addr=self._addrs.vs)
+        vs = Keithley6487(addr=self._addrs.vs, rm=self._rm)
 
         vs.set_laser_volt(0)
         vs.set_laser_state(1) # turn the laser on
@@ -61,8 +63,8 @@ class IVSweeps(BaseSweeps):
 
     def run_DSP7265(self):
         self.instrment_check(("pm", "amp"), self._addrs.keys())
-        pm = AgilentE3640A(addr=self._addrs.pm)
-        amp = AmetekDSP7265(addr=self._addrs.amp)
+        pm = AgilentE3640A(addr=self._addrs.pm, rm=self._rm)
+        amp = AmetekDSP7265(addr=self._addrs.amp, rm=self._rm)
         pm.set_volt(0)
         pm.set_output_state(1)
 
@@ -89,9 +91,9 @@ class IVSweeps(BaseSweeps):
 
     def run_dual_DSP7265(self):
         self.instrment_check(("amp", "pm"), self._addrs.keys())
-        amp = AmetekDSP7265(addr=self._addrs.amp)
-        pm1 = AgilentE3640A(addr=self._addrs.pm[0])
-        pm2 = AgilentE3640A(addr=self._addrs.pm[1])
+        amp = AmetekDSP7265(addr=self._addrs.amp, rm=self._rm)
+        pm1 = AgilentE3640A(addr=self._addrs.pm[0], rm=self._rm)
+        pm2 = AgilentE3640A(addr=self._addrs.pm[1], rm=self._rm)
 
         df = pd.DataFrame(columns=["Volt1 [V]", "Volt2 [V]", "Current1 [A]", "Current2 [A]", "Optical [dB]"])
 
@@ -116,7 +118,7 @@ class IVSweeps(BaseSweeps):
 
     def run_E3640A(self):
         self.instrment_check("pm", self._addrs.keys())
-        pm = AgilentE3640A(addr=self._addrs.pm)
+        pm = AgilentE3640A(addr=self._addrs.pm, rm=self._rm)
         pm.set_volt(0)
         pm.set_output_state(1)
 
@@ -138,7 +140,7 @@ class IVSweeps(BaseSweeps):
 
     def run_2400(self):
         self.instrment_check("vs", self._addrs.keys())
-        smu = Keithley2400(addr=self._addrs.smu)
+        smu = Keithley2400(addr=self._addrs.smu, rm=self._rm)
         smu.set_laser_volt(0)
         smu.set_laser_state(1) # turn the laser on
 

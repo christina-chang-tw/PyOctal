@@ -23,7 +23,6 @@ class TestClassCalls:
         rm = pyvisa.ResourceManager(self.sim_rm)
         addr = rm.list_resources()[0]
         identity = configs["devices"]["device 1"]["dialogues"][0]["r"]
-        rm.close()
         tested_module = []
 
         # search through the name of the files matching *.py under the folder
@@ -40,9 +39,11 @@ class TestClassCalls:
                     continue
                 tested_module.append(member)
                 # initialise a device
-                dev = cls(addr=addr, rm=self.sim_rm)
+                dev = cls(addr=addr, rm=rm)
+                dev.connect()
                 # check that the ids are as expected
                 assert DeviceID(identity) == dev.identity
+        rm.close()
 
     
     def test_class_docstrings(self):
@@ -51,7 +52,6 @@ class TestClassCalls:
         # get the address from opening up another resource manager
         rm = pyvisa.ResourceManager(self.sim_rm)
         addr = rm.list_resources()[0]
-        rm.close()
         tested_module = []
 
         # search through the name of the files matching *.py under the folder
@@ -72,11 +72,12 @@ class TestClassCalls:
                 # make sure that tested modules won't be tested again
                 tested_module.append(member)
                 
-                dev = cls(addr=addr, rm=self.sim_rm) # initialise a device
+                dev = cls(addr=addr, rm=rm) # initialise a device
+                dev.connect()
                 doc = cls.__doc__.split('.')[0].rstrip().lstrip()
-                dev.close()
                 print(f"| {member:20} | {doc:90} |")
         print("-"*117)
+        rm.close()
 
 
 def test_callable_funcs():
@@ -84,3 +85,6 @@ def test_callable_funcs():
     funcs = get_callable_funcs(obj=BaseInstrument)
     test_funcs = ['write', 'query', 'get_idn'] # only testing a fraction of callable functions
     assert [name for name in test_funcs if name in funcs]
+
+a = TestClassCalls()
+a.test_instr_initialization()

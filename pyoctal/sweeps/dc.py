@@ -15,12 +15,14 @@ class DCSweeps(BaseSweeps):
 
     Parameters
     ----------
-    instr_addrs:
-        A dictionary of the addresses of all instruments used in this sweep
+    configs:
+        A map containing all parameters. Should be read from a yaml file
+    rm:
+        Pyvisa resource manager
     """
-    def __init__(self, configs: dict):
+    def __init__(self, configs: dict, rm):
         # check if the required device type exist
-        super().__init__(instr_addrs=configs.instr_addrs, folder=configs.folder, fname=configs.fname)
+        super().__init__(instr_addrs=configs.instr_addrs, rm=rm, folder=configs.folder, fname=configs.fname)
         self.v_start = configs.v_start
         self.v_stop = configs.v_stop
         self.v_step = configs.v_step
@@ -38,7 +40,7 @@ class DCSweeps(BaseSweeps):
         """ Run with ILME engine """
         self.instrment_check("pm", self._addrs.keys())
 
-        pm = AgilentE3640A(addr=self._addrs.pm)
+        pm = AgilentE3640A(addr=self._addrs.pm, rm=self._rm)
         ilme = KeysightILME()
         ilme.activate()
 
@@ -59,8 +61,8 @@ class DCSweeps(BaseSweeps):
     def run_one_source(self):
         """ Run only with instrument. Require one voltage source """
         self.instrment_check(("pm", "mm"), self._addrs.keys())
-        pm = AgilentE3640A(addr=self._addrs.pm)
-        mm = Agilent8163B(addr=self._addrs.mm)
+        pm = AgilentE3640A(addr=self._addrs.pm, rm=self._rm)
+        mm = Agilent8163B(addr=self._addrs.mm, rm=self._rm)
 
         for volt in tqdm(range(self.v_start, self.v_stop+self.v_step, self.v_step)):
             pm.set_volt(volt)

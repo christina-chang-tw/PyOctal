@@ -13,8 +13,8 @@ class Agilent8163B(BaseInstrument):
     ----------
     addr: str
         The address of the instrument
-    rm: str
-        Argument for resource manager (for simualated device only)
+    rm:
+        Pyvisa resource manager
     src_num: int, default: 1
         Source interface number
     src_chan: int, default: 1
@@ -24,7 +24,7 @@ class Agilent8163B(BaseInstrument):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm: str="", src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+    def __init__(self, addr: str, rm, src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(rsc_addr=addr, rm=rm)
         self.src_num = src_num
         self.src_chan = src_chan
