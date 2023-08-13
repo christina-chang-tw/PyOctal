@@ -85,6 +85,3 @@ def test_callable_funcs():
     funcs = get_callable_funcs(obj=BaseInstrument)
     test_funcs = ['write', 'query', 'get_idn'] # only testing a fraction of callable functions
     assert [name for name in test_funcs if name in funcs]
-
-a = TestClassCalls()
-a.test_instr_initialization()
