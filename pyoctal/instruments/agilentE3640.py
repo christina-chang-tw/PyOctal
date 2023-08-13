@@ -12,7 +12,7 @@ class AgilentE3640A(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm)
+    def __init__(self, addr: str, rm):
         super().__init__(rsc_addr=addr, rm=rm)
 
     def setup(self):
