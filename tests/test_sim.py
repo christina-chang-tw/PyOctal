@@ -40,6 +40,7 @@ class TestClassCalls:
                 tested_module.append(member)
                 # initialise a device
                 dev = cls(addr=addr, rm=rm)
+                print(cls)
                 dev.connect()
                 # check that the ids are as expected
                 assert DeviceID(identity) == dev.identity
@@ -72,7 +73,7 @@ class TestClassCalls:
                 # make sure that tested modules won't be tested again
                 tested_module.append(member)
                 
-                dev = cls(addr=addr, rm=rm) # initialise a device
+                dev = cls(addr=addr, rm=rm) # instantiate a device
                 dev.connect()
                 doc = cls.__doc__.split('.')[0].rstrip().lstrip()
                 print(f"| {member:20} | {doc:90} |")
@@ -85,3 +86,5 @@ def test_callable_funcs():
     funcs = get_callable_funcs(obj=BaseInstrument)
     test_funcs = ['write', 'query', 'get_idn'] # only testing a fraction of callable functions
     assert [name for name in test_funcs if name in funcs]
+
+print(TestClassCalls)
