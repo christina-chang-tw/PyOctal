@@ -11,10 +11,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       
-      - name: Setup Python 3.6
+      # need to be Python 3.7+ for pytest
+      - name: Setup Python 3.7+
         uses: actions/setup-python@v3
         with:
-          python-version: '3.6'
           cache: 'pip'
       
       - name: Install dependencies
