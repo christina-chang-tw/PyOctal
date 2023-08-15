@@ -75,7 +75,8 @@ def log_setup_info(ttype, configs):
 
 
 def load_config(ttype, args_config):
-    #  If a config file is defined by user then use that otherwise use the default ones
+    """ Loading the appropriate configuration file for the test. """
+    # If a config file is defined by user then use that otherwise use the default ones
     fpath = f"./config/{ttype}_config.yaml" if args_config is None else args_config[0]
     with open(file=fpath, mode='r') as file:
         configs = yaml.safe_load(file)
@@ -140,7 +141,7 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
         nargs=1,
         type=str,
         default=None,
-        help='Setting a user-defined path to a config file. Without specified, it is default to ./config/<test>_config.yaml',
+        help='Setting a user-defined path to a config file. Without specified, it is default to ./config/<test>_configs.yaml',
         required=False,
     )
 

@@ -25,7 +25,7 @@ def main():
         type=str,
         help="Path to a configuration file.",
         required=False,
-        default=("./config/plot_config.yaml",)
+        default=("./configs/plot_config.yaml",)
     )
 
     args = parser.parse_args()

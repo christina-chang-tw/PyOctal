@@ -12,11 +12,11 @@ folders: # select folder name under results
   - "./results/Chip_8"
 
 sheets: # excel only
-  - "KTN Transitions"
+  - "KTN 4 Straights 2"
 
 
 ## Plot Variables ###############################################
-title: ""
+title: "KTN 4 Straights 2"
 xlabel: "Wavelength [nm]"
 ylabel: "Loss [dB/mm]"
 end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}

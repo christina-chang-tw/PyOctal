@@ -96,12 +96,12 @@ class BaseInstrument:
             
         
     def connect(self):
-        # Connect to the device
+        """ Establishing a connection to the device. """
         if self._addr in self.list_resource(): # Checking if the resource is available
-            self.instr = self._rm.open_resource(self._addr)
-            self.instr.read_termination = self._read_termination
-            self.instr.write_termination = self._write_termination
-            instr_type = self.instr.resource_info[3][:4]
+            self._instr = self._rm.open_resource(self._addr)
+            self._instr.read_termination = self._read_termination
+            self._instr.write_termination = self._write_termination
+            instr_type = self._instr.resource_info[3][:4]
             
             known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
             
@@ -109,7 +109,7 @@ class BaseInstrument:
             if instr_type not in known_type:
                 raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
             logger.info(f'You have connected succesfully with a/an {instr_type} type resource')
-            self._identity = DeviceID(self.get_idn())
+            self._identity = self.get_idn()
         else:
             raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
 
@@ -118,6 +118,7 @@ class BaseInstrument:
             
     @staticmethod
     def value_check(value, cond: Union[tuple, list]=None):
+        """ Check if the value meets the condition. """
         if cond is None: # nothing to check for
             pass
         elif not (isinstance(cond, Union[tuple, list]) and all(cond)): # the condition is incorrectly set and they are of the same type
@@ -131,36 +132,46 @@ class BaseInstrument:
 
 
     def write(self, cmd):
-        self.instr.write(cmd)
+        """ Write a command. """
+        self._instr.write(cmd)
     
     def write_binary_values(self, cmd, **kwargs):
-        self.instr.write_binary_values(cmd, **kwargs)
+        """ Write a command that sets a list of binary values. """
+        self._instr.write_binary_values(cmd, **kwargs)
     
     def query(self, cmd) -> str:
-        return self.instr.query(cmd).rstrip()
+        """ Query command. """
+        return self._instr.query(cmd).rstrip()
     
     def query_bool(self, cmd) -> bool:
-        return bool(self.instr.query(cmd).rstrip())
+        """ Convert the value return from a query to boolean. """
+        return bool(self._instr.query(cmd).rstrip())
     
     def query_float(self, cmd) -> float:
-        return float(self.instr.query(cmd).rstrip())
+        """ Convert the value return from a query to float. """
+        return float(self._instr.query(cmd).rstrip())
     
     def query_binary_values(self, cmd) -> list:
-        return self.instr.query_binary_values(cmd, is_big_endian=False)
+        """ Convert the value return from a query to binary values. """
+        return self._instr.query_binary_values(cmd, is_big_endian=False)
     
-    def get_idn(self) -> str:
-        return self.query("*IDN?")
+    def get_idn(self) -> DeviceID:
+        """ Get the identity string and parsed by DeviceID class. """
+        return DeviceID(self.query("*IDN?"))
 
     def reset(self):
+        """ Reset the instrument. """
         self.write("*RST")
 
     def clear(self):
+        """ Clear the instrument. """
         self.write("*CLS")
 
     def opc(self) -> bool:
         return self.query("*OPC?")
     
     def err(self) -> str:
+        """ Query of any error has occured. """
         return self.query("system:error?")
 
     @property
@@ -174,6 +185,10 @@ class BaseInstrument:
     @property
     def rm(self):
         return self._rm
+    
+    @property
+    def instr(self):
+        return self._instr
 
     def __get_name(self) -> str:
         return self.__class__.__name__
@@ -182,7 +197,7 @@ class BaseInstrument:
         return f"Instrument: {self.__get_name()} "
     
     def __repr__(self) -> str:
-        return f"{self.__get_name()}({self.instr, self.identity})"
+        return f"{self.__get_name()}({self._instr, self.identity})"
 
 
 class BaseSweeps(object):
@@ -218,6 +233,7 @@ class BaseSweeps(object):
     
     @staticmethod
     def instrment_check(match, addr_list):
+        """ Check if all instruments needed for a test are present. """
         if isinstance(match, str) and match not in addr_list:
             raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
         elif isinstance(match, Union[tuple, list]) and not all([dev_type in addr_list for dev_type in match]):
@@ -227,6 +243,7 @@ class BaseSweeps(object):
 
     @classmethod
     def get_callable_funcs(cls):
+        """ Get all callable functions from this class. """
         method_list = [method for method in dir(cls) if method.startswith('__') is False or method.startswith('_') is False]
 
         # filter out specific ones

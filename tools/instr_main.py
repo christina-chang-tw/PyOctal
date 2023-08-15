@@ -86,6 +86,7 @@ def setup(ttype, args, addrs):
     if ttype == "agilent8163B":
         SubparserInfo.agilent8163B_print(args)
         instr = Agilent8163B(addr=addrs["Agilent8163B_Addr"], rm=rm)
+        instr.connect()
         instr.setup(reset=args.reset, wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "h_speed":
@@ -93,6 +94,8 @@ def setup(ttype, args, addrs):
         SubparserInfo.h_speed_print(args)
         siggen = KeysightE8257D(addr=addrs["KeysightE8257D_Addr"], rm=rm)
         osc = KeysightFlexDCA(addr=addrs["KeysightFlexDCA_Addr"], rm=rm)
+        siggen.connect()
+        osc.connect()
         siggen.set_freq_fixed(freq=args.freq[0])
         osc.lock_clk()
         osc.set_clk_odratio(ratio=args.odratio[0])
