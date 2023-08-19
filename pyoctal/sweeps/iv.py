@@ -19,19 +19,24 @@ class IVSweeps(BaseSweeps):
 
     Parameters
     ----------
-    configs:
-        A map containing all parameters. Should be read from a yaml file
+    ttype_configs: dict
+        Test type specific configuration parameters
+    instr_addrs: map
+        All instrument addresses
     rm:
         Pyvisa resource manager
+    folder: str
+        Path to the folder
+    fname: str
+        Filename
     """
 
-    def __init__(self, configs: dict, rm):
-        super().__init__(instr_addrs=configs.instr_addrs, rm=rm, folder=configs.folder, fname=configs.fname)
-        
-        self.v_start = configs.v_start
-        self.v_stop = configs.v_stop
-        self.v_step = configs.v_step
-        self.t_step = configs.t_step
+    def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
+        super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
+        self.v_start = ttype_configs.v_start
+        self.v_stop = ttype_configs.v_stop
+        self.v_step = ttype_configs.v_step
+        self.t_step = ttype_configs.t_step
         self.currs = []
         self.volts = []
         self.df = pd.DataFrame()
@@ -54,7 +59,7 @@ class IVSweeps(BaseSweeps):
         self.df["Voltage [V]"] = self.volts
         self.df["Current [A]"] = self.currs
         
-        export_to_csv(data=self.df, path=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
 
         vs.set_laser_volt(0) 
         vs.set_laser_state(0) # turn laser off
@@ -82,7 +87,7 @@ class IVSweeps(BaseSweeps):
         self.df["Current [A]"] = self.currs
         self.df["Amplifier [dB]"] = optics
         
-        export_to_csv(data=self.df, path=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
 
         pm.set_volt(0) 
         pm.set_output_state(0) # turn laser off
@@ -109,7 +114,7 @@ class IVSweeps(BaseSweeps):
                 data = (volt1, volt2, curr1, curr2, optical)
                 df.loc[len(df)] = data
         
-        export_to_csv(data=self.df, path=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
         pm1.set_volt(0)
         pm1.set_output_state(0) # turn laser off
         pm2.set_volt(0)
@@ -132,7 +137,7 @@ class IVSweeps(BaseSweeps):
         self.df["Voltage [V]"] = self.volts
         self.df["Current [A]"] = self.currs
         
-        export_to_csv(data=self.df, path=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
 
         pm.set_volt(0) 
         pm.set_output_state(0) # turn laser off
@@ -159,9 +164,9 @@ class IVSweeps(BaseSweeps):
         self.df["Current [A]"] = self.currs
 
         # export V-Is
-        export_to_csv(data=currents, path=self.folder, fname=f'{self.fname}_VIs')
+        export_to_csv(data=currents, folder=self.folder, fname=f'{self.fname}_VIs.csv')
         # export V-I
-        export_to_csv(data=self.df, path=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
 
         smu.set_laser_volt(0) 
         smu.set_laser_state(0) # turn laser off

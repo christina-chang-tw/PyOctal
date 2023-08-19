@@ -4,7 +4,7 @@
 
 ## General Variables  ###########################################
 
-fname: "Chip_8" # <fname>.csv or <fname>.xlsx
+fname: "Chip_8.xlsx" # <fname>.csv or <fname>.xlsx
 func: "plt_lambda_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
 

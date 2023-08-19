@@ -15,23 +15,29 @@ class DCSweeps(BaseSweeps):
 
     Parameters
     ----------
-    configs:
-        A map containing all parameters. Should be read from a yaml file
+    ttype_configs: dict
+        Test type specific configuration parameters
+    instr_addrs: map
+        All instrument addresses
     rm:
         Pyvisa resource manager
+    folder: str
+        Path to the folder
+    fname: str
+        Filename
     """
-    def __init__(self, configs: dict, rm):
+    def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
         # check if the required device type exist
-        super().__init__(instr_addrs=configs.instr_addrs, rm=rm, folder=configs.folder, fname=configs.fname)
-        self.v_start = configs.v_start
-        self.v_stop = configs.v_stop
-        self.v_step = configs.v_step
-        self.cycles = configs.cycles
-        self.w_start=configs.lambda_start,
-        self.w_stop=configs.lambda_stop,
-        self.w_step=configs.lambda_step*pow(10, 3)
-        self.w_speed=configs.lambda_speed
-        self.power = configs.power
+        super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
+        self.v_start = ttype_configs.v_start
+        self.v_stop = ttype_configs.v_stop
+        self.v_step = ttype_configs.v_step
+        self.cycles = ttype_configs.cycles
+        self.w_start = ttype_configs.lambda_start,
+        self.w_stop = ttype_configs.lambda_stop,
+        self.w_step = ttype_configs.lambda_step*pow(10, 3)
+        self.w_speed = ttype_configs.lambda_speed
+        self.power = ttype_configs.power
         self.currents = []
         self.df = pd.DataFrame()
 
@@ -52,8 +58,8 @@ class DCSweeps(BaseSweeps):
             ilme.start_meas()
             temp = ilme.get_result(name=volt)
             self.df = pd.concat([self.df, temp], axis=1)
-            export_to_csv(self.df, self.folder, self.fname)
-            export_to_csv(pd.Series(self.currents), self.folder, "dc_currents")
+            export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+            export_to_csv(data=pd.Series(self.currents), folder=self.folder, fname="dc_currents.csv")
 
         pm.set_volt(0)
 
@@ -81,8 +87,8 @@ class DCSweeps(BaseSweeps):
                 cycles=self.cycles,
                 )
             
-            export_to_csv(self.df, self.folder, self.fname)
-            export_to_csv(pd.Series(self.currents), self.folder, "dc_currents")
+            export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+            export_to_csv(data=pd.Series(self.currents), folder=self.folder, fname="dc_currents.csv")
         
         pm.set_volt(0)
         pm.set_output_state(0)

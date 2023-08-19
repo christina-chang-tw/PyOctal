@@ -3,7 +3,7 @@ import logging
 import argparse
 
 from pyoctal.util.plot import PlotGraphs
-from pyoctal.util.util import setup_rootlogger
+from pyoctal.util.util import setup_rootlogger, DictObj
 from pyoctal.util.formatter import CustomArgparseFormatter
 
 LOG_FNAME = "./logging.log"
@@ -31,20 +31,20 @@ def main():
     args = parser.parse_args()
 
     with open(file=args.config[0], mode='r') as file:
-        configs = yaml.safe_load(file)
+        configs = DictObj(**yaml.safe_load(file))
 
     
 
-    folders = [", ".join(configs["folders"])] if (len(configs["folders"]) > 1) else configs["folders"][0]
+    folders = [", ".join(configs.folders)] if (len(configs.folders) > 1) else configs.folders[0]
     logger.info("--------------------------------------")
     logger.info(f'{"Folders":10}: {folders}')
-    logger.info(f'{"Filename":10}: {configs["fname"]}')
-    logger.info(f'{"Function":10}: {configs["func"]}')
+    logger.info(f'{"Filename":10}: {configs.fname}')
+    logger.info(f'{"Function":10}: {configs.func}')
     logger.info("--------------------------------------")
 
     plot = PlotGraphs(configs)
 
-    func = getattr(plot, configs["func"])
+    func = getattr(plot, configs.func)
     func()
     
     plot.show()

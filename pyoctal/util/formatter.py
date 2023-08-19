@@ -60,6 +60,8 @@ class CustomArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.R
                         help_msg += ' [default: ' + str(action.default.name) + ']'
                     elif isinstance(action.default, bool):
                         help_msg += ' [default: ' + str(action.default) + ']'
+                    elif isinstance(action.default, str):
+                        help_msg += ' [default: ' + str(action.default) + ']'
                     elif action.default is not None:
                         help_msg += f' [default: {", ".join(map(str, action.default))}]'
         return help_msg

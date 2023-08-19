@@ -8,6 +8,7 @@ from pyoctal.sweeps.info import TestInfo
 from pyoctal.sweeps import (
     ILossSweep, 
     DCSweeps,
+    IVSweeps,
 )
 from pyoctal.util.formatter import CustomArgparseFormatter
 from pyoctal.util.util import (
@@ -22,7 +23,7 @@ setup_rootlogger(root_logger, LOG_FNAME)
 logger = logging.getLogger(__name__)
 
 
-TEST_TYPES = ("passive", "dc", "ac")
+TEST_TYPES = ("passive", "dc", "ac", "iv")
 
 
 class PrintSubparserInfo():
@@ -30,54 +31,75 @@ class PrintSubparserInfo():
 
     @staticmethod
     def passive(configs):
-        logger.info(f'{"Length [um]":<25} : {", ".join([str(round(i, 2)) for i in configs.lengths])}')
         logger.info(f'{"Output power [dBm]":<25} : {configs.power:<6}')
         logger.info(f'{"Wavelength start [nm]":<25} : {configs.w_start:<6}')
         logger.info(f'{"Wavelength stop [nm]":<25} : {configs.w_stop:<6}')
         logger.info(f'{"Sweep step [pm]":<25} : {configs.w_step:<6}')
+        logger.info(f'{"Length [um]":<25} : {", ".join(list(map(str, configs.lengths))) if configs.lengths is not None else ""}')
 
     @staticmethod
     def dc(configs):
-        pass
+        logger.info(f'{"Output power [dBm]":<25} : {configs.power}')
+        logger.info(f'{"Voltage start [dBm]":<25} : {configs.v_start:<6}')
+        logger.info(f'{"Voltage stop [nm]":<25} : {configs.v_stop:<6}')
+        logger.info(f'{"Voltage step [nm]":<25} : {configs.v_step:<6}')
+        logger.info(f'{"Cycle":<25} : {configs.cycle:<6}')
+        logger.info(f'{"Wavelength start [nm]":<25} : {configs.w_start:<6}')
+        logger.info(f'{"Wavelength stop [nm]":<25} : {configs.w_stop:<6}')
+        logger.info(f'{"Wavelength step [nm]":<25} : {configs.w_step:<6}')
+        logger.info(f'{"Wavelength speed [nm/s]":<25} : {configs.w_speed:<6}')
 
     @staticmethod
     def ac(configs):
         pass
 
+    @staticmethod
+    def iv(configs):
+        logger.info(f'{"Voltage start [dBm]":<25} : {configs.v_start:<6}')
+        logger.info(f'{"Voltage stop [nm]":<25} : {configs.v_stop:<6}')
+        logger.info(f'{"Voltage step [nm]":<25} : {configs.v_step:<6}')
+        logger.info(f'{"Time step [s]":<25} : {configs.t_step:<6}')
 
-def log_setup_info(ttype, configs):
+
+def log_setup_info(ttype, configs, ttype_configs):
+    end = '\033[0m'
+    italic = '\033[3m'
+    bold = '\033[1m'
+    underline = '\033[4m'
     """Print the setup information for each test"""
-    logger.info()
+    logger.info("")
     logger.info(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     logger.info("##############################################")
     logger.info("## TEST INFORMATION:                        ##")
     logger.info("##############################################")
-    logger.info()
+    logger.info("")
+    logger.info(underline + bold + italic + "General Variables" + end)
     logger.info(f'{"Folder":<10} : {configs.folder:<12}')
+    logger.info(f'{"Filename":<10} : {configs.fname:<12}')
     logger.info(f'{"Test Type":<10} : {ttype:<12}')
-    logger.info("-------------------------------------------")
-    logger.info(f'| {"Dev. Types":<10} | {"No. Dev.":^8} | {"Addresses":<15} |')
-    logger.info("-------------------------------------------")
-    for instr_type in configs.instr_addr.keys():
-        address = configs.instr_addr[instr_type]
-        logger.info(f'| {instr_type:<10} | {len(address):^8} | {address}')
-    logger.info("-------------------------------------------")
-    logger.info()
+    logger.info(f'{"Funcion":<10} : {configs.func:<12}')
+    logger.info(f'{"Address":<10} :')
+    for instr_type in configs.instr_addrs.keys():
+        addr = configs.instr_addrs[instr_type]
+        addr_str = ", ".join(addr)
+        logger.info(f'  {instr_type:<6} - {len(addr)} - {addr_str}')
+    logger.info("")
 
+    logger.info(underline + bold + italic + "Test-Specific Variables" + end)
     if ttype == "passive":
-        PrintSubparserInfo.passive(configs)
+        PrintSubparserInfo.passive(ttype_configs)
     elif ttype == "ac":
-        PrintSubparserInfo.ac(configs)
+        PrintSubparserInfo.ac(ttype_configs)
     elif ttype == "dc":
-        PrintSubparserInfo.dc(configs)
-    logger.info()
+        PrintSubparserInfo.dc(ttype_configs)
+    elif ttype == "iv":
+        PrintSubparserInfo.iv(ttype_configs)
+    logger.info("")
 
 
 
-def load_config(ttype, args_config):
+def load_config(fpath):
     """ Loading the appropriate configuration file for the test. """
-    # If a config file is defined by user then use that otherwise use the default ones
-    fpath = f"./config/{ttype}_config.yaml" if args_config is None else args_config[0]
     with open(file=fpath, mode='r') as file:
         configs = yaml.safe_load(file)
     return DictObj(**configs)
@@ -96,16 +118,47 @@ def test_distribution(ttype, configs):
     create_folder(folder)
     
     if ttype == "passive":
-        sweeps = ILossSweep(configs=configs, rm=rm)
-        TestInfo.passive(folder, configs)
-        sweeps.run_ilme(configs.lengths)
+        TestInfo.passive(folder=folder, fname=configs.fname, ttype_configs=configs.passive)
+        sweeps = ILossSweep(
+            rm=rm,
+            ttype_configs=configs.passive, 
+            instr_addrs=configs.instr_addrs,
+            folder=configs.folder,
+            fname=configs.fname,
+            )
+        func = getattr(sweeps, configs.func)
+        if configs.func == "run_ilme":
+            func(configs.passive.lengths)
+        else:
+            func()
 
     elif ttype == "ac":
         pass
+
     elif ttype == "dc":
-        sweeps = DCSweeps(configs=configs, rm=rm)
-        TestInfo.dc(folder, configs)
-        sweeps.run_ilme()
+        TestInfo.dc(folder=folder, fname=configs.fname, ttype_configs=configs.dc)
+        sweeps = DCSweeps(
+            rm=rm,
+            ttype_configs=configs.dc, 
+            instr_addrs=configs.instr_addrs,
+            folder=configs.folder,
+            fname=configs.fname,
+        )
+        func = getattr(sweeps, configs.func)
+        func()
+
+    elif ttype == "iv":
+        TestInfo.iv(folder=folder, fname=configs.fname, ttype_configs=configs.iv)
+        sweeps = IVSweeps(
+            rm=rm,
+            ttype_configs=configs.iv, 
+            instr_addrs=configs.instr_addrs,
+            folder=configs.folder,
+            fname=configs.fname,
+        )
+        func = getattr(sweeps, configs.func)
+        func()
+
         
 
 def main():
@@ -134,23 +187,25 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
         required=True,
     )
 
+    config_path = "./configs/sweep_config.yaml"
     parser.add_argument(
-        "--config",
-        dest="config",
+        "--config-path",
+        dest="config_path",
         metavar="",
         nargs=1,
         type=str,
-        default=None,
-        help='Setting a user-defined path to a config file. Without specified, it is default to ./config/<test>_configs.yaml',
+        default=(config_path,),
+        help=f'Path to a config file.',
         required=False,
     )
 
     args = parser.parse_args()
     ttype = args.test[0]
 
-    configs = load_config(ttype, args.config)
-    log_setup_info(ttype, configs)
-    test_distribution(ttype, configs)
+    configs = load_config(args.config_path[0])
+    ttype_configs = configs[ttype]
+    log_setup_info(ttype, configs, ttype_configs)
+    test_distribution(ttype, configs, ttype_configs)
     
 
 if __name__ == "__main__":

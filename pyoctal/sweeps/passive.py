@@ -1,4 +1,3 @@
-import warnings
 import pandas as pd
 from tqdm import tqdm
 
@@ -17,17 +16,23 @@ class ILossSweep(BaseSweeps):
 
     Parameters
     ----------
-    configs:
-        A map containing all parameters. Should be read from a yaml file
+    ttype_configs: dict
+        Test type specific configuration parameters
+    instr_addrs: map
+        All instrument addresses
     rm:
         Pyvisa resource manager
+    folder: str
+        Path to the folder
+    fname: str
+        Filename
     """
-    def __init__(self, configs: dict, rm):
-        super().__init__(instr_addrs=configs.instr_addrs, rm=rm, folder=configs.folder, fname=configs.fname)
-        self.w_start = configs.w_start
-        self.w_stop = configs.w_stop
-        self.w_step = configs.w_step
-        self.power = configs.power
+    def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
+        super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
+        self.w_start = ttype_configs.w_start
+        self.w_stop = ttype_configs.w_stop
+        self.w_step = ttype_configs.w_step
+        self.power = ttype_configs.power
 
 
     def run_ilme(self, lengths):
@@ -54,7 +59,7 @@ class ILossSweep(BaseSweeps):
             dev.start_meas()
             lf[i], temp = dev.get_result(length)
             df = pd.concat([df, temp], axis=1)
-            export_to_csv(df, self.folder, f'{self.fname}')
+            export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
 
         
         if not lf.eq(lf.iloc[:,0], axis=0).all(axis=1).all(axis=0):

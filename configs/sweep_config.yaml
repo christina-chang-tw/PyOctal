@@ -1,0 +1,47 @@
+# This is a configuration file for setting up different sweep test parameters
+
+--- # document start
+### General variables for testing #################
+folder: "" # path to folder e.g. ./results/a
+fname: ""  # filename       e.g. a.csv
+func: ""
+
+instr_addrs:
+  siggen:
+    - "GPIB0::25::INSTR"
+    - "GPIB0::20::INSTR"
+  osc:
+    - "GPIB0::25::INSTR"
+    - "GPIB0::20::INSTR"
+
+## DC Sweeps  ###########################################
+dc:
+  power: 10  # dBm
+  v_start: 0 # start voltage [V]
+  v_stop: 5  # stop voltage [V]
+  v_step: 1  # step [V]
+  cycle: 10
+  w_start: 1530 # nm
+  w_stop: 1570   # nm
+  w_step: 5     # nm
+  w_speed: 5    # nm/s
+########################################################
+
+## IV Sweeps  ###########################################
+iv:
+  v_start: 0  # start voltage [V]
+  v_stop: 5   # stop voltage [V]
+  v_step: 1   # step [V]
+  t_step: 0.2 # s
+########################################################
+
+## Passive Sweeps  ######################################
+passive:
+  power: 10        # output power [dBm]
+  w_start: 1535    # start wavelength [nm]
+  w_stop: 1575     # end wavelength [nm]
+  w_step: 5        # sweep step [pm]
+  lengths:         # a list of lengths (used for header of the column)
+########################################################
+
+... # document end

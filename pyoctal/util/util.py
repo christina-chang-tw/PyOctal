@@ -22,6 +22,16 @@ class DictObj:
             else:
                 self.__dict__[key] = val
 
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def keys(self):
+        return self.__dict__.keys()
+
+    def get(self, key):
+        if key in self.__dict__.keys():
+            return self.__getitem__(key)
+        return None
 
 def setup_rootlogger(root_logger, fname: str):
     root_logger.setLevel(logging.INFO)
