@@ -2,8 +2,8 @@
 
 --- # document start
 ### General variables for testing #################
-folder: "" # path to folder e.g. ./results/a
-fname: ""  # filename       e.g. a.csv
+folder: "xxx" # path to folder e.g. ./results/a
+fname: "xxx"  # filename       e.g. a.csv
 func: ""
 
 instr_addrs:

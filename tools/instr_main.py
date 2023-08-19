@@ -45,8 +45,25 @@ INSTR_ADDRS = {
 
 INSTR_TYPES = ("agilent8163B", "h_speed")
 
-        
+class PrintInfo:
+    """ 
+    Print subparser-dependent information to the CMD output. 
+    """
+    @staticmethod
+    def agilent8163B_print(args):
+        logger.info(f'{"Wavelength [nm]":<25} : {args.wavelength[0]:<6}')
+        logger.info(f'{"Output power [dBm]":<25} : {args.power[0]:<6}')
+        logger.info(f'{"Averaged period [s]":<25} : {args.period[0]:<6}')
+        logger.info(f'{"Reset the instrument?":<25} : {args.reset:<6}')
+
+    @staticmethod
+    def h_speed_print(args):
+        logger.info(f'{"Frequency [GHz]":<25} : {args.freq[0]:<6}')
+        logger.info(f'{"Clock divide ratio":<25} : {args.odratio[0]:<6}')
+
+
 class SubparserInfo:
+    
     @staticmethod
     def agilent8163B_info() -> str:
         info = textwrap.dedent("""
@@ -62,36 +79,23 @@ class SubparserInfo:
                 
                 """)
         return info
-    
-    @staticmethod
-    def agilent8163B_print(args):
-        logger.info(f'{"Wavelength [nm]":<25} : {args.wavelength[0]:<6}')
-        logger.info(f'{"Output power [dBm]":<25} : {args.power[0]:<6}')
-        logger.info(f'{"Averaged period [s]":<25} : {args.period[0]:<6}')
-        logger.info(f'{"Reset the instrument?":<25} : {args.reset:<6}')
-
 
     @staticmethod
     def h_speed_info():
         pass
 
-    @staticmethod
-    def h_speed_print(args):
-        logger.info(f'{"Frequency [GHz]":<25} : {args.freq[0]:<6}')
-        logger.info(f'{"Clock divide ratio":<25} : {args.odratio[0]:<6}')
-
 
 def setup(ttype, args, addrs):
     rm = pyvisa.ResourceManager()
     if ttype == "agilent8163B":
-        SubparserInfo.agilent8163B_print(args)
+        PrintInfo.agilent8163B_print(args)
         instr = Agilent8163B(addr=addrs["Agilent8163B_Addr"], rm=rm)
         instr.connect()
         instr.setup(reset=args.reset, wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "h_speed":
         # obtaining the device
-        SubparserInfo.h_speed_print(args)
+        PrintInfo.h_speed_print(args)
         siggen = KeysightE8257D(addr=addrs["KeysightE8257D_Addr"], rm=rm)
         osc = KeysightFlexDCA(addr=addrs["KeysightFlexDCA_Addr"], rm=rm)
         siggen.connect()
@@ -101,8 +105,9 @@ def setup(ttype, args, addrs):
         osc.set_clk_odratio(ratio=args.odratio[0])
     rm.close()
 
-def main():
 
+
+def main():
     parser = argparse.ArgumentParser(
         description="Remote setup the instrument", 
         formatter_class=CustomArgparseFormatter)

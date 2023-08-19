@@ -3,8 +3,8 @@ from datetime import datetime
 import logging
 import yaml
 import pyvisa
+from typing import Union
 
-from pyoctal.sweeps.info import TestInfo
 from pyoctal.sweeps import (
     ILossSweep, 
     DCSweeps,
@@ -14,8 +14,10 @@ from pyoctal.util.formatter import CustomArgparseFormatter
 from pyoctal.util.util import (
     create_folder,
     setup_rootlogger,
+    package_info,
     DictObj
 )
+from pyoctal.util.file_operations import export_to_csv
 
 LOG_FNAME = "./logging.log"
 root_logger = logging.getLogger()
@@ -26,47 +28,79 @@ logger = logging.getLogger(__name__)
 TEST_TYPES = ("passive", "dc", "ac", "iv")
 
 
-class PrintSubparserInfo():
-    """ Print subparser-dependent information to the CMD output """
+class SweepTestInfo:
+    """
+    Sweep Test Information
+    """
+    def __init__(self, folder, fname):
+        self.folder = folder
+        self.fname = fname
+
+    def passive(self, configs):
+        """ Information about passive testing """
+        self.fname = self.fname + "_passive_info.csv"
+        info = {
+            "Power [dBm]" : configs.power,
+            "Start wavelength [nm]" : configs.w_start,
+            "Stop wavelength [nm]" : configs.w_stop,
+            "Wavelength step [pm]" : configs.w_step,
+            "Lengths [um]" : [", ".join(map(str, configs.lengths) if configs.lengths is not None else "")],
+        }
+        return info
+
+    def dc(self, configs):
+        """ Information about dc testing """
+        self.fname = self.fname + "_dc_info.csv"
+        info = {
+            "Power [dBm]" : configs.power,
+            "Start voltage [V]" : configs.v_start,
+            "Stop voltage [V]" : configs.v_stop,
+            "Step voltage [V]" : configs.v_step,
+            "Cycle" : configs.cycle,
+            "Wavelength start [nm]" : configs.w_start,
+            "Wavelength stop [nm]" : configs.w_stop,
+            "Wavelength step [nm]" : configs.w_step,
+            "Scan speed [nm/s]" : configs.w_speed,
+        }
+        return info
+
+    def iv(self, configs):
+        """ Information about iv testing """
+        self.fname = self.fname + "_iv_info.csv"
+        info = {
+            "Start voltage [V]" : configs.v_start,
+            "Stop voltage [V]" : configs.v_stop,
+            "Step voltage [V]" : configs.v_step,
+            "Time step [s]" : configs.t_step,
+        }
+        return info
 
     @staticmethod
-    def passive(configs):
-        logger.info(f'{"Output power [dBm]":<25} : {configs.power:<6}')
-        logger.info(f'{"Wavelength start [nm]":<25} : {configs.w_start:<6}')
-        logger.info(f'{"Wavelength stop [nm]":<25} : {configs.w_stop:<6}')
-        logger.info(f'{"Sweep step [pm]":<25} : {configs.w_step:<6}')
-        logger.info(f'{"Length [um]":<25} : {", ".join(list(map(str, configs.lengths))) if configs.lengths is not None else ""}')
-
-    @staticmethod
-    def dc(configs):
-        logger.info(f'{"Output power [dBm]":<25} : {configs.power}')
-        logger.info(f'{"Voltage start [dBm]":<25} : {configs.v_start:<6}')
-        logger.info(f'{"Voltage stop [nm]":<25} : {configs.v_stop:<6}')
-        logger.info(f'{"Voltage step [nm]":<25} : {configs.v_step:<6}')
-        logger.info(f'{"Cycle":<25} : {configs.cycle:<6}')
-        logger.info(f'{"Wavelength start [nm]":<25} : {configs.w_start:<6}')
-        logger.info(f'{"Wavelength stop [nm]":<25} : {configs.w_stop:<6}')
-        logger.info(f'{"Wavelength step [nm]":<25} : {configs.w_step:<6}')
-        logger.info(f'{"Wavelength speed [nm/s]":<25} : {configs.w_speed:<6}')
-
-    @staticmethod
-    def ac(configs):
-        pass
-
-    @staticmethod
-    def iv(configs):
-        logger.info(f'{"Voltage start [dBm]":<25} : {configs.v_start:<6}')
-        logger.info(f'{"Voltage stop [nm]":<25} : {configs.v_stop:<6}')
-        logger.info(f'{"Voltage step [nm]":<25} : {configs.v_step:<6}')
-        logger.info(f'{"Time step [s]":<25} : {configs.t_step:<6}')
+    def print(info):
+        for key, value in info.items():
+            if isinstance(value, Union[tuple, list]):
+                if value is not None:
+                    logger.info(f'{key:<25} : {", ".join(value)}')
+                else:
+                    logger.info(f'{key:<25} :')
+            elif isinstance(value, Union[str, float, int]):
+                logger.info(f'{key:<25} : {value:}')
+            else:
+                raise ValueError("Values invalid.")
+            
+    def export_csv(self, info):
+        export_to_csv(data=package_info(info), folder=self.folder, fname=self.fname)
 
 
 def log_setup_info(ttype, configs, ttype_configs):
+    """
+    Print the setup information for each test
+    """
     end = '\033[0m'
     italic = '\033[3m'
     bold = '\033[1m'
     underline = '\033[4m'
-    """Print the setup information for each test"""
+    
     logger.info("")
     logger.info(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     logger.info("##############################################")
@@ -86,79 +120,79 @@ def log_setup_info(ttype, configs, ttype_configs):
     logger.info("")
 
     logger.info(underline + bold + italic + "Test-Specific Variables" + end)
+    testinfo = SweepTestInfo(configs.folder, configs.fname)
+    info = []
     if ttype == "passive":
-        PrintSubparserInfo.passive(ttype_configs)
+        info = testinfo.passive(ttype_configs)
     elif ttype == "ac":
-        PrintSubparserInfo.ac(ttype_configs)
+        pass
     elif ttype == "dc":
-        PrintSubparserInfo.dc(ttype_configs)
+        info = testinfo.dc(ttype_configs)
     elif ttype == "iv":
-        PrintSubparserInfo.iv(ttype_configs)
+        info = testinfo.iv(ttype_configs)
+    testinfo.print(info)
+    testinfo.export_csv(info)
     logger.info("")
 
 
-
 def load_config(fpath):
-    """ Loading the appropriate configuration file for the test. """
+    """ 
+    Loading the appropriate configuration file for the test. 
+    """
     with open(file=fpath, mode='r') as file:
         configs = yaml.safe_load(file)
     return DictObj(**configs)
 
 
-def test_distribution(ttype, configs):
+def test_distribution(ttype, configs, ttype_configs):
     """ 
     Distribute tests 
         type: test type,
         configs: containing all input arguments
     """
     folder = configs.folder
-    rm = pyvisa.ResourceManager()
-
     # create a folder for the test chip if this has not been done so
     create_folder(folder)
+    log_setup_info(ttype, configs, ttype_configs)
+    rm = pyvisa.ResourceManager()
     
+    sweep = []
     if ttype == "passive":
-        TestInfo.passive(folder=folder, fname=configs.fname, ttype_configs=configs.passive)
-        sweeps = ILossSweep(
+        sweep = ILossSweep(
             rm=rm,
             ttype_configs=configs.passive, 
             instr_addrs=configs.instr_addrs,
             folder=configs.folder,
             fname=configs.fname,
             )
-        func = getattr(sweeps, configs.func)
-        if configs.func == "run_ilme":
-            func(configs.passive.lengths)
-        else:
-            func()
 
     elif ttype == "ac":
         pass
 
     elif ttype == "dc":
-        TestInfo.dc(folder=folder, fname=configs.fname, ttype_configs=configs.dc)
-        sweeps = DCSweeps(
+        sweep = DCSweeps(
             rm=rm,
             ttype_configs=configs.dc, 
             instr_addrs=configs.instr_addrs,
             folder=configs.folder,
             fname=configs.fname,
         )
-        func = getattr(sweeps, configs.func)
-        func()
 
     elif ttype == "iv":
-        TestInfo.iv(folder=folder, fname=configs.fname, ttype_configs=configs.iv)
-        sweeps = IVSweeps(
+        sweep = IVSweeps(
             rm=rm,
             ttype_configs=configs.iv, 
             instr_addrs=configs.instr_addrs,
             folder=configs.folder,
             fname=configs.fname,
         )
-        func = getattr(sweeps, configs.func)
-        func()
 
+    # run the sweep function
+    func = getattr(sweep, configs.func)
+    if configs.func == "run_ilme":
+        func(configs.passive.lengths)
+    else:
+        func()
         
 
 def main():
@@ -204,7 +238,6 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
 
     configs = load_config(args.config_path[0])
     ttype_configs = configs[ttype]
-    log_setup_info(ttype, configs, ttype_configs)
     test_distribution(ttype, configs, ttype_configs)
     
 
