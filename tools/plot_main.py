@@ -33,16 +33,19 @@ def main():
     with open(file=args.config[0], mode='r') as file:
         configs = DictObj(**yaml.safe_load(file))
 
-    
-
-    folders = [", ".join(configs.folders)] if (len(configs.folders) > 1) else configs.folders[0]
+    files = configs.dict["files"]
+    column_drop = configs.dict["columns_drop"]
+    columns_plot = configs.dict["columns_plot"]
     logger.info("--------------------------------------")
-    logger.info(f'{"Folders":10}: {folders}')
-    logger.info(f'{"Filename":10}: {configs.fname}')
     logger.info(f'{"Function":10}: {configs.func}')
     logger.info("--------------------------------------")
 
-    plot = PlotGraphs(configs)
+    plot = PlotGraphs(
+        configs, 
+        files=files, 
+        columns_drop=column_drop, 
+        columns_plot=columns_plot
+    )
 
     func = getattr(plot, configs.func)
     func()

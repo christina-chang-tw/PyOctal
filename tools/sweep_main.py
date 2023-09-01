@@ -9,6 +9,7 @@ from pyoctal.sweeps import (
     ILossSweep, 
     DCSweeps,
     IVSweeps,
+    AMPSweeps
 )
 from pyoctal.util.formatter import CustomArgparseFormatter
 from pyoctal.util.util import (
@@ -25,7 +26,7 @@ setup_rootlogger(root_logger, LOG_FNAME)
 logger = logging.getLogger(__name__)
 
 
-TEST_TYPES = ("passive", "dc", "ac", "iv")
+TEST_TYPES = ("passive", "dc", "ac", "iv", "amp")
 
 
 class SweepTestInfo:
@@ -72,6 +73,18 @@ class SweepTestInfo:
             "Stop voltage [V]" : configs.v_stop,
             "Step voltage [V]" : configs.v_step,
             "Time step [s]" : configs.t_step,
+        }
+        return info
+    
+    def amp(self, configs):
+        """ Information about amp testing. """
+        self.fname = self.fname + "_amp_info.csv"
+        info = {
+            "Mode" : configs.mode,
+            "Start Value" : configs.start,
+            "Stop Value" : configs.stop,
+            "Step Value" : configs.step,
+            "Channels": ", ".join(list(configs.channels)),
         }
         return info
 
@@ -130,6 +143,8 @@ def log_setup_info(ttype, configs, ttype_configs):
         info = testinfo.dc(ttype_configs)
     elif ttype == "iv":
         info = testinfo.iv(ttype_configs)
+    elif ttype == "amp":
+        info = testinfo.amp(ttype_configs)
     testinfo.print(info)
     testinfo.export_csv(info)
     logger.info("")
@@ -156,11 +171,10 @@ def test_distribution(ttype, configs, ttype_configs):
     log_setup_info(ttype, configs, ttype_configs)
     rm = pyvisa.ResourceManager()
     
-    sweep = []
     if ttype == "passive":
         sweep = ILossSweep(
             rm=rm,
-            ttype_configs=configs.passive, 
+            ttype_configs=ttype_configs, 
             instr_addrs=configs.instr_addrs,
             folder=configs.folder,
             fname=configs.fname,
@@ -172,7 +186,7 @@ def test_distribution(ttype, configs, ttype_configs):
     elif ttype == "dc":
         sweep = DCSweeps(
             rm=rm,
-            ttype_configs=configs.dc, 
+            ttype_configs=ttype_configs, 
             instr_addrs=configs.instr_addrs,
             folder=configs.folder,
             fname=configs.fname,
@@ -181,7 +195,16 @@ def test_distribution(ttype, configs, ttype_configs):
     elif ttype == "iv":
         sweep = IVSweeps(
             rm=rm,
-            ttype_configs=configs.iv, 
+            ttype_configs=ttype_configs, 
+            instr_addrs=configs.instr_addrs,
+            folder=configs.folder,
+            fname=configs.fname,
+        )
+
+    elif ttype == "amp":
+        sweep = AMPSweeps(
+            rm=rm,
+            ttype_configs=ttype_configs, 
             instr_addrs=configs.instr_addrs,
             folder=configs.folder,
             fname=configs.fname,

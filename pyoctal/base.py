@@ -93,6 +93,7 @@ class BaseInstrument:
         # character based on the resource address
         self._read_termination = "\n" if not rsc_addr.startswith("ASRL") else "\r\n"
         self._write_termination = "\n"
+        self.connect()
             
         
     def connect(self):
@@ -112,6 +113,7 @@ class BaseInstrument:
             self._identity = self.get_idn()
         else:
             raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
+
 
     def list_resource(self):
         return self._rm.list_resources()
@@ -146,6 +148,10 @@ class BaseInstrument:
     def query_bool(self, cmd) -> bool:
         """ Convert the value return from a query to boolean. """
         return bool(self._instr.query(cmd).rstrip())
+    
+    def query_int(self, cmd) -> int:
+        """ Convert the value return from a query to int. """
+        return int(self._instr.query(cmd).rstrip())
     
     def query_float(self, cmd) -> float:
         """ Convert the value return from a query to float. """

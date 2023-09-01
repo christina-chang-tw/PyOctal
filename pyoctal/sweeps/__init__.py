@@ -7,10 +7,10 @@ from pyoctal.instruments import __platform__
 if sys.platform in __platform__:
     from .dc import DCSweeps
     from .passive import ILossSweep
+    from .amp import AMPSweeps
 
 from .ac import ACSweeps
 from .iv import IVSweeps
-from .passive import InstrILossSweep
 
 __all__ = [
     "ACSweeps",

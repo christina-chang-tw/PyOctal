@@ -17,6 +17,10 @@ from .arroyo6301 import Arroyo6301
 
 from .daylightQCL import DaylightQCL
 
+from .exfoXTA50 import EXFOXTA50
+
+from .fiberlabsAMP import FiberlabsAMP
+
 from .keithley2400 import Keithley2400
 from .keithley6487 import Keithley6487
 

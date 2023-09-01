@@ -44,4 +44,10 @@ passive:
   lengths:         # a list of lengths (used for header of the column)
 ########################################################
 
+## Amp Sweeps ##########################################
+amp:
+  mode: "ACC" # ACC or ALC
+  start: 0
+  stop: 2
+  channels: 1
 ... # document end

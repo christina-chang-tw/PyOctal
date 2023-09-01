@@ -4,22 +4,21 @@
 
 ## General Variables  ###########################################
 
-fname: "Chip_8.xlsx" # <fname>.csv or <fname>.xlsx
-func: "plt_lambda_loss_excel" # Inspect PlotGraphs for available functions
+func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
+normalise: true
 
-folders: # select folder name under results
-  - "./results/Chip_8"
-
-sheets: # excel only
-  - "KTN 4 Straights 2"
-
+files: 
+  "./results/Chip_6/result.xlsx": # path/to/file
+    - "KTN One Straight (20.5)" # sheetname
+    
 
 ## Plot Variables ###############################################
-title: "KTN 4 Straights 2"
-xlabel: "Wavelength [nm]"
-ylabel: "Loss [dB/mm]"
-end_of_legend: "" # legend = {folder_name}_{length}{end_of_legend}
+title: ""
+xlabel: "Length [mm]"
+ylabel: "Normalised Loss [dB]"
+end_of_legend: "" # legend = {length}{end_of_legend}
+
 
 
 # Filtering signal parameters - moving average ##################
@@ -29,21 +28,21 @@ window_size: 100
 
 ## Length Loss Plots Only Variables #####################################
 exp_lambda: 1550 # wavelength of interest [nm]
-lambda_avgrange: 1 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
+lambda_avgrange: 3 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
 columns_drop:
-  Chip_8:
-    - 6
-    - 8
-    - 12
+  "./results/Chip_6/result.xlsx":
+    "KTN One Straight (20.5)":
+      - 1.5
+      - 6.5
+  "./results/Chip_8/result.xlsx":
+    "KTN 4 Straights":
+      - 6
+      - 12
 
 
 ## Wavelength Loss Plots Only Variables #################################
 # if nothing is specified then it will plot all data ####################
 columns_plot: 
-  Chip_9:
-  Chip_6:
-  Chip_4:
-  Chip_5:
 
 
 ## DC Loss Plots Only Variables #################################

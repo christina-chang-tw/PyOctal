@@ -27,7 +27,6 @@ class DCSweeps(BaseSweeps):
         Filename
     """
     def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
-        # check if the required device type exist
         super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
         self.v_start = ttype_configs.v_start
         self.v_stop = ttype_configs.v_stop
@@ -56,9 +55,10 @@ class DCSweeps(BaseSweeps):
             self.currents.append(pm.get_curr()) # get the current value
 
             ilme.start_meas()
-            temp = ilme.get_result(name=volt)
-            self.df = pd.concat([self.df, temp], axis=1)
-            export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+            x, y = ilme.get_result()
+            self.df["Wavelength"] = x
+            self.df["Loss [dB]"] = y
+            export_to_csv(data=self.df, folder=self.folder, fname=f"{volt}V")
             export_to_csv(data=pd.Series(self.currents), folder=self.folder, fname="dc_currents.csv")
 
         pm.set_volt(0)

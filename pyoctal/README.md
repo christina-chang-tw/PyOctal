@@ -10,7 +10,6 @@ lib
 ├── sweeps                   # different types of sweeps
 │   ├── ac.py                       # ac sweeps
 │   ├── dc.py                       # dc sweeps
-│   ├── info.py                     # information of each sweep (to be exported to a .csv file)
 │   └── passive.py                  # passive test sweeps
 ├── util                     # utility library
 │   ├── file_operations.py          # functions related to read/writing to a file

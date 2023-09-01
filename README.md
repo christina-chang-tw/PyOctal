@@ -173,11 +173,11 @@ Before you run a test, please make sure that you set all parameters correctly in
 ```bash
 # Example: 
 # (1) General helper message
-> python -m sweep_main -h
+> python -m tools.sweep_main -h
 # (2) Run a passive test without specifying anything
-> python -m sweep_main -t passive
+> python -m tools.sweep_main -t passive
 # (3) Run a dc sweep test with logging level as DEBUG and specify the config file path
-> python -m sweep_main -t dc --config ./config/test.yaml
+> python -m tools.sweep_main -t dc --config ./config/test.yaml
 ```
 
 **Instrument Setup**
@@ -191,11 +191,11 @@ An interface to easily setup an instrument.
 ```bash
 # Example: 
 # (1) General helper message
-> python -m instr_main -h
+> python -m tools.instr_main -h
 # (2) Helper message for specific instrument(s)
-> python -m instr_main agilent8163B -h
+> python -m tools.instr_main agilent8163B -h
 # (3) Setup 8163B wavelength at 1550nm and power at 10dBm
-> python -m instr_main m_8163b -w 1550 -p 10
+> python -m tools.instr_main agilent8163B -w 1550 -p 10
 ```
 
 ### Debugging issues
