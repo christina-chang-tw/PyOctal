@@ -4,7 +4,7 @@
 ### General variables for testing #################
 folder: "xxx" # path to folder e.g. ./results/a
 fname: "xxx"  # filename       e.g. a.csv
-func: ""
+func: "run_acc"
 
 instr_addrs:
   siggen:

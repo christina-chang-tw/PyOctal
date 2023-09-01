@@ -172,44 +172,24 @@ def test_distribution(ttype, configs, ttype_configs):
     rm = pyvisa.ResourceManager()
     
     if ttype == "passive":
-        sweep = ILossSweep(
-            rm=rm,
-            ttype_configs=ttype_configs, 
-            instr_addrs=configs.instr_addrs,
-            folder=configs.folder,
-            fname=configs.fname,
-            )
-
+        cls = ILossSweep
     elif ttype == "ac":
         pass
-
     elif ttype == "dc":
-        sweep = DCSweeps(
-            rm=rm,
-            ttype_configs=ttype_configs, 
-            instr_addrs=configs.instr_addrs,
-            folder=configs.folder,
-            fname=configs.fname,
-        )
-
+        cls = DCSweeps
     elif ttype == "iv":
-        sweep = IVSweeps(
-            rm=rm,
-            ttype_configs=ttype_configs, 
-            instr_addrs=configs.instr_addrs,
-            folder=configs.folder,
-            fname=configs.fname,
-        )
-
+        cls = IVSweeps
     elif ttype == "amp":
-        sweep = AMPSweeps(
-            rm=rm,
-            ttype_configs=ttype_configs, 
-            instr_addrs=configs.instr_addrs,
-            folder=configs.folder,
-            fname=configs.fname,
-        )
+        cls = AMPSweeps
 
+    sweep = cls(
+        rm=rm,
+        ttype_configs=ttype_configs, 
+        instr_addrs=configs.instr_addrs,
+        folder=configs.folder,
+        fname=configs.fname,
+    )
+    
     # run the sweep function
     func = getattr(sweep, configs.func)
     if configs.func == "run_ilme":
