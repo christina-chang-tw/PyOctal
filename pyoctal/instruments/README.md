@@ -1,7 +1,7 @@
 # Instruments
 
 Supported instruments are listed below:
-| Manufacturer | Part Number | Description | Tested |
+| Manufacturer | Model       | Description | Tested |
 | ------------ | ----------- | ----------- | ------ |
 | Agilent (Keysight)      | 8163B       | Lightwave Multimeter | Yes |
 |              | DSO8000     | Oscilloscopes | No |
@@ -13,10 +13,11 @@ Supported instruments are listed below:
 |              | 6487        | Picoammeter Voltage Source | No |
 | Keysight     | 86100D      | Wide-Bandwidth Oscilloscope | No |
 |              | E8257D      | PSG Signal Geneartors | No |
-|              | PAS         | Insertion Loss Engine | No |
+|              | PAS         | Insertion Loss Engine | Yes |
 | Tektronix    | Scope       |
 | Thorlabs     | APT         | Programming interface with Tektronix instruments | No |
 |              | ITC4002QCL  | Benchtop Laser Diode/TEC Controller for QCLs | No |
 |              | PM100       | Optical Power and Energy Meter | No |
 | Daylight Solutions | QCL         | Programming interface with Daylight Solutions Quantum Cascade Laser instruments | No |
 | TTi         | TGF3162     | Dual Channel Arbitrary Function Generator | No |
+| FiberLabs   | AMP-FL8611-OB-20  | Desktop Optical Fiber Amplifier  | Yes |

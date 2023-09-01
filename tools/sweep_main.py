@@ -84,7 +84,7 @@ class SweepTestInfo:
             "Start Value" : configs.start,
             "Stop Value" : configs.stop,
             "Step Value" : configs.step,
-            "Channels": ", ".join(list(configs.channels)),
+            "Channels": ", ".join(map(str, configs.channels)),
         }
         return info
 
@@ -145,8 +145,10 @@ def log_setup_info(ttype, configs, ttype_configs):
         info = testinfo.iv(ttype_configs)
     elif ttype == "amp":
         info = testinfo.amp(ttype_configs)
+    
     testinfo.print(info)
-    testinfo.export_csv(info)
+    if not ttype == "amp": # don't export for amp info file for sweeps
+        testinfo.export_csv(info)
     logger.info("")
 
 

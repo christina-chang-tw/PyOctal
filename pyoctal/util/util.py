@@ -16,7 +16,6 @@ from . import __python_min_version__, __platform__
 class DictObj:
     """ Convert a dictionary to python object """
     def __init__(self, **dictionary):
-        self._dict = dictionary
         for key, val in dictionary.items():
             if isinstance(val, dict):
                 self.__dict__[key] = DictObj(**val)

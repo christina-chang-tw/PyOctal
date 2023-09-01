@@ -7,12 +7,7 @@ fname: "xxx"  # filename       e.g. a.csv
 func: "run_acc"
 
 instr_addrs:
-  siggen:
-    - "GPIB0::25::INSTR"
-    - "GPIB0::20::INSTR"
-  osc:
-    - "GPIB0::25::INSTR"
-    - "GPIB0::20::INSTR"
+  amp: "GPIB0::1::INSTR"
 
 ## DC Sweeps  ###########################################
 dc:
@@ -49,5 +44,7 @@ amp:
   mode: "ACC" # ACC or ALC
   start: 0
   stop: 2
-  channels: 1
+  step: 1
+  channels:
+    - 1
 ... # document end

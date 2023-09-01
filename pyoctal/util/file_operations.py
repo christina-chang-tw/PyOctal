@@ -30,7 +30,7 @@ def get_dataframe_from_excel(filepath: str, sheet_names: Union[tuple, list]) -> 
 
 
 def export_to_csv(data: Union[pd.DataFrame, pd.Series], folder: str="./xxx", fname: str="xxx.csv"):
-    create_folder(folder=folder)
+    create_folder(path=folder)
     path_to_file = f"{folder}/{fname}"
 
     with open(path_to_file, 'w', encoding='utf-8') as file:
@@ -38,7 +38,7 @@ def export_to_csv(data: Union[pd.DataFrame, pd.Series], folder: str="./xxx", fna
 
 
 def export_to_excel(data: Union[pd.DataFrame, list, tuple], sheet_names: Union[tuple, list]=["sheet"], folder: str="./xxx", fname: str="xxx.xlsx"):
-    create_folder(folder=folder)
+    create_folder(path=folder)
     path_to_file = f"{folder}/{fname}"
 
     with pd.ExcelWriter(path_to_file) as writer:

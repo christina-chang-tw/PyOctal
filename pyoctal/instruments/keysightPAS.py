@@ -23,12 +23,12 @@ class BasePAS(object):
         # connect to Engine Manager
         self.engine_mgr = win32com.client.Dispatch(server_addr)
         # list all engines running
-        self.engine_ids = self.engine_mgr.EngineIDs()
+        self.engine_ids = self.engine_mgr.EngineIDs
         self.connect()
 
     def connect(self):
         # always connect to the first engine
-        self.engine = self.engine_mgr.OpenEngine(self.engine_ids(1))
+        self.engine = self.engine_mgr.OpenEngine(self.engine_ids[0])
         self.activate()
         activating = 0
         start = time.time()
@@ -180,11 +180,9 @@ class KeysightILME(BasePAS):
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
         data_per_curve = IOMRGraph.dataPerCurve
-        no_channels = IOMRGraph.noChannels
-        ydata = IOMRGraph.YData
-        ycurve = [tuple(ydata[i*data_per_curve:(i+1)*data_per_curve]) for i in range(no_channels)]
-        
-        return self.get_wavelength(IOMRGraph, data_per_curve), ycurve
+        ydata = IOMRGraph.YData # we assume that channel number is always 1
+    
+        return self.get_wavelength(IOMRGraph, data_per_curve), ydata
     
     @staticmethod
     def get_wavelength(IOMRGraph, data_per_curve) -> tuple:

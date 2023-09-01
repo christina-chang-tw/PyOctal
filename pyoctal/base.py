@@ -84,14 +84,16 @@ class BaseInstrument:
     termination: str
         The termination character when pyvisa is communicating with the instrument
     """
-    def __init__(self, rsc_addr: str, rm):
+    def __init__(self, rsc_addr: str, rm, **kwargs):
         # Communicate with the resource and identify it
         self._addr = rsc_addr
         self._rm = rm
         self._rm.timeout = 25e+03
         # check which type of resources it is connecting to and automatically determine the read and write termination 
         # character based on the resource address
-        self._read_termination = "\n" if not rsc_addr.startswith("ASRL") else "\r\n"
+        self._read_termination = kwargs.get("read_termination", "\n")
+        if rsc_addr.startswith("ASRL"):
+            self._read_termination = "\r\n"
         self._write_termination = "\n"
         self.connect()
             
@@ -244,8 +246,7 @@ class BaseSweeps(object):
             raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
         elif isinstance(match, Union[tuple, list]) and not all([dev_type in addr_list for dev_type in match]):
             raise Exception(f"Error code {INSTR_NOT_EXIST:x}: {error_message[INSTR_NOT_EXIST]}")
-        else:
-            raise Exception(f"Error code {INSTR_MATCH_STRING_INCOR}: {error_message[INSTR_MATCH_STRING_INCOR]}")
+        
 
     @classmethod
     def get_callable_funcs(cls):

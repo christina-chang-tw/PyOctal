@@ -1,7 +1,9 @@
-class A:
-    def __init__(self):
-        print("hello")
+import pyvisa
 
+from pyoctal.instruments import FiberlabsAMP
 
-a = A
-b = a()
+rm = pyvisa.ResourceManager()
+
+amp = FiberlabsAMP(addr="GPIB0::1::INSTR", rm=rm, read_termination="")
+
+amp.set_output_state(0)
