@@ -152,15 +152,6 @@ def log_setup_info(ttype, configs, ttype_configs):
     logger.info("")
 
 
-def load_config(fpath):
-    """ 
-    Loading the appropriate configuration file for the test. 
-    """
-    with open(file=fpath, mode='r') as file:
-        configs = yaml.safe_load(file)
-    return DictObj(**configs)
-
-
 def test_distribution(ttype, configs, ttype_configs):
     """ 
     Distribute tests 

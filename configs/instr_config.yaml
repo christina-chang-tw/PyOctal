@@ -1,0 +1,21 @@
+###########################################################
+### USER DEFINED VARIABLES ################################
+# ONLY MODIFY THIS SECTION!                               #
+#                                                         #
+## Addresses of each devices  #############################
+# NOTE: You only have to set the correct address for      #
+# instruments related to your operations                  #
+#                                                         #
+# e.g. Each of the x should be replaced                   #
+#   GPIB Device = GPIBx::x::INSTR                         #
+#   COM  Device = COMx                                    #     
+###########################################################
+                                                          
+INSTR_ADDRS:                                             
+    "Agilent8163B_Addr": "GPIB0::25::INSTR"            
+    "KeysightE8257D_Addr": ""
+    "KeysightFlexDCA_Addr": ""
+    "Keysight86100D_Addr": ""
+    "FiberlabsAMP_Addr": "GPIB0:1:INSTR"
+###########################################################
+###########################################################

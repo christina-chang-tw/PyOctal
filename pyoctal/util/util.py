@@ -7,6 +7,7 @@ import sys
 import os
 import logging
 import pandas as pd
+import yaml
 
 from pyoctal.error import *
 from pyoctal.util.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
@@ -70,6 +71,13 @@ def wait_for_next_meas(i, total):
     print("\r")
     input(f"{i}/{total} : Press ENTER to continue")
 
+def load_config(fpath: str):
+    """ 
+    Loading the appropriate configuration file for the test. 
+    """
+    with open(file=fpath, mode='r') as file:
+        configs = yaml.safe_load(file)
+    return DictObj(**configs)
 
 def get_config_dirpath() -> str:
     return f'{os.getcwd()}/config'

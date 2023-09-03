@@ -4,7 +4,6 @@ import win32com.client
 import math
 import time
 import numpy as np
-import pandas as pd
 from typing import Tuple
 
 class BasePAS(object):
@@ -98,6 +97,10 @@ class KeysightILME(BasePAS):
         self.wavelength_stop = stop
         self.wavelength_step = step
         self.tls_power = power
+
+    def get_dpts(self) -> int:
+        """ Get the total wavelength datapoints. """
+        return (self.wavelength_stop - self.wavelength_start)/(self.wavelength_step*10e-3) + 1
 
     @property
     def wavelength_start(self) -> float:

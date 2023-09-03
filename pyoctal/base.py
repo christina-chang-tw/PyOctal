@@ -91,10 +91,10 @@ class BaseInstrument:
         self._rm.timeout = 25e+03
         # check which type of resources it is connecting to and automatically determine the read and write termination 
         # character based on the resource address
+        self._write_termination = kwargs.get("write_termination", "\n")
         self._read_termination = kwargs.get("read_termination", "\n")
         if rsc_addr.startswith("ASRL"):
             self._read_termination = "\r\n"
-        self._write_termination = "\n"
         self.connect()
             
         
@@ -111,7 +111,6 @@ class BaseInstrument:
             # make sure that we know the device type
             if instr_type not in known_type:
                 raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
-            logger.info(f'You have connected succesfully with a/an {instr_type} type resource')
             self._identity = self.get_idn()
         else:
             raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")

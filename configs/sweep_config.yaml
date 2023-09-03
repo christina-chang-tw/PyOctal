@@ -41,6 +41,9 @@ passive:
 
 ## Amp Sweeps ##########################################
 amp:
+  # if prediction is true, this will make a model save to (.pkl) to enable 
+  # prediction of current setting with given wavelength and loss.
+  prediction: true 
   mode: "ACC" # ACC or ALC
   start: 0
   stop: 2

@@ -1,9 +1,11 @@
-import pyvisa
+import numpy as np
 
-from pyoctal.instruments import FiberlabsAMP
+xdata = [1, 3, 5, 7, 9, 11]
+ydata = [1, 2, 3, 4, 5, 6]
 
-rm = pyvisa.ResourceManager()
+currents = [0, 1, 2, 3, 4]
 
-amp = FiberlabsAMP(addr="GPIB0::1::INSTR", rm=rm, read_termination="")
+data_array = np.zeros(shape=(len(xdata), len(currents)))
 
-amp.set_output_state(0)
+for i in range(1,1):
+    print("hello")
