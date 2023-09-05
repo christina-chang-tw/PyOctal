@@ -1,7 +1,3 @@
-###########################################################
-### USER DEFINED VARIABLES ################################
-# ONLY MODIFY THIS SECTION!                               #
-#                                                         #
 ## Addresses of each devices  #############################
 # NOTE: You only have to set the correct address for      #
 # instruments related to your operations                  #
@@ -9,13 +5,41 @@
 # e.g. Each of the x should be replaced                   #
 #   GPIB Device = GPIBx::x::INSTR                         #
 #   COM  Device = COMx                                    #     
-###########################################################
-                                                          
+###########################################################                                                      
 INSTR_ADDRS:                                             
     "Agilent8163B_Addr": "GPIB0::25::INSTR"            
     "KeysightE8257D_Addr": ""
     "KeysightFlexDCA_Addr": ""
     "Keysight86100D_Addr": ""
     "FiberlabsAMP_Addr": "GPIB0:1:INSTR"
+
 ###########################################################
-###########################################################
+
+# agilent8163B ######################################
+agilent8163B:
+  wavelength: 1550 #[nm]
+  power: 10 # [dBm]
+  period: 200.0E-03 # [s]
+  reset: false
+#####################################################
+
+# high_speed ########################################
+high_speed:
+  frequency: 1 # [GHz]
+  odratio: "unit" # Set the output clock divide ratio
+#####################################################
+
+# fiberlabsAMP ######################################
+fiberlabsAMP:
+  # Prediction-only variables ##
+  prediction: False # If true, makes prediction based on the wavelength [nm] and the loss [dB].
+  model_file: "" # Required when "prediction" is true
+  wavelength: 1550 # [nm]
+  loss: 10 # [dBm]
+  #####################################
+  mode: "ACC" # ACC - current, ALC - power
+  channel: 1
+  current: 10 # [mA]
+  power: 10 # [dBm]
+#####################################################
+  

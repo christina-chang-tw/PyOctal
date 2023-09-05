@@ -46,7 +46,7 @@ INSTR_ADDRS = {
 ###########################################################
 
 
-INSTR_TYPES = ("agilent8163B", "h_speed", "fiberlabsAMP")
+INSTR_TYPES = ("agilent8163B", "highigh_speed", "fiberlabsAMP")
 
 class PrintInfo:
     """ 
@@ -60,7 +60,7 @@ class PrintInfo:
         logger.info(f'{"Reset the instrument?":<25} : {args.reset:<6}')
 
     @staticmethod
-    def h_speed_print(args):
+    def high_speed_print(args):
         logger.info(f'{"Frequency [GHz]":<25} : {args.freq[0]:<6}')
         logger.info(f'{"Clock divide ratio":<25} : {args.odratio[0]:<6}')
 
@@ -83,7 +83,7 @@ class SubparserInfo:
         return info
 
     @staticmethod
-    def h_speed_info():
+    def high_speed_info():
         pass
 
 
@@ -99,9 +99,9 @@ def setup(ttype, args, addrs):
         instr.connect()
         instr.setup(reset=args.reset, wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
-    elif ttype == "h_speed":
+    elif ttype == "high_speed":
         # obtaining the device
-        PrintInfo.h_speed_print(args)
+        PrintInfo.high_speed_print(args)
         siggen = KeysightE8257D(addr=addrs.KeysightE8257D_Addr, rm=rm)
         osc = KeysightFlexDCA(addr=addrs.KeysightFlexDCA_Addr, rm=rm)
         siggen.set_freq_fixed(freq=args.freq[0])
@@ -167,9 +167,9 @@ def main():
     agilent8163B.add_argument("--reset", action="store_true", dest="reset", help="Reset the instrument")
     
     # Subparser arguments for setting up high-speed testing involving KeysightE8257D and KeysightFlexDCA
-    h_speed = subparsers.add_parser(INSTR_TYPES[1], description=SubparserInfo.h_speed_info(), help="High speed instrument setup.", formatter_class=CustomArgparseFormatter)
-    h_speed.add_argument("-f", "--frequency", type=float, metavar="", dest="freq", nargs=1, default=(1,), help="Set the frequency of the signal generator [GHz].", required=False)
-    h_speed.add_argument("-r", "--odratio", type=str, metavar="", dest="odratio", nargs=1, default=("unit",), help="Set the output clock divide ratio.", required=False)
+    high_speed = subparsers.add_parser(INSTR_TYPES[1], description=SubparserInfo.high_speed_info(), help="High speed instrument setup.", formatter_class=CustomArgparseFormatter)
+    high_speed.add_argument("-f", "--frequency", type=float, metavar="", dest="freq", nargs=1, default=(1,), help="Set the frequency of the signal generator [GHz].", required=False)
+    high_speed.add_argument("-r", "--odratio", type=str, metavar="", dest="odratio", nargs=1, default=("unit",), help="Set the output clock divide ratio.", required=False)
 
     fiberlabsAMP = subparsers.add_parser(INSTR_TYPES[2], description=SubparserInfo.agilent8163B_info(), help="Multimeter M8163B equipment setup.", formatter_class=CustomArgparseFormatter)
     fiberlabsAMP.add_argument("--prediction", action="store_true", dest="prediction", help="If present, makes prediction based on the wavelength [nm] and the loss [dB].")

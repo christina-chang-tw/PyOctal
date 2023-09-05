@@ -17,6 +17,7 @@ from . import __python_min_version__, __platform__
 class DictObj:
     """ Convert a dictionary to python object """
     def __init__(self, **dictionary):
+        self.__dict = dictionary
         for key, val in dictionary.items():
             if isinstance(val, dict):
                 self.__dict__[key] = DictObj(**val)
@@ -36,7 +37,8 @@ class DictObj:
     
     @property
     def dict(self):
-        return self._dict
+        return self.__dict
+
 
 def setup_rootlogger(root_logger, fname: str):
     root_logger.setLevel(logging.INFO)

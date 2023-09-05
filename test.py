@@ -1,11 +1,14 @@
-import numpy as np
+from pyoctal.util.file_operations import get_dataframe_from_excel, export_to_excel
+import pandas as pd
 
-xdata = [1, 3, 5, 7, 9, 11]
-ydata = [1, 2, 3, 4, 5, 6]
+fp = "./results/Chip_3/Si_iloss_data.xlsx"
+sheet = "Si Waveguide"
+df = get_dataframe_from_excel(filepath=fp, sheet_names=(sheet,))
 
-currents = [0, 1, 2, 3, 4]
+df = df[sheet]
+wavelength = df.loc[:,"Wavelength"]*1e+09
 
-data_array = np.zeros(shape=(len(xdata), len(currents)))
+# df = df.apply(lambda x: -x)
+df["Wavelength"] = wavelength
 
-for i in range(1,1):
-    print("hello")
+export_to_excel(data=df, sheet_names=(sheet,), folder="./results/Chip_3/", fname="Si_iloss_data.xlsx")

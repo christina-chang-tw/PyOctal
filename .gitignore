@@ -21,3 +21,5 @@ results/*
 *.egg-info/*
 *.pypirc
 dist/*
+
+*.png

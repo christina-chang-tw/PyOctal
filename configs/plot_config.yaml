@@ -6,46 +6,67 @@
 
 func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
-normalise: true
+normalise: true # normalise data
 
 files: 
-  "./results/Chip_6/result.xlsx": # path/to/file
-    - "KTN One Straight (20.5)" # sheetname
-    
+  "./results/Chip_3/Si_iloss_data.xlsx": # path/to/file
+    - "Si Waveguide"
+  "./results/Chip_6/KTN_chip.xlsx":
+    - "Si waveguide"
+  "./results/Chip_9/result.xlsx":
+    - "Si waveguide"
+
+#################################################################   
 
 ## Plot Variables ###############################################
 title: ""
 xlabel: "Length [mm]"
 ylabel: "Normalised Loss [dB]"
-end_of_legend: "" # legend = {length}{end_of_legend}
+end_of_legend: "mm" # legend = {length}{end_of_legend}
 
+x_range:
+  start:
+  stop:
+
+save: true # if true, it will save the image to the specified filepath
+save_fpath: "./Si loss.png"
+#################################################################
 
 
 # Filtering signal parameters - moving average ##################
 signal_filter: false # require filtering the signal?
 window_size: 100
+#################################################################
 
 
 ## Length Loss Plots Only Variables #####################################
 exp_lambda: 1550 # wavelength of interest [nm]
-lambda_avgrange: 3 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
+lambda_avgrange: 1 # wavelength range for averaging data points [nm] e.g. 10: x-5 to x+5
 columns_drop:
-  "./results/Chip_6/result.xlsx":
-    "KTN One Straight (20.5)":
-      - 1.5
-      - 6.5
-  "./results/Chip_8/result.xlsx":
-    "KTN 4 Straights":
-      - 6
-      - 12
+  "./results/Chip_3/Si_iloss_data.xlsx": # path/to/file
+    "Si Waveguide":
+      - 4
+      - 16
+  "./results/Chip_6/KTN_chip.xlsx":
+    "Si waveguide":
+      - 24
+  "./results/Chip_9/result.xlsx":
+    "Si waveguide":
+      - 24
+#################################################################
 
 
 ## Wavelength Loss Plots Only Variables #################################
 # if nothing is specified then it will plot all data ####################
-columns_plot: 
+columns_plot:
+  
+
+    
+
+#################################################################
 
 
 ## DC Loss Plots Only Variables #################################
 dc_drop:
-
+#################################################################
 ... # document end
