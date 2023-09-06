@@ -4,17 +4,13 @@
 
 ## General Variables  ###########################################
 
-func: "plt_len_loss_excel" # Inspect PlotGraphs for available functions
+func: "plt_lambda_loss_excel" # Inspect PlotGraphs for available functions
 no_channels: 1 # number of channels
 normalise: true # normalise data
 
 files: 
-  "./results/Chip_3/Si_iloss_data.xlsx": # path/to/file
-    - "Si Waveguide"
-  "./results/Chip_6/KTN_chip.xlsx":
-    - "Si waveguide"
-  "./results/Chip_9/result.xlsx":
-    - "Si waveguide"
+  "./results/moscap/dc_tests.xlsx": # path/to/file
+    - "dev2"
 
 #################################################################   
 
@@ -25,8 +21,8 @@ ylabel: "Normalised Loss [dB]"
 end_of_legend: "mm" # legend = {length}{end_of_legend}
 
 x_range:
-  start:
-  stop:
+  start: 1553
+  stop: 1554
 
 save: true # if true, it will save the image to the specified filepath
 save_fpath: "./Si loss.png"
@@ -59,7 +55,11 @@ columns_drop:
 ## Wavelength Loss Plots Only Variables #################################
 # if nothing is specified then it will plot all data ####################
 columns_plot:
-  
+  "./results/moscap/dc_tests.xlsx": # path/to/file
+    "dev2":
+      - -4
+      - 0
+      - 4
 
     
 

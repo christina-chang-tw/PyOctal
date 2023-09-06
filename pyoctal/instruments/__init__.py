@@ -7,7 +7,7 @@ import sys
 __platform__ = ("cygwin", "win32") # Windows OS system
 
 
-from .agilent8163B import Agilent8163B
+from .agilent816xB import Agilent8163B, Agilent8164B
 from .agilentE3640 import AgilentE3640A
 from .agilentDSO8000 import AgilentDSO8000
 

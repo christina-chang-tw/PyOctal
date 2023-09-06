@@ -5,9 +5,9 @@ import time
 from pyoctal.base import BaseInstrument
 from pyoctal.error import PARAM_INVALID_ERR, error_message
 
-class Agilent8163B(BaseInstrument):
+class Agilent816xB(BaseInstrument):
     """
-    Agilent 8163B Lightwave Multimeter VISA Library.
+    Agilent 816xB General VISA Library.
 
     Parameters
     ----------
@@ -15,16 +15,16 @@ class Agilent8163B(BaseInstrument):
         The address of the instrument
     rm:
         Pyvisa resource manager
-    src_num: int, default: 1
+    src_num: int
         Source interface number
-    src_chan: int, default: 1
+    src_chan: int
         Source channel
-    sens_num: int, default: 2
+    sens_num: int
         Sensor interface number
-    sens_chan: int, default: 1
+    sens_chan: int
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+    def __init__(self, addr: str, rm, src_num: int, src_chan: int, sens_num: int, sens_chan: int):
         super().__init__(rsc_addr=addr, rm=rm)
         self.src_num = src_num
         self.src_chan = src_chan
@@ -299,6 +299,66 @@ class Agilent8163B(BaseInstrument):
         self.set_detect_func_mode(mode=("logging","stop"))
 
         return results
+    
+
+class Agilent8163B(Agilent816xB):
+    """
+    Agilent 8163B Lightwave Multimeter VISA Library.
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    rm:
+        Pyvisa resource manager
+    src_num: int, default: 1
+        Source interface number
+    src_chan: int, default: 1
+        Source channel
+    sens_num: int, default: 2
+        Sensor interface number
+    sens_chan: int, default: 1
+        Sensor channel
+    """
+    def __init__(self, addr: str, rm, src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+        super().__init__(
+            addr=addr, 
+            rm=rm, 
+            src_num=src_num, 
+            src_chan=src_chan, 
+            sens_num=sens_num, 
+            sens_chan=sens_chan
+        )
+
+class Agilent8164B(Agilent816xB):
+    """
+    Agilent 8164B Lightwave Measurement VISA Library.
+
+    Parameters
+    ----------
+    addr: str
+        The address of the instrument
+    rm:
+        Pyvisa resource manager
+    src_num: int, default: 0
+        Source interface number
+    src_chan: int, default: 1
+        Source channel
+    sens_num: int, default: 2
+        Sensor interface number
+    sens_chan: int, default: 1
+        Sensor channel
+    """
+    def __init__(self, addr: str, rm, src_num: int=0, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+        super().__init__(
+            addr=addr, 
+            rm=rm, 
+            src_num=src_num, 
+            src_chan=src_chan, 
+            sens_num=sens_num, 
+            sens_chan=sens_chan
+        )
+
 
 
 

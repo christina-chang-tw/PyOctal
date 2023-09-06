@@ -6,8 +6,8 @@
 #   GPIB Device = GPIBx::x::INSTR                         #
 #   COM  Device = COMx                                    #     
 ###########################################################                                                      
-INSTR_ADDRS:                                             
-    "Agilent8163B_Addr": "GPIB0::20::INSTR"            
+instr_addrs:                                             
+    "Agilent816xB_Addr": "GPIB0::20::INSTR"            
     "KeysightE8257D_Addr": ""
     "KeysightFlexDCA_Addr": ""
     "Keysight86100D_Addr": ""
@@ -16,7 +16,8 @@ INSTR_ADDRS:
 ###########################################################
 
 # agilent8163B ######################################
-agilent8163B:
+agilent816xB:
+  model: "8163" # "8163" or "8164" type
   wavelength: 1550 #[nm]
   power: 10 # [dBm]
   period: 200.0E-03 # [s]
