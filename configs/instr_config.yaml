@@ -7,7 +7,7 @@
 #   COM  Device = COMx                                    #     
 ###########################################################                                                      
 INSTR_ADDRS:                                             
-    "Agilent8163B_Addr": "GPIB0::25::INSTR"            
+    "Agilent8163B_Addr": "GPIB0::20::INSTR"            
     "KeysightE8257D_Addr": ""
     "KeysightFlexDCA_Addr": ""
     "Keysight86100D_Addr": ""

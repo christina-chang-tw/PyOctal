@@ -95,9 +95,8 @@ def setup(ttype, args, addrs):
 
     if ttype == "agilent8163B":
         PrintInfo.agilent8163B_print(args)
-        instr = Agilent8163B(addr=addrs.Agilent8163B_Addr, rm=rm)
-        instr.connect()
-        instr.setup(reset=args.reset, wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
+        mm = Agilent8163B(addr=addrs.Agilent8163B_Addr, rm=rm)
+        mm.setup(reset=args.reset, wavelength=args.wavelength[0], power=args.power[0], period=args.period[0])
 
     elif ttype == "high_speed":
         # obtaining the device
@@ -151,7 +150,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Remote setup the instrument", 
         formatter_class=CustomArgparseFormatter)
-    parser.add_argument("-f", "--filepath", type=str, metavar="", dest="filepath", nargs=1, default=("./configs/instr_config.yaml"), help="Path to the configuration file.", required=False)
+    parser.add_argument("-f", "--filepath", type=str, metavar="", dest="filepath", nargs=1, default=("./configs/instr_config.yaml",), help="Path to the configuration file.", required=False)
 
     subparsers = parser.add_subparsers(
         dest="test",
