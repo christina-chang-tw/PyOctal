@@ -100,13 +100,12 @@ def setup(instr, configs):
 
     if instr == "agilent816xB":
         if instr_configs.model == "8163":  
-            PrintInfo.agilent816xB_print(instr_configs)
-            mm = Agilent8163B(addr=addrs.Agilent816xB_Addr, rm=rm)
-            mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)
+            cls = Agilent8163B
         elif instr_configs.model == "8164":
-            PrintInfo.agilent816xB_print(instr_configs)
-            mm = Agilent8164B(addr=addrs.Agilent816xB_Addr, rm=rm)
-            mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)
+            cls = Agilent8164B
+        mm = cls(addr=addrs.Agilent816xB_Addr, rm=rm)
+        PrintInfo.agilent816xB_print(instr_configs)
+        mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)
 
 
     elif instr == "high_speed":
@@ -123,18 +122,9 @@ def setup(instr, configs):
         if instr_configs.prediction:
             def predict(model):
                 """ Predict the required setting. """
-                chan_max = 1048 if instr_configs.mode == "ACC" else 10
+                chan_max = amp.chan_curr_max if instr_configs.mode == "ACC" else amp.chan_power_max
                 # predict the output current
                 predicted = model.predict(instr_configs.wavelength, instr_configs.loss)
-
-                # # read in a file containing at these two columns with the first two being:
-                # # col0: set current/power (user sets this)
-                # # col1: output current/power (monitored by the instrument)
-                # df = get_dataframe_from_csv(cdiff_fpath)
-
-                # # perform true value and set value mapping
-                # row = df.iloc[df[:,1] == output_curr]
-                # predicted = df.iloc[row, 0]
                 chan = predicted/chan_max
 
                 predicted_str = textwrap.dedent(f"""

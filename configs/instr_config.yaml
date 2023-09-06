@@ -32,7 +32,7 @@ high_speed:
 
 # fiberlabsAMP ######################################
 fiberlabsAMP:
-  # Prediction-only variables ##
+  # Prediction-only variables #########
   prediction: False # If true, makes prediction based on the wavelength [nm] and the loss [dB].
   model_file: "" # Required when "prediction" is true
   wavelength: 1550 # [nm]
