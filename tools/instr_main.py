@@ -162,7 +162,7 @@ def main():
         description="Remote setup the instrument", 
         formatter_class=CustomArgparseFormatter
     )
-    parser.add_argument("--instr", type=str, metavar="", dest="instr", nargs=1, help=f'Instrument setup: {"".join(INSTR_TYPES)}', required=True)
+    parser.add_argument("--instr", type=str, metavar="", dest="instr", nargs=1, help=f'Instruments: {"".join(INSTR_TYPES)}', required=True)
     parser.add_argument("-f", "--filepath", type=str, metavar="", dest="filepath", nargs=1, default=("./configs/instr_config.yaml",), help="Path to the configuration file.", required=False)
 
     args = parser.parse_args()
