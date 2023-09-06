@@ -17,8 +17,8 @@ instr_addrs:
 
 # agilent8163B ######################################
 agilent816xB:
-  model: "8163" # "8163" or "8164" type
-  wavelength: 1550 #[nm]
+  model: "8164" # "8163" or "8164" type
+  wavelength: 1290 #[nm]
   power: 10 # [dBm]
   period: 200.0E-03 # [s]
   reset: false

@@ -1,14 +1,15 @@
-from pyoctal.util.file_operations import get_dataframe_from_excel, export_to_excel
-import pandas as pd
+import pyvisa
 
-fp = "./results/Chip_3/Si_iloss_data.xlsx"
-sheet = "Si Waveguide"
-df = get_dataframe_from_excel(filepath=fp, sheet_names=(sheet,))
 
-df = df[sheet]
-wavelength = df.loc[:,"Wavelength"]*1e+09
+from pyoctal.instruments import FiberlabsAMP
 
-# df = df.apply(lambda x: -x)
-df["Wavelength"] = wavelength
+rm = pyvisa.ResourceManager()
+amp = FiberlabsAMP(addr="GPIB0::1::INSTR", rm=rm)
 
-export_to_excel(data=df, sheet_names=(sheet,), folder="./results/Chip_3/", fname="Si_iloss_data.xlsx")
+print(amp.set_power(1,1e-03))
+
+a = 1050
+b = 1048
+
+c = a % b
+print(c)

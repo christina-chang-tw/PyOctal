@@ -8,6 +8,7 @@ import os
 import logging
 import pandas as pd
 import yaml
+import math
 
 from pyoctal.error import *
 from pyoctal.util.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
@@ -17,7 +18,6 @@ from . import __python_min_version__, __platform__
 class DictObj:
     """ Convert a dictionary to python object """
     def __init__(self, **dictionary):
-        self.__dict = dictionary
         for key, val in dictionary.items():
             if isinstance(val, dict):
                 self.__dict__[key] = DictObj(**val)
@@ -34,11 +34,6 @@ class DictObj:
         if key in self.__dict__.keys():
             return self.__getitem__(key)
         return None
-    
-    @property
-    def dict(self):
-        return self.__dict
-
 
 def setup_rootlogger(root_logger, fname: str):
     root_logger.setLevel(logging.INFO)
@@ -111,6 +106,12 @@ def get_callable_funcs(obj, identifier: str="") -> str:
             correct_func.append(obj)
 
     return correct_func
+
+def dbm_to_watt(power):
+    return pow(10, -3+power/10)
+
+def watt_to_dbm(power):
+    return 10*math.log10(power/pow(10, -3))
 
 
     

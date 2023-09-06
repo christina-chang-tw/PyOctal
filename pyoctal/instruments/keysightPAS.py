@@ -100,39 +100,42 @@ class KeysightILME(BasePAS):
 
     def get_dpts(self) -> int:
         """ Get the total wavelength datapoints. """
-        return (self.wavelength_stop - self.wavelength_start)/(self.wavelength_step*10e-3) + 1
+        return (self.wavelength_stop - self.wavelength_start)/(self.wavelength_step*1e-3) + 1
 
     @property
     def wavelength_start(self) -> float:
         """ Get the start wavelength in nm. """
-        return self.engine.WavelengthStart*10e+09
+        return self.engine.WavelengthStart*1e+09
     @wavelength_start.setter
     def wavelength_start(self, wavelength: float):
         """ Set the start wavelength in nm. """
-        self.engine.WavelengthStart = wavelength*10e-09
+        self.engine.WavelengthStart = wavelength*1e-09
 
     @property
     def wavelength_stop(self) -> float:
         """ Get the stop wavelength in nm. """
-        return self.engine.WavelengthStop*10e+09
+        return self.engine.WavelengthStop*1e+09
     @wavelength_stop.setter
     def wavelength_stop(self, wavelength: float):
         """ Set the stop wavelength in nm. """
-        self.engine.WavelengthStop = wavelength*10e-09
+        self.engine.WavelengthStop = wavelength*1e-09
 
     @property
     def wavelength_step(self) -> float:
         """ Get the step wavelength in pm. """
-        return self.engine.WavelengthStep*10e+012
+        return self.engine.WavelengthStep*1e+012
     @wavelength_step.setter
     def wavelength_step(self, step: float):
         """ Set the step wavelength in pm. """
-        self.engine.WavelengthStep = step*10e-012
+        self.engine.WavelengthStep = step*1e-012
 
     @property
     def sweep_rate(self) -> float:
         """ Get the sweep rate in nm/s. """
-        return self.engine.SweepRate
+        speed = self.engine.SweepRate
+        if speed == -1:
+            return "AUTO"
+        return speed
     @sweep_rate.setter
     def sweep_rate(self, rate: float):
         """ Set the sweep rate in nm/s. """
@@ -141,11 +144,11 @@ class KeysightILME(BasePAS):
     @property
     def tls_power(self) -> float:
         """ Get the laser power in dBm. """
-        return 10*math.log10(self.engine.TLSPower/10e-03)
+        return 10*math.log10(self.engine.TLSPower/1e-03)
     @tls_power.setter
     def tls_power(self, power: float):
         """ Set the laser power in dBm. """
-        self.engine.TLSPower = pow(10, (power/10))*10e-03
+        self.engine.TLSPower = pow(10, (power/10))*1e-03
 
     @property
     def num_of_scans(self) -> int:

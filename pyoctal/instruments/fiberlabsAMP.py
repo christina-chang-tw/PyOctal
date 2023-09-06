@@ -3,7 +3,8 @@ import time
 import sys
 
 from pyoctal.base import BaseInstrument
-
+from pyoctal.error import PARAM_INVALID_ERR, error_message
+from pyoctal.util.util import watt_to_dbm, dbm_to_watt
 
 class FiberlabsAMP(BaseInstrument):
     """
@@ -18,39 +19,77 @@ class FiberlabsAMP(BaseInstrument):
     """
     def __init__(self, addr: str, rm: str):
         super().__init__(rsc_addr=addr, rm=rm, read_termination="")
-        self.chan_curr_max = 1048
-        self.chan_power_max = 10
-        
+        self._chan_curr_max = 1048 # [mA]
+        self._chan_power_max = 398.11 # [mW]
+    
+    @property
+    def chan_curr_max(self):
+        return self._chan_curr_max
+    
+    @property
+    def chan_power_max(self):
+        return self._chan_power_max
+
     def write(self, cmd):
         """ To bypass the return string when setting values. """
         _ = self.query(cmd)
 
-    def query_float(self, cmd: str, all: bool):
+    def query_monitor(self, cmd: str, all_chan: bool):
         """ 
-        Return float numbers.
+        Return float numbers that are querying about monitor.
+
+        Returned values from the instrument are in the format of a 
+        string list.
+        i.e. "1.0,2.0,N/A,N/A"
          
         Parameters:
         -----------
-        all: bool
-            If true, it is a query to get valuesfor all channels.
+        all_chan: bool
+            If true, it is a query to get valuesfor all_chan channels.
+        """
+        rsp = self.query(cmd)
+        if not all_chan:
+            return float(rsp)
+        rsp = rsp.rstrip().split(',')
+        rsp = [float(val if val != "N/A" else "-100") for val in rsp]
+        return rsp
+    
+
+    def query_setting(self, cmd: str, all_chan: bool):
+        """ 
+        Return float numbers that are querying about settings.
+
+        Returned values from the instrument are in the format of a 
+        string list.
+        i.e. "SETMOD,1,1"
+         
+        Parameters:
+        -----------
+        all_chan: bool
+            If true, it is a query to get valuesfor all_chan channels.
         """
         rsp = self.query(cmd)
         rsp = rsp.rstrip().split(',')
-        if all:
-            rsp = list(map(float, rsp[1:]))
-        else:
-            rsp = float(rsp[-1])
+        if not all_chan:
+            return float(rsp[-1])
+        rsp = list(map(float, rsp[1:]))
         return rsp
+
 
     def set_output_state(self, state: bool):
         """ Set output state. """
         self.write(f"active,{state}")
 
-    def set_ld_mode(self, chan: int, mode: int):
+    def set_ld_mode(self, chan: int, mode: Union[int, str]):
         """ 
         Set the setting of pumpLD driving mode. 
         0 - ALC, 1 - ACC
         """
+
+        if isinstance(mode, str):
+            mode = 0 if mode == "ALC" else 1
+        if chan != 1 and mode == 0:
+            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Only Channel 1 can be set to ALC")
         self.write(f"setmod:,{chan},{mode}")
 
     def set_vals_smart(self, mode: str, val: float):
@@ -81,55 +120,75 @@ class FiberlabsAMP(BaseInstrument):
 
 
     def set_curr(self, chan: int, curr: float):
-        """ Set the temporary setting of the current for ACC [mA]. """
+        """ Set the temporary setting of the current for ACC [mW]. """
         self.write(f"setacc,{chan},{curr}")
 
     def set_power(self, chan: int, power: float):
-        """ Set the temporary setting of optical output level for ALC [dBm]. """
+        """ Set the temporary setting of optical output level for ALC [mW]. """
+        power = watt_to_dbm(power)
         self.write(f"setalc,{chan},{power}")
 
 
 
     def get_mon_output_power(self) -> list:
-        """ Get output power level [dBm]. """
-        return self.query_float("monout", all=True)
+        """ Get output power level [mW]. """
+        powers = self.query_monitor("monout", all_chan=True)
+        print(powers)
+        powers = list(map(dbm_to_watt, powers))
+        print(powers)
+        return powers
     
     def get_mon_input_power(self) -> list:
-        """ Get input power level [dBm]. """
-        return self.query_float("monin", all=True)
+        """ Get input power level [mW]. """
+        powers = self.query_monitor("monin", all_chan=True)
+        powers = list(map(dbm_to_watt, powers))
+        return powers
     
     def get_mon_ret_power(self) -> list:
-        """ Get return power level [dBm]. """
-        return self.query_float("monret", all=True)
+        """ Get return power level [mW]. """
+        powers = self.query_monitor("monret", all_chan=True)
+        powers = list(map(dbm_to_watt, powers))
+        return powers
     
-    def get_mon_pump_curr(self, chan: int="") -> Union[list, float]:
+    def get_mon_pump_curr(self, chan: int=None) -> Union[list, float]:
         """ Get monitor of pumpLD forward current (mA). """
-        if chan == "":
+        if not chan:
             # all channels' forward current
-            return self.query_float("monldc", all=True)
-        return self.query_float(f"monldc,{chan}", all=False)
+            return self.query_monitor("monldc,", all_chan=True)
+        return self.query_monitor(f"monldc,{chan}", all_chan=False)
         
-    def get_mon_pump_temp(self, chan: int="") -> Union[list, float]:
+    def get_mon_pump_temp(self, chan: int=None) -> Union[list, float]:
         """ Get monitor of pumpLD temperature (deg.C). """
-        if chan == "":
+        if not chan:
             # all channels' forward current
-            return self.query_float("monldt", all=True)
-        return self.query_float(f"monldt,{chan}", all=False)
+            return self.query_monitor("monldt,", all_chan=True)
+        return self.query_monitor(f"monldt,{chan}", all_chan=False)
     
-    def get_ld_mode(self, chan: int) -> int:
+    def get_ld_mode(self, chan: int=None) -> int:
         """ 
         Get the setting of pumpLD driving mode. 
         0 - ALC, 1 - ACC
         """
-        return self.query_float(f"setmod,{chan}", all=False)
+        if not chan:
+            # all channels' driving mode
+            return self.query_setting("setmod,", all_chan=True)
+        return self.query_setting(f"setmod,{chan}", all_chan=False)
     
-    def get_curr(self, chan: int) -> float:
+    def get_curr(self, chan: int=None) -> float:
         """ Get the temporary setting of current for ACC [mA]. """
-        return self.query_float(f"setacc,{chan}", all=False)
+        if not chan:
+            # all channels' driving mode
+            return self.query_setting("setacc,", all_chan=True)
+        return self.query_setting(f"setacc,{chan}", all_chan=False)
 
-    def get_power(self, chan: int) -> float:
-        """ Get the optical output power for ALC [dBm]."""
-        return self.query_float(f"setalc,{chan}", all=False)
+    def get_power(self, chan: int=None) -> float:
+        """ Get the optical output power for ALC [mW]."""
+        if not chan:
+            # all channels' driving mode
+            powers = self.query_setting("setalc,", all_chan=True)
+            powers = list(map(dbm_to_watt, powers))
+            return powers
+        return dbm_to_watt(self.query_setting(f"setalc,{chan}", all_chan=False))
     
 
 
@@ -138,9 +197,9 @@ class FiberlabsAMP(BaseInstrument):
         scale_factor = 0.1 # 10% difference
         diff = sys.maxsize # assign a big value
 
-        prev = self.get_mon_pump_ld(chan=chan)
+        prev = self.get_mon_pump_curr(chan=chan)
         while diff > scale_factor*prev:
-            new = self.get_mon_pump_ld(chan=chan)
+            new = self.get_mon_pump_curr(chan=chan)
             diff = new - prev
             prev = new
             time.sleep(0.1)

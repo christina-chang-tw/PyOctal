@@ -47,7 +47,7 @@ INSTR_ADDRS = {
 ###########################################################
 
 
-INSTR_TYPES = ("agilent816xB", "highigh_speed", "fiberlabsAMP")
+INSTR_TYPES = ("agilent816xB", "high_speed", "fiberlabsAMP")
 
 class PrintInfo:
     """ 
@@ -55,15 +55,15 @@ class PrintInfo:
     """
     @staticmethod
     def agilent816xB_print(args):
-        logger.info(f'{"Wavelength [nm]":<25} : {args.wavelength[0]:<6}')
-        logger.info(f'{"Output power [dBm]":<25} : {args.power[0]:<6}')
-        logger.info(f'{"Averaged period [s]":<25} : {args.period[0]:<6}')
+        logger.info(f'{"Wavelength [nm]":<25} : {args.wavelength:<6}')
+        logger.info(f'{"Output power [dBm]":<25} : {args.power:<6}')
+        logger.info(f'{"Averaged period [s]":<25} : {args.period:<6}')
         logger.info(f'{"Reset the instrument?":<25} : {args.reset:<6}')
 
     @staticmethod
     def high_speed_print(args):
-        logger.info(f'{"Frequency [GHz]":<25} : {args.freq[0]:<6}')
-        logger.info(f'{"Clock divide ratio":<25} : {args.odratio[0]:<6}')
+        logger.info(f'{"Frequency [GHz]":<25} : {args.freq:<6}')
+        logger.info(f'{"Clock divide ratio":<25} : {args.odratio:<6}')
 
 
 class SubparserInfo:
@@ -99,14 +99,14 @@ def setup(instr, configs):
     addrs = configs.instr_addrs
 
     if instr == "agilent816xB":
-        if instr_configs.model[0] == "8163":  
+        if instr_configs.model == "8163":  
             PrintInfo.agilent816xB_print(instr_configs)
             mm = Agilent8163B(addr=addrs.Agilent816xB_Addr, rm=rm)
-            mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength[0], power=instr_configs.power[0], period=instr_configs.period[0])
-        elif instr_configs.model[0] == "8164":
+            mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)
+        elif instr_configs.model == "8164":
             PrintInfo.agilent816xB_print(instr_configs)
             mm = Agilent8164B(addr=addrs.Agilent816xB_Addr, rm=rm)
-            mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength[0], power=instr_configs.power[0], period=instr_configs.period[0])
+            mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)
 
 
     elif instr == "high_speed":
@@ -114,18 +114,18 @@ def setup(instr, configs):
         PrintInfo.high_speed_print(instr_configs)
         siggen = KeysightE8257D(addr=addrs.KeysightE8257D_Addr, rm=rm)
         osc = KeysightFlexDCA(addr=addrs.KeysightFlexDCA_Addr, rm=rm)
-        siggen.set_freq_fixed(freq=instr_configs.freq[0])
+        siggen.set_freq_fixed(freq=instr_configs.freq)
         osc.lock_clk()
-        osc.set_clk_odratio(ratio=instr_configs.odratio[0])
+        osc.set_clk_odratio(ratio=instr_configs.odratio)
 
     elif instr == "fiberlabsAMP":
         amp = FiberlabsAMP(addr=addrs.FiberlabsAMP_Addr, rm=rm)
         if instr_configs.prediction:
             def predict(model):
                 """ Predict the required setting. """
-                chan_max = 1048 if instr_configs.mode[0] == "ACC" else 10
+                chan_max = 1048 if instr_configs.mode == "ACC" else 10
                 # predict the output current
-                predicted = model.predict(instr_configs.wavelength[0], instr_configs.loss[0])
+                predicted = model.predict(instr_configs.wavelength, instr_configs.loss)
 
                 # # read in a file containing at these two columns with the first two being:
                 # # col0: set current/power (user sets this)
@@ -143,16 +143,16 @@ def setup(instr, configs):
                     Channels smaller than {chan} should be set to {chan_max} and greater set to 0.
                     """)
                 return predicted, predicted_str
-            with open(instr_configs.mfile[0], "rb") as file:
+            with open(instr_configs.mfile, "rb") as file:
                 model = pickle.load(file)
             predicted, predicted_str = predict(model)
             logger.info(predicted_str)
             amp.set_vals_smart(predicted)
         else:
             if instr_configs.mode[0] == "ACC":
-                amp.set_curr(chan=instr_configs.channel[0], curr=instr_configs.current[0])
+                amp.set_curr(chan=instr_configs.channel, curr=instr_configs.current)
             elif instr_configs.mode[0] == "ALC":
-                amp.set_power(chan=instr_configs.channel[0], power=instr_configs.power[0])
+                amp.set_power(chan=instr_configs.channel, power=instr_configs.power)
     rm.close()
 
 
@@ -162,13 +162,13 @@ def main():
         description="Remote setup the instrument", 
         formatter_class=CustomArgparseFormatter
     )
-    parser.add_argument("--instr", type=str, metavar="", dest="instr", nargs=1, help=f'Instruments: {"".join(INSTR_TYPES)}', required=True)
+    parser.add_argument("--instr", type=str, metavar="", dest="instr", nargs=1, help=f'Instruments: {", ".join(INSTR_TYPES)}', required=True)
     parser.add_argument("-f", "--filepath", type=str, metavar="", dest="filepath", nargs=1, default=("./configs/instr_config.yaml",), help="Path to the configuration file.", required=False)
 
     args = parser.parse_args()
 
     configs = load_config(args.filepath[0])
-    setup(args.instr, configs)
+    setup(args.instr[0], configs)
 
 
 

@@ -9,6 +9,10 @@ class Colours:
     orange = "\x1b[38;5;214m"
     red = "\x1b[38;5;202m"
     reset = "\x1b[0m"
+    end = '\033[0m'
+    italic = '\033[3m'
+    bold = '\033[1m'
+    underline = '\033[4m'
 
 class CustomLogFileFormatter(logging.Formatter):
     """ Format the logging output to the log file to display extra information. """

@@ -4,12 +4,14 @@ import numpy as np
 import math
 from sklearn.linear_model import LinearRegression
 import pickle
-import textwrap
+import logging
 
-
+from pyoctal.util.formatter import Colours
 from pyoctal.util.file_operations import export_to_excel, export_to_csv, get_dataframe_from_csv
 from pyoctal.base import BaseSweeps
 from pyoctal.instruments import FiberlabsAMP, KeysightILME
+
+logger = logging.getLogger(__name__)
 
 class AMPSweeps(BaseSweeps):
     """
@@ -39,9 +41,7 @@ class AMPSweeps(BaseSweeps):
         self.start = ttype_configs.start
         self.stop = ttype_configs.stop
         self.step = ttype_configs.step
-        self.channels = ttype_configs.channels
-        self.chan_max = 1048 if self.mode == "ACC" else 100 # Current limit: 1048mA, Power limit: 100mW
-
+        
     @staticmethod
     def linear_regression(pkl_fpath: str, data: np.array):
         """ 
@@ -63,47 +63,50 @@ class AMPSweeps(BaseSweeps):
 
 
     def run_acc(self):
-
-        # package information:
-        config_info = {
-            "Wavelength start [nm]" : ilme.wavelength_start,
-            "Wavelength stop [nm]"  : ilme.wavelength_stop,
-            "Wavelength step [nm]"  : ilme.wavelength_step,
-            "Sweep rate [nm/s]"     : ilme.sweep_rate,
-            "Output power [dBm]"    : ilme.tls_power,
-        }
-
-        # print sweep information
-        for key, val in config_info.items():
-            print(f"{key:22} : {val}")
-
         self.instrment_check("amp", self._addrs.keys())
 
         amp = FiberlabsAMP(addr=self._addrs.amp, rm=self._rm)
         ilme = KeysightILME()
         ilme.activate()
 
+        # package information:
+        config_info = {
+            "Wavelength start [nm]" : ilme.wavelength_start,
+            "Wavelength stop [nm]"  : ilme.wavelength_stop,
+            "Wavelength step [pm]"  : ilme.wavelength_step,
+            "Sweep rate [nm/s]"     : ilme.sweep_rate,
+            "Output power [dBm]"    : ilme.tls_power,
+        }
+
+        # print sweep information
+        logger.info(Colours.underline + Colours.bold + Colours.italic + "ILME Configurations" + Colours.end)
+        for key, val in config_info.items():
+            print(f"{key:22} : {val}")
+
         currents = range(self.start, self.stop, self.step)
         
         extra_data_cols = ("Current [mA]", "Monitored Current [mA]", "Monitored Temperature [deg]")
-        extra_data = np.zeros(shape=(len(self.channels)*len(currents), 3))
+        extra_data = np.zeros(shape=(len(currents), 3))
+
         # initialise a 2d loss array for model training
         if self.prediction:
             loss_2d_arr = np.zeros(shape=(ilme.get_dpts(), len(currents)))
 
-        amp.set_ld_mode(mode=self.mode)
+        # make sure to set channel 1 to ACC mode
+        amp.set_ld_mode(chan=1, mode=self.mode)
         amp.set_output_state(state=1)
 
-        for j, curr in tqdm(enumerate(currents), desc="Currents"):
+        for j, curr in tqdm(enumerate(currents), desc="Currents", total=len(currents)):
             df = pd.DataFrame()
-            chan = math.floor(curr/self.chan_max)
+            chan = math.floor(curr/amp.chan_curr_max) + 1
+            set_curr = curr % amp.chan_curr_max
 
-            amp.set_curr(chan=chan, curr=curr)
+            amp.set_curr(chan=chan, curr=set_curr)
             amp.wait_till_curr_is_stabalised(chan=chan) # wait until it is stabalise
 
             # Additional information #####
             mon_curr = sum(amp.get_mon_pump_curr()) # the output current is additive of the all channels' output
-            mon_temp = amp.get_mon_pump_temp()
+            mon_temp = amp.get_mon_pump_temp(chan=chan)
             extra_data[j] = (curr, mon_curr, mon_temp)
             ##############################
 

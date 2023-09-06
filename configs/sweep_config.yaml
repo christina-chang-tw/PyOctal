@@ -43,11 +43,9 @@ passive:
 amp:
   # if prediction is true, this will make a model save to (.pkl) to enable 
   # prediction of current setting with given wavelength and loss.
-  prediction: true 
+  prediction: false 
   mode: "ACC" # ACC or ALC
-  start: 0
-  stop: 2
-  step: 1
-  channels:
-    - 1
+  start: 1040 # [mA] or [mW]
+  stop: 1080  # [mA] or [mW]
+  step: 5     # [mA] or [mW]
 ... # document end

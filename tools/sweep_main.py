@@ -1,7 +1,6 @@
 import argparse
 from datetime import datetime
 import logging
-import yaml
 import pyvisa
 from typing import Union
 
@@ -11,12 +10,12 @@ from pyoctal.sweeps import (
     IVSweeps,
     AMPSweeps
 )
-from pyoctal.util.formatter import CustomArgparseFormatter
+from pyoctal.util.formatter import CustomArgparseFormatter, Colours
 from pyoctal.util.util import (
     create_folder,
     setup_rootlogger,
     package_info,
-    DictObj
+    load_config,
 )
 from pyoctal.util.file_operations import export_to_csv
 
@@ -84,7 +83,6 @@ class SweepTestInfo:
             "Start Value" : configs.start,
             "Stop Value" : configs.stop,
             "Step Value" : configs.step,
-            "Channels": ", ".join(map(str, configs.channels)),
         }
         return info
 
@@ -109,10 +107,6 @@ def log_setup_info(ttype, configs, ttype_configs):
     """
     Print the setup information for each test
     """
-    end = '\033[0m'
-    italic = '\033[3m'
-    bold = '\033[1m'
-    underline = '\033[4m'
     
     logger.info("")
     logger.info(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
@@ -120,7 +114,7 @@ def log_setup_info(ttype, configs, ttype_configs):
     logger.info("## TEST INFORMATION:                        ##")
     logger.info("##############################################")
     logger.info("")
-    logger.info(underline + bold + italic + "General Variables" + end)
+    logger.info(Colours.underline + Colours.bold + Colours.italic + "General Variables" + Colours.end)
     logger.info(f'{"Folder":<10} : {configs.folder:<12}')
     logger.info(f'{"Filename":<10} : {configs.fname:<12}')
     logger.info(f'{"Test Type":<10} : {ttype:<12}')
@@ -128,11 +122,16 @@ def log_setup_info(ttype, configs, ttype_configs):
     logger.info(f'{"Address":<10} :')
     for instr_type in configs.instr_addrs.keys():
         addr = configs.instr_addrs[instr_type]
-        addr_str = ", ".join(addr)
-        logger.info(f'  {instr_type:<6} - {len(addr)} - {addr_str}')
+        if isinstance(addr, list):
+            addr_str = ", ".join(addr)
+            no = len(addr)
+        else:
+            addr_str = addr
+            no = 1
+        logger.info(f'  {instr_type:<6} - {no} - {addr_str}')
     logger.info("")
 
-    logger.info(underline + bold + italic + "Test-Specific Variables" + end)
+    logger.info(Colours.underline + Colours.bold + Colours.italic + "Test-Specific Variables" + Colours.end)
     testinfo = SweepTestInfo(configs.folder, configs.fname)
     info = []
     if ttype == "passive":
