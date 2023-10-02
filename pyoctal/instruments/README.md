@@ -4,6 +4,7 @@ Supported instruments are listed below:
 | Manufacturer | Model       | Description | Tested |
 | ------------ | ----------- | ----------- | ------ |
 | Agilent (Keysight)      | 8163B       | Lightwave Multimeter | Yes |
+|                         | 8164B       | Lightwave Measurement | Yes |
 |              | DSO8000     | Oscilloscopes | No |
 |              | E3640A      | Power Meter | Yes |
 | Ametek       | DSP7230     | DSP Lock-In Amplifier | No |
@@ -21,3 +22,4 @@ Supported instruments are listed below:
 | Daylight Solutions | QCL         | Programming interface with Daylight Solutions Quantum Cascade Laser instruments | No |
 | TTi         | TGF3162     | Dual Channel Arbitrary Function Generator | No |
 | FiberLabs   | AMP-FL8611-OB-20  | Desktop Optical Fiber Amplifier  | Yes |
+| EXFO        | XTA50       | Tunable Filter with Adjustable Bandwidth  | No |

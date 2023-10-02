@@ -59,6 +59,36 @@ class AMPSweeps(BaseSweeps):
         with open(pkl_fpath, "wb") as file:
             pickle.dump(model, file)
         return model
+    
+
+    @staticmethod
+    def predict(model, fpath: str, wavelength: float, loss: float):
+        """ 
+        Predict the required setting. 
+        
+        Parameters
+        ----------
+        model: 
+            Machine learning model
+        fpath: str
+            Path to the file which contains the discrepancy between
+            the user-defined current and the true output current.
+        wavelength: float [nm]
+        loss: float [dB]
+        """
+        # predict the output current
+
+        # read in a file containing at these two columns with the first two being:
+        # col0: set current/power (user sets this)
+        # col1: output current/power (monitored by the instrument)
+        df = get_dataframe_from_csv(fpath)
+        output_curr = model.predict(wavelength, loss)
+
+        # perform true value and set value mapping
+        row = df.iloc[df[:,1] == output_curr]
+        predicted = df.iloc[row, 0]
+
+        return predicted
 
 
     def run_acc(self):

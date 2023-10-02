@@ -2,7 +2,7 @@ from pyoctal.base import BaseInstrument
 
 class EXFOXTA50(BaseInstrument):
     """
-    EXFOXTA 50 VISA Library.
+    EXFOXTA 50 Tunable Filter with Adjustable Wavelength VISA Library.
     
     Parameters
     ----------
