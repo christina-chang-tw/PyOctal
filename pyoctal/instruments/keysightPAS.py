@@ -6,6 +6,8 @@ import time
 import numpy as np
 from typing import Tuple
 
+from pyoctal.util.file_operations import create_folder
+
 class BasePAS(object):
     """
     A base Photonics Application Suite class.
@@ -188,7 +190,7 @@ class KeysightILME(BasePAS):
         data_per_curve = IOMRGraph.dataPerCurve
         ydata = IOMRGraph.YData # we assume that channel number is always 1
     
-        return self.get_wavelength(IOMRGraph, data_per_curve), ydata
+        return self.get_wavelength(IOMRGraph, data_per_curve), ydata, IOMRFile
     
     @staticmethod
     def get_wavelength(IOMRGraph, data_per_curve) -> tuple:
@@ -198,6 +200,7 @@ class KeysightILME(BasePAS):
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
         return tuple(np.divide(xdata, 1e-9))
     
-    @staticmethod
-    def export_file(results, fname):
-        results.FileSave(fname)
+    def export_omr(self, data, folder: str, fname: str):
+        create_folder(path=folder)
+        path_to_file = f"{folder}/{fname}"
+        data.Write(path_to_file)

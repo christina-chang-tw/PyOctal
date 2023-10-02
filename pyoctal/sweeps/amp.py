@@ -1,13 +1,12 @@
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-import math
 from sklearn.linear_model import LinearRegression
 import pickle
 import logging
 
 from pyoctal.util.formatter import Colours
-from pyoctal.util.file_operations import export_to_excel, export_to_csv, get_dataframe_from_csv
+from pyoctal.util.file_operations import export_to_excel, export_to_csv
 from pyoctal.base import BaseSweeps
 from pyoctal.instruments import FiberlabsAMP, KeysightILME
 
@@ -83,10 +82,10 @@ class AMPSweeps(BaseSweeps):
         for key, val in config_info.items():
             print(f"{key:22} : {val}")
 
-        currents = range(self.start, self.stop, self.step)
+        currents = range(self.start, self.stop + self.step, self.step)
         
-        extra_data_cols = ("Current [mA]", "Monitored Current [mA]", "Monitored Temperature [deg]")
-        extra_data = np.zeros(shape=(len(currents), 3))
+        extra_data_cols = ("Current [mA]", "Monitored Current [mA]")
+        extra_data = np.zeros(shape=(len(currents), 2))
 
         # initialise a 2d loss array for model training
         if self.prediction:
@@ -94,24 +93,22 @@ class AMPSweeps(BaseSweeps):
 
         # make sure to set channel 1 to ACC mode
         amp.set_ld_mode(chan=1, mode=self.mode)
+        # set all current to 0
+        amp.set_all_curr(curr=0)
         amp.set_output_state(state=1)
 
         for j, curr in tqdm(enumerate(currents), desc="Currents", total=len(currents)):
             df = pd.DataFrame()
-            chan = math.floor(curr/amp.chan_curr_max) + 1
-            set_curr = curr % amp.chan_curr_max
 
-            amp.set_curr(chan=chan, curr=set_curr)
-            amp.wait_till_curr_is_stabalised(chan=chan) # wait until it is stabalise
+            amp.set_curr_smart(mode=self.mode, val=curr)
 
-            # Additional information #####
+            ### Additional information #####
             mon_curr = sum(amp.get_mon_pump_curr()) # the output current is additive of the all channels' output
-            mon_temp = amp.get_mon_pump_temp(chan=chan)
-            extra_data[j] = (curr, mon_curr, mon_temp)
-            ##############################
+            extra_data[j] = (curr, mon_curr)
+            #############################
 
             ilme.start_meas()
-            wavelength, loss = ilme.get_result()
+            wavelength, loss, omr_data = ilme.get_result()
             if self.prediction:
                 loss_2d_arr[:,j] = loss
             
@@ -120,6 +117,10 @@ class AMPSweeps(BaseSweeps):
             fname = f"{curr}A.xlsx"
             export_to_excel(data=pd.DataFrame(config_info.items()), sheet_names="config", folder=self.folder, fname=fname)
             export_to_excel(data=df, sheet_names="data", folder=self.folder, fname=fname)
+            
+            omr_fname = f"{self.folder}/{curr}A.omr"
+            ilme.export_omr(omr_data, folder=self.folder, fname=omr_fname)
+
 
         if self.prediction:
             dpts = []

@@ -1,10 +1,12 @@
 from typing import Union
 import time
 import sys
+import math
 
 from pyoctal.base import BaseInstrument
 from pyoctal.error import PARAM_INVALID_ERR, error_message
 from pyoctal.util.util import watt_to_dbm, dbm_to_watt
+
 
 class FiberlabsAMP(BaseInstrument):
     """
@@ -92,7 +94,7 @@ class FiberlabsAMP(BaseInstrument):
             raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Only Channel 1 can be set to ALC")
         self.write(f"setmod:,{chan},{mode}")
 
-    def set_vals_smart(self, mode: str, val: float):
+    def set_curr_smart(self, mode: str, val: float):
         """ 
         Smarter way of setting current or power.
 
@@ -106,7 +108,7 @@ class FiberlabsAMP(BaseInstrument):
             func = self.set_power
             chan_max = self.chan_power_max
 
-        boundary = val/chan_max + 1
+        boundary = val//chan_max + 1
         val = val%chan_max
 
         # set channels below the boundary to maximum
@@ -115,9 +117,17 @@ class FiberlabsAMP(BaseInstrument):
         # set channels above the boundary to 0mA
         for chan in range(boundary+1, 5):
             func(chan, 0)
-        # set channel at the boundary to the correct current
-        func(boundary, val)
 
+        # set channel at the boundary to the correct current
+        if boundary <= 4:
+            func(boundary, val)
+            self.wait_till_curr_is_stabalised(chan=boundary)
+        else:
+            self.wait_till_curr_is_stabalised(chan=4)
+
+    def set_all_curr(self, curr: float):
+        for chan in range(1, 5):
+            self.set_curr(chan=chan, curr=curr)
 
     def set_curr(self, chan: int, curr: float):
         """ Set the temporary setting of the current for ACC [mW]. """
