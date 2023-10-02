@@ -91,7 +91,94 @@ class AMPSweeps(BaseSweeps):
         return predicted
 
 
-    def run_acc(self):
+    def run_curr(self):
+        """
+        Obtain wavelength v.s. loss at different current levels.
+
+        You only need to set the min and max current that you want to set
+        and the program will automatically set the driving current of each
+        channel for you starting from the smallest channel.
+        """
+        self.instrment_check("amp", self._addrs.keys())
+
+        amp = FiberlabsAMP(addr=self._addrs.amp, rm=self._rm)
+        ilme = KeysightILME()
+        ilme.activate()
+
+        # package information:
+        config_info = {
+            "Wavelength start [nm]" : ilme.wavelength_start,
+            "Wavelength stop [nm]"  : ilme.wavelength_stop,
+            "Wavelength step [pm]"  : ilme.wavelength_step,
+            "Sweep rate [nm/s]"     : ilme.sweep_rate,
+            "Output power [dBm]"    : ilme.tls_power,
+        }
+
+        # print sweep information
+        logger.info(Colours.underline + Colours.bold + Colours.italic + "ILME Configurations" + Colours.end)
+        for key, val in config_info.items():
+            print(f"{key:22} : {val}")
+
+        currents = range(self.start, self.stop, self.step)
+        
+        extra_data_cols = ("Current [mA]", "Monitored Current [mA]", "Monitored Temperature [deg]")
+        extra_data = np.zeros(shape=(len(currents), 3))
+
+        # initialise a 2d loss array for model training
+        if self.prediction:
+            loss_2d_arr = np.zeros(shape=(ilme.get_dpts(), len(currents)))
+
+        # make sure to set channel 1 to ACC mode
+        amp.set_ld_mode(chan=1, mode=self.mode)
+        amp.set_output_state(state=1)
+
+        for j, curr in tqdm(enumerate(currents), desc="Currents", total=len(currents)):
+            df = pd.DataFrame()
+            chan = math.floor(curr/amp.chan_curr_max) + 1
+            set_curr = curr % amp.chan_curr_max
+
+            amp.set_curr(chan=chan, curr=set_curr)
+            amp.wait_till_curr_is_stabalised(chan=chan) # wait until it is stabalise
+
+            # Additional information #####
+            mon_curr = sum(amp.get_mon_pump_curr()) # the output current is additive of the all channels' output
+            mon_temp = amp.get_mon_pump_temp(chan=chan)
+            extra_data[j] = (curr, mon_curr, mon_temp)
+            ##############################
+
+            ilme.start_meas()
+            wavelength, loss = ilme.get_result()
+            if self.prediction:
+                loss_2d_arr[:,j] = loss
+            
+            df["Wavelength"] = wavelength
+            df["Loss [dB]"] = loss
+            fname = f"{curr}A.xlsx"
+            export_to_excel(data=pd.DataFrame(config_info.items()), sheet_names="config", folder=self.folder, fname=fname)
+            export_to_excel(data=df, sheet_names="data", folder=self.folder, fname=fname)
+
+        if self.prediction:
+            dpts = []
+            for i, curr in enumerate(currents):
+                for j, wlength in enumerate(wavelength):
+                    dpts.append((curr, wlength, loss_2d_arr[i,j]))
+            dpts = np.array(dpts)
+            # Save the data for developing model in the future.
+            np.save(f"{self.folder}/model_data.npy", dpts)
+            _ = self.linear_regression(f"{self.folder}/model.pkl", dpts)
+            
+
+        export_to_csv(data=pd.DataFrame(extra_data, columns=extra_data_cols), folder=self.folder, fname="extra_data.csv")
+        amp.set_output_state(state=0)
+
+    def run_chan_curr(self):
+        """
+        Obtain wavelength v.s. loss at different current levels.
+
+        You provide the min and max currents of each channel and
+        they will be swept seqeuntially from the lowest channel to 
+        the highest channel.
+        """
         self.instrment_check("amp", self._addrs.keys())
 
         amp = FiberlabsAMP(addr=self._addrs.amp, rm=self._rm)

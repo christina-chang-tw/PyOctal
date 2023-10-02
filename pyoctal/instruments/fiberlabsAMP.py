@@ -111,19 +111,19 @@ class FiberlabsAMP(BaseInstrument):
         boundary = val//chan_max + 1
         val = val%chan_max
 
-        # set channels below the boundary to maximum
-        for chan in range(1, boundary):
-            func(chan, chan_max)
-        # set channels above the boundary to 0mA
-        for chan in range(boundary+1, 5):
-            func(chan, 0)
-
-        # set channel at the boundary to the correct current
-        if boundary <= 4:
-            func(boundary, val)
-            self.wait_till_curr_is_stabalised(chan=boundary)
-        else:
-            self.wait_till_curr_is_stabalised(chan=4)
+        for chan in range(1, 5):
+            if chan < boundary:
+                 # set channels below the boundary to maximum
+                func(chan, chan_max)
+            elif chan == boundary:
+                # set channel at the boundary to the correct current
+                func(chan, val)
+            else:
+                # set channels above the boundary to 0mA
+                func(chan, 0)
+        
+            # make sure the last set channel is stabalised
+            self.wait_till_curr_is_stabalised(chan=chan)
 
     def set_all_curr(self, curr: float):
         for chan in range(1, 5):
@@ -137,7 +137,6 @@ class FiberlabsAMP(BaseInstrument):
         """ Set the temporary setting of optical output level for ALC [mW]. """
         power = watt_to_dbm(power)
         self.write(f"setalc,{chan},{power}")
-
 
 
     def get_mon_output_power(self) -> list:

@@ -218,8 +218,9 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
 
     config_path = "./configs/sweep_config.yaml"
     parser.add_argument(
-        "--config-path",
-        dest="config_path",
+        "-f",
+        "--filepath",
+        dest="filepath",
         metavar="",
         nargs=1,
         type=str,
@@ -231,7 +232,7 @@ Run a dc sweep test with logging level as DEBUG and specify a path for a config 
     args = parser.parse_args()
     ttype = args.test[0]
 
-    configs = load_config(args.config_path[0])
+    configs = load_config(args.filepath[0])
     ttype_configs = configs[ttype]
     test_distribution(ttype, configs, ttype_configs)
     

@@ -50,6 +50,8 @@ This table provides information about all callable functions for each type of sw
 |             | run_dual_DSP7265 | AgilentE3640Ax2, AmetekDSP7265 | Run with two power meters and a lock-in amplifier
 |             | run_E3640A | AgilentE3640A | Run with only the power meter |
 |             | run_2400   | Keithley2400  | Run with only the SMU
+| amp         | run_curr | FiberlabsAMP, KeysightILME | Sweep through by only specifying minimum and maximum currents. |
+|             | run_chan_curr | FiberlabsAMP, KeysightILME | Specify channel and minimum and maximum currents. They will be swept through sequentially. |
 
 
 ### How to write a YAML configuration file
