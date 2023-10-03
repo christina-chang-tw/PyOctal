@@ -161,6 +161,14 @@ class KeysightILME(BasePAS):
         """ Set number of scans. """
         self.engine.NumberOfScans = scan
 
+    @property
+    def measurement_result(self):
+        return self.engine.MeasurementResult
+    
+    @property
+    def busy(self):
+        return self.engine.Busy
+
     def start_meas(self):
         """ Start one-shot measurement. """
         self.engine.StartMeasurement()
@@ -201,6 +209,9 @@ class KeysightILME(BasePAS):
         return tuple(np.divide(xdata, 1e-9))
     
     def export_omr(self, data, folder: str, fname: str):
+        import pathlib
         create_folder(path=folder)
         path_to_file = f"{folder}/{fname}"
+        path_to_file = pathlib.Path(path_to_file).absolute()
         data.Write(path_to_file)
+
