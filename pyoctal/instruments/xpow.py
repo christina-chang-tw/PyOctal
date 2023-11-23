@@ -27,10 +27,12 @@ class NicsLabXPOW(BaseInstrument):
         return self.max_volt
 
 
-    def cvcalibrate_single(self, chan: int, volt: float):
+    def cvcali_single(self, chan: int, volt: float):
+        """ Calibrate a single channel. """
         self.write(f"CH:{chan}:CALIB:{volt}")
 
-    def cvcalibrate_all(self, volts: list):
+    def cvcali_all(self, volts: list):
+        """ Calibrate all channels. """
         for chan in range(self.channel_number):
             self.cvcalibrate_single(chan+1, volts[chan])
 
@@ -63,6 +65,7 @@ class NicsLabXPOW(BaseInstrument):
             self.set_curr_single(chan+1, currs[chan])
 
     def set_channel(self, chan: int, volt: float, curr: float):
+        """ Set a channel's current and voltage. """
         self.set_volt_single(chan, volt)
         self.set_curr_single(chan, curr)
 
@@ -73,7 +76,7 @@ class NicsLabXPOW(BaseInstrument):
         results = result.split(':')
 
         # third and fourth elements wil be voltage and current
-        return float(results[2]), float(results[3]) 
+        return float(results[2]), float(results[3])
 
     def set_gpio_state(self, pin: int, state: str):
         """ Set the GPIO state. """

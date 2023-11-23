@@ -48,4 +48,18 @@ amp:
   start: 1048 # [mA] or [mW]
   stop: 4182  # [mA] or [mW]
   step: 1048     # [mA] or [mW]
+
+
+## Pulse Sweeps ########################################
+pulse:
+  wavelength: 1550 # detector wavelength [nm]
+  avg_pts: 10
+  v_start: 0
+  v_stop: 10
+  cycle: 10
+  channel: 1
+  avg_transmission_at_quad: 10
+  current_filename: "current.csv"
+  power_filename: "power.csv"
+  phase_filename: "phase.csv"
 ... # document end

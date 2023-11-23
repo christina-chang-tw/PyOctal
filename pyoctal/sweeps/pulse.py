@@ -28,16 +28,16 @@ class PulseSweeps(BaseSweeps):
     """
     def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
         super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
-        self.wavelength = ttype_configs.wavelength
+        self.wavelength = ttype_configs.wavelength*1e-09
         self.avg_pts = ttype_configs.avg_pts
         self.v_start = ttype_configs.v_start
         self.v_stop = ttype_configs.v_stop
         self.cycle = ttype_configs.cycle
         self.channel = ttype_configs.channel
         self.avg_transmission_at_quad = ttype_configs.avg_transmission_at_quad
-        self.current_fname = ttype_configs.current_fname
-        self.power_fname = ttype_configs.power_fname 
-        self.phase_fname = ttype_configs.phase_name
+        self.current_fname = ttype_configs.current_filename
+        self.power_fname = ttype_configs.power_filename
+        self.phase_fname = ttype_configs.phase_filename
 
     @staticmethod
     def phase_calculation(

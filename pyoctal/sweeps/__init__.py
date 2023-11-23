@@ -11,9 +11,11 @@ if sys.platform in __platform__:
 
 from .ac import ACSweeps
 from .iv import IVSweeps
+from .pulse import PulseSweeps
 
 __all__ = [
     "ACSweeps",
     "IVSweeps",
-    "InstrILossSweep"
+    "InstrILossSweep",
+    "PulseSweeps"
 ]

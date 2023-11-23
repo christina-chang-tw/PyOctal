@@ -8,7 +8,8 @@ from pyoctal.sweeps import (
     ILossSweep, 
     DCSweeps,
     IVSweeps,
-    AMPSweeps
+    AMPSweeps,
+    PulseSweeps
 )
 from pyoctal.util.formatter import CustomArgparseFormatter, Colours
 from pyoctal.util.util import (
@@ -25,7 +26,7 @@ setup_rootlogger(root_logger, LOG_FNAME)
 logger = logging.getLogger(__name__)
 
 
-TEST_TYPES = ("passive", "dc", "ac", "iv", "amp")
+TEST_TYPES = ("passive", "dc", "ac", "iv", "amp", "pulse")
 
 
 class SweepTestInfo:
@@ -83,6 +84,21 @@ class SweepTestInfo:
             "Start Value" : configs.start,
             "Stop Value" : configs.stop,
             "Step Value" : configs.step,
+        }
+        return info
+
+    def pulse(self, configs):
+        """ Information about pulse testing. """
+        self.fname = self.fname + "_pulse_info.csv"
+        info = {
+            "Wavelength" : configs.wavelength,
+            "Start voltage [V]" : configs.v_start,
+            "Stop voltage [V]" : configs.v_stoop,
+            "Cycle" : configs.cycle,
+            "Average transmission at quad": configs.avg_transmission_at_quad,
+            "Current filename": configs.current_filename,
+            "Power filename": configs.power_filename,
+            "Phase filename": configs.phase_filename,
         }
         return info
 
@@ -144,7 +160,9 @@ def log_setup_info(ttype, configs, ttype_configs):
         info = testinfo.iv(ttype_configs)
     elif ttype == "amp":
         info = testinfo.amp(ttype_configs)
-    
+    elif ttype == "pulse":
+        info = testinfo.pulse(ttype_configs)
+
     testinfo.print(info)
     if not ttype == "amp": # don't export for amp info file for sweeps
         testinfo.export_csv(info)
@@ -173,6 +191,9 @@ def test_distribution(ttype, configs, ttype_configs):
         cls = IVSweeps
     elif ttype == "amp":
         cls = AMPSweeps
+    elif ttype == "pulse":
+        cls = PulseSweeps
+    
 
     sweep = cls(
         rm=rm,
