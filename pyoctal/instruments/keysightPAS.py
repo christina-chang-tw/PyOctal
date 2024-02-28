@@ -1,10 +1,15 @@
 """ Photonics Application Suite (PAS) Interface """
-import win32com.client
 
 import math
 import time
-import numpy as np
 from typing import Tuple
+from pathlib import Path
+from os.path import dirname
+from os import makedirs
+
+import numpy as np
+import win32com.client
+import pandas as pd
 
 from pyoctal.util.file_operations import create_folder
 
@@ -196,7 +201,9 @@ class KeysightILME(BasePAS):
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
         data_per_curve = IOMRGraph.dataPerCurve
-        ydata = IOMRGraph.YData # we assume that channel number is always 1
+
+        #TODO: check if the channel number is always 1
+        ydata = IOMRGraph.YData
     
         return self.get_wavelength(IOMRGraph, data_per_curve), ydata, IOMRFile
     
@@ -208,10 +215,14 @@ class KeysightILME(BasePAS):
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
         return tuple(np.divide(xdata, 1e-9))
     
-    def export_omr(self, data, folder: str, fname: str):
-        import pathlib
-        create_folder(path=folder)
-        path_to_file = f"{folder}/{fname}"
-        path_to_file = pathlib.Path(path_to_file).absolute()
-        data.Write(path_to_file)
+    def export_omr(self, data, filename: str):
+        makedirs(dirname(filename), exist_ok=True)
+        data.Write(Path(filename).absolute())
+
+    def export_csv(self, xdata, ydata, filename: str):
+        makedirs(dirname(filename), exist_ok=True)
+        pd.DataFrame({"Wavelength [nm]": xdata, "Insertion Loss [dB]": ydata}).to_csv(Path(filename).absolute(), index=False)
+        
+
+        
 
