@@ -23,9 +23,9 @@ agilent816xB:
   reset: false
   op: # find operating wavelength configuration
     db: -3 # [dB]
-    target: 1550 # [nm]
-    step: 5 # [pm]
-    xrange: 20 # [nm]
+    target: 1260 # [nm]
+    step: 0.1 # [pm]
+    xrange: 10 # [nm]
 #####################################################
 
 # high_speed ########################################

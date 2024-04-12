@@ -358,7 +358,7 @@ class Agilent816xB(BaseInstrument):
         float
             The wavelength that corresponds to the target value
         """
-        wavelengths = np.arange(target-xrange, target+xrange, step)
+        wavelengths = np.round(np.arange(target-xrange/2, target+xrange/2+step, step), 4)
         ratio = dbm_to_watt(db)
 
         result = np.zeros(shape=(len(wavelengths), 2), dtype=float)
