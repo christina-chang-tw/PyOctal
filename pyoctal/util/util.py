@@ -34,6 +34,10 @@ class DictObj:
         if key in self.__dict__.keys():
             return self.__getitem__(key)
         return None
+    
+    def items(self):
+        for key in self.__dict__:
+            yield key, self.__dict__[key]
 
 def setup_rootlogger(root_logger, fname: str):
     root_logger.setLevel(logging.INFO)
