@@ -6,3 +6,4 @@ pyaml
 tqdm
 pywin32; sys_platform == "cygwin" or sys_platform == "win32"
 pyvisa-sim
+scipy
