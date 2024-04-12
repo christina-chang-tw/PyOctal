@@ -12,7 +12,6 @@ instr_addrs:
     "KeysightFlexDCA_Addr": ""
     "Keysight86100D_Addr": ""
     "FiberlabsAMP_Addr": "GPIB0:1:INSTR"
-
 ###########################################################
 
 # agilent8163B ######################################
@@ -22,6 +21,11 @@ agilent816xB:
   power: 10 # [dBm]
   period: 200.0E-03 # [s]
   reset: false
+  op: # find operating wavelength configuration
+    db: -3 # [dB]
+    target: 1550 # [nm]
+    step: 5 # [pm]
+    xrange: 20 # [nm]
 #####################################################
 
 # high_speed ########################################

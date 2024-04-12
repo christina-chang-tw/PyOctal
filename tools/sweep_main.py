@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 import pyvisa
 from typing import Union
+from os import makedirs
 
 from pyoctal.sweeps import (
     ILossSweep, 
@@ -13,7 +14,6 @@ from pyoctal.sweeps import (
 )
 from pyoctal.util.formatter import CustomArgparseFormatter, Colours
 from pyoctal.util.util import (
-    create_folder,
     setup_rootlogger,
     package_info,
     load_config,
@@ -177,7 +177,7 @@ def test_distribution(ttype, configs, ttype_configs):
     """
     folder = configs.folder
     # create a folder for the test chip if this has not been done so
-    create_folder(folder)
+    makedirs(folder, exist_ok=True)
     log_setup_info(ttype, configs, ttype_configs)
     rm = pyvisa.ResourceManager()
     

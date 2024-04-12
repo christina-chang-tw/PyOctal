@@ -9,9 +9,6 @@ from os import makedirs
 
 import numpy as np
 import win32com.client
-import pandas as pd
-
-from pyoctal.util.file_operations import create_folder
 
 class BasePAS(object):
     """
@@ -182,7 +179,7 @@ class KeysightILME(BasePAS):
         """ Stop a measurement. """
         self.engine.StopMeasurement()
 
-    def get_result(self) -> Tuple[tuple, tuple]:
+    def get_result(self) -> Tuple[list, list, tuple]:
         """ 
         Obtain result after the measurement.
         
@@ -215,13 +212,9 @@ class KeysightILME(BasePAS):
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
         return tuple(np.divide(xdata, 1e-9))
     
-    def export_omr(self, data, filename: str):
-        makedirs(dirname(filename), exist_ok=True)
-        data.Write(Path(filename).absolute())
-
-    def export_csv(self, xdata, ydata, filename: str):
-        makedirs(dirname(filename), exist_ok=True)
-        pd.DataFrame({"Wavelength [nm]": xdata, "Insertion Loss [dB]": ydata}).to_csv(Path(filename).absolute(), index=False)
+def export_to_omr(data, filename: str):
+    makedirs(dirname(filename), exist_ok=True)
+    data.Write(Path(filename).absolute())
         
 
         

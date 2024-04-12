@@ -2,8 +2,35 @@ from typing import Union
 import sys
 import time
 
+import numpy as np
+from scipy.signal import find_peaks
+
 from pyoctal.base import BaseInstrument
 from pyoctal.error import PARAM_INVALID_ERR, error_message
+from pyoctal.util.util import dbm_to_watt
+
+
+def resonances(data: np.array, cutoff: float, distance: int) -> list:
+    """ 
+    Find the resonances in the spectrum. 
+    
+    Parameters
+    ----------
+    cutoff: float
+        The cutoff value to find the resonances
+    distance: int
+        The minimum distance between each peak
+
+    Returns
+    -------
+    list
+        The resonances found in the spectrum
+    """
+    peaks, _ = find_peaks(data, distance=distance)
+    peaks = peaks[data[peaks] - min(data) > cutoff]
+    return peaks
+    
+
 
 class Agilent816xB(BaseInstrument):
     """
@@ -299,7 +326,64 @@ class Agilent816xB(BaseInstrument):
         self.set_detect_func_mode(mode=("logging","stop"))
 
         return results
-    
+   
+
+    def find_op_wavelength(self, db: float, target: float, xrange: float=20e-09,
+                           step: float=5e-12, cutoff: float=10, distance: float=100, tol: float=1e-09) -> float:
+        """
+        Find the operating wavelength that corresponds to a certain dB point from the maximum power level.
+        This wavelength should be on the lefthand side of the resonance and should be the closest to
+        the target wavelength.
+
+        Parameters
+        ----------
+        db: float
+            The dB value from the normalised maximum value. i.e. db = -3, -3dB from 1.
+        target: float
+            The target value to find
+        xrange: float
+            The range of the wavelength to search.
+            i.e. if xrange = 20e-09, the search range will be target - 10nm to target + 10nm
+        step: float
+            The step size of the wavelength search
+        cutoff: float
+            The cutoff value to find the resonances
+        distance: float
+            The minimum distance between each peak
+        tol: float
+            The tolerance value to find the closest wavelength
+            
+        Returns
+        -------
+        float
+            The wavelength that corresponds to the target value
+        """
+        wavelengths = np.arange(target-xrange, target+xrange, step)
+        ratio = dbm_to_watt(db)
+
+        result = np.zeros(shape=(len(wavelengths), 2), dtype=float)
+
+        for idx, wavelength in enumerate(wavelengths):
+            self.set_wavelength(wavelength=wavelength)
+            power = self.get_detect_pow()
+            result[idx] = (wavelength, power)
+
+        peak_idxs = resonances(data=result[:,1], cutoff=cutoff, distance=distance)
+        if len(peak_idxs) == 0:
+            raise ValueError("No resonances found. Please adjust the parameters.")
+
+        # Find the closest wavelength to the target
+        hbd_idx = np.argmin(np.abs(result[:,0][peak_idxs] - target))
+        lbd_idx = peak_idxs(np.where(peak_idxs == hbd_idx)[0][0]-1)
+        result = result[lbd_idx:hbd_idx, lbd_idx:hbd_idx]
+
+        pmax = np.max(result[:,1])
+        ptarget = pmax*ratio
+        # find the rightmost one as it will be on the lefthand side of the resonance
+        target_idx = np.where(np.abs(result[:,1] - pmax - ptarget) <= tol)[-1]
+
+        return result[:,0][target_idx]
+
 
 class Agilent8163B(Agilent816xB):
     """

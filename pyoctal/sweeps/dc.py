@@ -37,6 +37,7 @@ class DCSweeps(BaseSweeps):
         self.w_step = ttype_configs.lambda_step*pow(10, 3)
         self.w_speed = ttype_configs.lambda_speed
         self.power = ttype_configs.power
+        self.omr_save = ttype_configs.omr_save
         self.currents = []
         self.df = pd.DataFrame()
 
@@ -55,11 +56,13 @@ class DCSweeps(BaseSweeps):
             self.currents.append(pm.get_curr()) # get the current value
 
             ilme.start_meas()
-            x, y = ilme.get_result()
-            self.df["Wavelength"] = x
-            self.df["Loss [dB]"] = y
+            wavelength, loss, omr_data = ilme.get_result()
+            self.df["Wavelength"] = wavelength
+            self.df["Loss [dB]"] = loss
             export_to_csv(data=self.df, folder=self.folder, fname=f"{volt}V")
-            export_to_csv(data=pd.Series(self.currents), folder=self.folder, fname="dc_currents.csv")
+
+            if self.omr_save:
+                ilme.export_omr_data(omr_data, folder=self.folder, fname=f"{volt}V")
 
         pm.set_volt(0)
 
@@ -88,7 +91,6 @@ class DCSweeps(BaseSweeps):
                 )
             
             export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
-            export_to_csv(data=pd.Series(self.currents), folder=self.folder, fname="dc_currents.csv")
         
         pm.set_volt(0)
         pm.set_output_state(0)

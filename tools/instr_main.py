@@ -61,6 +61,13 @@ class PrintInfo:
         logger.info(f'{"Reset the instrument?":<25} : {args.reset:<6}')
 
     @staticmethod
+    def agilent816xB_op_print(args):
+        logger.info(f"{'Target power level [dB]':<25} : {args.db:<6}")
+        logger.info(f"{'Target wavelength [nm]':<25} : {args.target:<6}")
+        logger.info(f"{'Wavelength range [nm]':<25} : {args.target - args.xrange/2} - {args.target + args.xrange/2}")
+        logger.info(f"{'Wavelength step [nm]':<25} : {args.step:<6}")
+
+    @staticmethod
     def high_speed_print(args):
         logger.info(f'{"Frequency [GHz]":<25} : {args.freq:<6}')
         logger.info(f'{"Clock divide ratio":<25} : {args.odratio:<6}')
@@ -104,8 +111,13 @@ def setup(instr, configs):
         elif instr_configs.model == "8164":
             cls = Agilent8164B
         mm = cls(addr=addrs.Agilent816xB_Addr, rm=rm)
-        PrintInfo.agilent816xB_print(instr_configs)
-        mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)
+
+        if instr_configs.op is not None and instr_configs.op.keys() is not None:
+            PrintInfo.agilent816xB_op_print(instr_configs.op)
+            mm.find_op_wavelength(**instr_configs.op)
+        else:
+            PrintInfo.agilent816xB_print(instr_configs)
+            mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)
 
 
     elif instr == "high_speed":

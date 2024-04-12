@@ -9,11 +9,13 @@ import logging
 import pandas as pd
 import yaml
 import math
+from os.path import dirname
+from os import makedirs
+from pathlib import Path
 
 from pyoctal.error import *
 from pyoctal.util.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
 from . import __python_min_version__, __platform__
-
 
 class DictObj:
     """ Convert a dictionary to python object """
@@ -90,14 +92,6 @@ def get_result_dirpath(folder) -> str:
 def package_info(info: dict) -> pd.DataFrame:
     """ Put information about a sweep into a dataframe. """
     return pd.DataFrame(info.items(), columns=['Params', 'Value'])
-
-def create_folder(path: str="XXX"):
-    if not os.path.isdir(path):
-        os.mkdir(path)
-
-def delete_folder(path: str="XXX"):
-    if os.path.isdir(path):
-        os.rmdir(path)
 
 def get_callable_funcs(obj, identifier: str="") -> str:
     """ Get all callable (unhidden) functions of a class in a nice format style. """ 
