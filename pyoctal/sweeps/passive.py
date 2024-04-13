@@ -1,14 +1,19 @@
+from os.path import join
+
 import pandas as pd
 from tqdm import tqdm
 
 from pyoctal.instruments import KeysightILME, Agilent8163B
-from pyoctal.util.file_operations import export_to_csv
-from pyoctal.util.util import wait_for_next_meas
-from pyoctal.base import BaseSweeps
+from pyoctal.utils.file_operations import export_to_csv
+from pyoctal.instruments.base import BaseSweeps
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+def wait_for_next_meas(i, total):
+    print("\r")
+    input(f"{i}/{total} : Press ENTER to continue")
 
 class ILossSweep(BaseSweeps):
     """
@@ -59,7 +64,7 @@ class ILossSweep(BaseSweeps):
             dev.start_meas()
             lf[i], temp = dev.get_result(length)
             df = pd.concat([df, temp], axis=1)
-            export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+            export_to_csv(data=self.df, filename=join(self.folder, f"{self.fname}.csv"))
 
         
         if not lf.eq(lf.iloc[:,0], axis=0).all(axis=1).all(axis=0):

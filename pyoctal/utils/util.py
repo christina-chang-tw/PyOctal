@@ -4,17 +4,13 @@ that are used but do not belong to a specific category
 """
 import inspect
 import sys
-import os
 import logging
-import pandas as pd
-import yaml
 import math
-from os.path import dirname
-from os import makedirs
-from pathlib import Path
 
-from pyoctal.error import *
-from pyoctal.util.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
+import yaml
+
+from pyoctal.utils.error import *
+from pyoctal.utils.formatter import CustomLogFileFormatter, CustomLogConsoleFormatter
 from . import __python_min_version__, __platform__
 
 class DictObj:
@@ -70,9 +66,6 @@ def pyversion_check():
 def get_func_name() -> str:
     return inspect.stack()[1].function
 
-def wait_for_next_meas(i, total):
-    print("\r")
-    input(f"{i}/{total} : Press ENTER to continue")
 
 def load_config(fpath: str):
     """ 
@@ -81,29 +74,6 @@ def load_config(fpath: str):
     with open(file=fpath, mode='r') as file:
         configs = yaml.safe_load(file)
     return DictObj(**configs)
-
-def get_config_dirpath() -> str:
-    return f'{os.getcwd()}/config'
-
-
-def get_result_dirpath(folder) -> str:
-    return f'{os.getcwd()}/results/{folder}'
-
-def package_info(info: dict) -> pd.DataFrame:
-    """ Put information about a sweep into a dataframe. """
-    return pd.DataFrame(info.items(), columns=['Params', 'Value'])
-
-def get_callable_funcs(obj, identifier: str="") -> str:
-    """ Get all callable (unhidden) functions of a class in a nice format style. """ 
-
-    func, _ = zip(*inspect.getmembers(object=obj, predicate=inspect.isfunction))
-    
-    correct_func = []
-    for obj in func:
-        if not obj.startswith('__') and not obj.startswith('_'):
-            correct_func.append(obj)
-
-    return correct_func
 
 def dbm_to_watt(power):
     return pow(10, -3+power/10)

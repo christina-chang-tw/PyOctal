@@ -211,7 +211,8 @@ class KeysightILME(BasePAS):
         xstep = IOMRGraph.xStep
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
         return tuple(np.divide(xdata, 1e-9))
-    
+
+
 def export_to_omr(data, filename: str):
     makedirs(dirname(filename), exist_ok=True)
     data.Write(Path(filename).absolute())

@@ -1,7 +1,7 @@
 """
 Import all instruments here to shorten the imports
 """
-from pyoctal.error import *
+from pyoctal.utils.error import *
 import sys
 
 __platform__ = ("cygwin", "win32") # Windows OS system

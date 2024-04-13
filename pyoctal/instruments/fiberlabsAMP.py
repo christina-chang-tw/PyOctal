@@ -3,9 +3,9 @@ import time
 import sys
 import math
 
-from pyoctal.base import BaseInstrument
-from pyoctal.error import PARAM_INVALID_ERR, error_message
-from pyoctal.util.util import watt_to_dbm, dbm_to_watt
+from pyoctal.instruments.base import BaseInstrument
+from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
+from pyoctal.utils.util import watt_to_dbm, dbm_to_watt
 
 
 class FiberlabsAMP(BaseInstrument):

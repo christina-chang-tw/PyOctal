@@ -1,10 +1,13 @@
-import pandas as pd
-from tqdm import tqdm 
 import time
+from os.path import join
+
+import pandas as pd
+from tqdm import tqdm
 
 from pyoctal.instruments import AgilentE3640A, Agilent8163B, KeysightILME
-from pyoctal.base import BaseSweeps
-from pyoctal.util.file_operations import export_to_csv
+from pyoctal.instruments.keysightPAS import export_to_omr
+from pyoctal.instruments.base import BaseSweeps
+from pyoctal.utils.file_operations import export_to_csv
 
 class DCSweeps(BaseSweeps):
     """
@@ -59,10 +62,11 @@ class DCSweeps(BaseSweeps):
             wavelength, loss, omr_data = ilme.get_result()
             self.df["Wavelength"] = wavelength
             self.df["Loss [dB]"] = loss
-            export_to_csv(data=self.df, folder=self.folder, fname=f"{volt}V")
+
+            export_to_csv(data=self.df, filename=join(self.folder, f"{volt}V.csv"))
 
             if self.omr_save:
-                ilme.export_omr_data(omr_data, folder=self.folder, fname=f"{volt}V")
+                export_to_omr(omr_data, join(self.folder, f"{volt}V.omr"))
 
         pm.set_volt(0)
 
@@ -90,7 +94,7 @@ class DCSweeps(BaseSweeps):
                 cycles=self.cycles,
                 )
             
-            export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+            export_to_csv(data=self.df, filename=join(self.folder, f"{self.fname}.csv"))
         
         pm.set_volt(0)
         pm.set_output_state(0)

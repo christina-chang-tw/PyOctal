@@ -1,14 +1,17 @@
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
 import pickle
 import logging
+from os.path import join
 
-from pyoctal.util.formatter import Colours
-from pyoctal.util.file_operations import export_to_excel, export_to_csv, get_dataframe_from_csv
-from pyoctal.base import BaseSweeps
+from sklearn.linear_model import LinearRegression
+
+from pyoctal.utils.formatter import Colours
+from pyoctal.utils.file_operations import export_to_excel, export_to_csv
+from pyoctal.instruments.base import BaseSweeps
 from pyoctal.instruments import FiberlabsAMP, KeysightILME
+from pyoctal.instruments.keysightPAS import export_to_omr
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +84,7 @@ class AMPSweeps(BaseSweeps):
         # read in a file containing at these two columns with the first two being:
         # col0: set current/power (user sets this)
         # col1: output current/power (monitored by the instrument)
-        df = get_dataframe_from_csv(fpath)
+        df = pd.read_csv(fpath, encoding='utf-8')
         output_curr = model.predict(wavelength, loss)
 
         # perform true value and set value mapping
@@ -152,7 +155,7 @@ class AMPSweeps(BaseSweeps):
             export_to_excel(data=pd.DataFrame(config_info.items()), sheet_names="config", folder=self.folder, fname=fname)
             export_to_excel(data=df, sheet_names="data", folder=self.folder, fname=fname)
 
-            ilme.export_omr(omr_data, folder=self.folder, fname=f"{curr}A.omr")
+            export_to_omr(omr_data, join(self.folder, f"{curr}A.omr"))
 
         if self.prediction:
             dpts = []
@@ -165,7 +168,7 @@ class AMPSweeps(BaseSweeps):
             _ = self.linear_regression(f"{self.folder}/model.pkl", dpts)
             
 
-        export_to_csv(data=pd.DataFrame(extra_data, columns=extra_data_cols), folder=self.folder, fname="extra_data.csv")
+        export_to_csv(data=pd.DataFrame(extra_data, columns=extra_data_cols), filename=join("self.folder", "extra_data.csv"))
         amp.set_output_state(state=0)
 
     def run_chan_curr(self):
@@ -232,8 +235,7 @@ class AMPSweeps(BaseSweeps):
             export_to_excel(data=pd.DataFrame(config_info.items()), sheet_names="config", folder=self.folder, fname=fname)
             export_to_excel(data=df, sheet_names="data", folder=self.folder, fname=fname)
             
-            omr_fname = f"{self.folder}/{curr}A.omr"
-            ilme.export_omr(omr_data, folder=self.folder, fname=omr_fname)
+            export_to_omr(omr_data, join(self.folder, f"{curr}A.omr"))
 
 
         if self.prediction:
@@ -247,6 +249,6 @@ class AMPSweeps(BaseSweeps):
             _ = self.linear_regression(f"{self.folder}/model.pkl", dpts)
             
 
-        export_to_csv(data=pd.DataFrame(extra_data, columns=extra_data_cols), folder=self.folder, fname="extra_data.csv")
+        export_to_csv(data=pd.DataFrame(extra_data, columns=extra_data_cols), filename=join("self.folder", "extra_data.csv"))
         amp.set_output_state(state=0)
 

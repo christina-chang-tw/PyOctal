@@ -3,7 +3,7 @@ from typing import Union
 import textwrap
 import logging
 
-from pyoctal.error import *
+from pyoctal.utils.error import *
 
 logger = logging.getLogger(__name__)
 

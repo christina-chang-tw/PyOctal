@@ -1,6 +1,7 @@
 # PyOctal
 
 PyOctal is a Python package equipped with sweep tests, analysis tools, and interfaces with equipments that are used primarily for optical chip testing.
+This package supports visa communications with a varitey of instruments.
 
 <!-- toc -->
 - [More About PyOctal](#more-about-pyoctal)
@@ -47,10 +48,6 @@ Take a look at [here](https://github.com/christina-chang-tw/PyOctal/blob/master/
 ## Installation
 
 Before installing any of the software, please make sure that you know exactly the operating system that you are running on and whether it is 32-bit or 64-bit.
-
-### Git Bash (Optional)
-
-If you have not install Git, install the newest correct version of Git for your Windows system. Git is a source distributed version control system designed to handle everything from small to very large projects with speed and efficiency. This is a very useful tool to keep track of the newest information being pushed onto the remote Github repository.
 
 ### Environment
 
@@ -112,16 +109,6 @@ Run this in the root-directory of this repository namely `autotesting`.
 # Deactivate a venv machine
 > deactivate
 ```
-
-### Visual Studio Code (VSCode)
-
-Install VSCode for code editing or running in python terminal. This software can be opened in Anaconda Navigator under Home tab. Recommend you to setup a Github account if you have not already done so and sign in to the account in VSCode.
-
-Open a new bash terminal in VSCode by going to the top tab bar and Terminal > New Terminal. Now you will have opened a terminal and ready to clone the repository down.
-
-**NOTE:** If you are running Windows 7, alternative code editors, such as Atom, VSCodium, and Texteditor are available.
-
-
 ### Install PyOctal
 
 For users, I recommend to update your current old repository to a newer version by cloning or downloading this repository again and delete the old ones.
@@ -131,9 +118,9 @@ For users, I recommend to update your current old repository to a newer version 
 Getting the repository cloned to a local direcotory
 ```bash
 # Create a directory named autotesting
-> mkdir autotesting
+> mkdir pyoctal
 # Go into that directory
-> cd autotesting
+> cd pyoctal
 # Clone this repository down to your autotesting directory
 > git clone https://github.com/christina-chang-tw/PyOctal.git
 # move into that directory
@@ -156,7 +143,7 @@ This package supports installation using pip allowing users to expand the projec
 ## Getting Started
 
 ### How to Run a Test?
-Everything is this repository should be run as a python module. It uses argparse package to parse command line information to the program. 
+Everything is this repository should be run as a python module. It uses argparse package to parse command line information to the program. You should pass in a .yaml file to set all the parameters.
 
 **Sweeps**
 
@@ -202,41 +189,3 @@ An interface to easily setup an instrument.
 
 1. f-string formatting method cannot be used is an issues related to the python version. Only versions after Python 3.6 adopts f-string format.
 2. Contact me if need extra help: tyc1g20@soton.ac.uk 
-
-
-## Developer Information
-
-### Git Bash
-
-Git commands related to updating the remote directory. The best practice is 
-- Create a new branch before making any modifictions to the repository as it isolates out your changes from others
-- Always pull the newest update before you push your new changes
-- Once you are satisfied and ready to make the final update to the main reponsitory, merge your branch and the main branch together
-
-Create a branch for developing your own code:
-```bash
-# Example
-> git branch new_branch # create a new branch called new_branch
-> git checkout new_branch # checkout to new_branch from current branch
-```
-
-
-Pull the newest changes down:
-```bash
-> git pull 
-# or
-> git pull https://github.com/christina-chang-tw/orcoctal.git
-```
-
-Push your local changes to the remote repository:
-```bash
-> git add .
-> git commit -m "message" # commit your local changes with "message" as a comment
-> git push                # push your changes to the remote branch
-```
-
-### Expand this library
-To maintain the current structure, place your instrument class in the correct file. If the type of your instrument does not exist yet, please create a class which subclass the `BaseInstrument` class.
-
-
-

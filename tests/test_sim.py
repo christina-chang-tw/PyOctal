@@ -5,8 +5,8 @@ import inspect
 import pyvisa
 import yaml
 
-from pyoctal.base import DeviceID
-from pyoctal.util.util import get_callable_funcs
+from pyoctal.instruments.base import DeviceID
+from pyoctal.utils.util import get_callable_funcs
 
 class TestClassCalls:
     sim_fpath = './tests/sim_dev.yaml'
@@ -86,7 +86,7 @@ class TestClassCalls:
 
 
 def test_callable_funcs():
-    from pyoctal.base import BaseInstrument
+    from pyoctal.instruments.base import BaseInstrument
     funcs = get_callable_funcs(obj=BaseInstrument)
     test_funcs = ['write', 'query', 'get_idn'] # only testing a fraction of callable functions
     assert [name for name in test_funcs if name in funcs]

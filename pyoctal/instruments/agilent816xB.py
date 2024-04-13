@@ -5,8 +5,8 @@ import time
 import numpy as np
 from scipy.signal import find_peaks
 
-from pyoctal.base import BaseInstrument
-from pyoctal.error import PARAM_INVALID_ERR, error_message
+from pyoctal.instruments.base import BaseInstrument
+from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
 
 
 def resonances(data: np.array, cutoff: float, distance: int) -> list:

@@ -1,9 +1,12 @@
+from os.path import join
+from os import makedirs
+import pyvisa
 import argparse
+
 from datetime import datetime
 import logging
-import pyvisa
 from typing import Union
-from os import makedirs
+import pandas as pd
 
 from pyoctal.sweeps import (
     ILossSweep, 
@@ -12,13 +15,12 @@ from pyoctal.sweeps import (
     AMPSweeps,
     PulseSweeps
 )
-from pyoctal.util.formatter import CustomArgparseFormatter, Colours
-from pyoctal.util.util import (
+from pyoctal.utils.formatter import Colours, CustomArgparseFormatter
+from pyoctal.utils.util import (
     setup_rootlogger,
-    package_info,
     load_config,
 )
-from pyoctal.util.file_operations import export_to_csv
+from pyoctal.utils.file_operations import export_to_csv
 
 LOG_FNAME = "./logging.log"
 root_logger = logging.getLogger()
@@ -115,8 +117,7 @@ class SweepTestInfo:
             else:
                 raise ValueError("Values invalid.")
             
-    def export_csv(self, info):
-        export_to_csv(data=package_info(info), folder=self.folder, fname=self.fname)
+        
 
 
 def log_setup_info(ttype, configs, ttype_configs):
@@ -165,7 +166,7 @@ def log_setup_info(ttype, configs, ttype_configs):
 
     testinfo.print(info)
     if not ttype == "amp": # don't export for amp info file for sweeps
-        testinfo.export_csv(info)
+        export_to_csv(data=pd.DataFrame(info.items(), columns=['Params', 'Value']), filename=join(configs.folder, f"{configs.fname}_info.csv"))
     logger.info("")
 
 

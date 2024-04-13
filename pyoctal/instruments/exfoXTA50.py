@@ -1,4 +1,4 @@
-from pyoctal.base import BaseInstrument
+from pyoctal.instruments.base import BaseInstrument
 
 class EXFOXTA50(BaseInstrument):
     """

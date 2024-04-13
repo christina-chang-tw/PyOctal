@@ -1,4 +1,4 @@
-from pyoctal.base import BaseSweeps
+from pyoctal.instruments.base import BaseSweeps
 
 class ACSweeps(BaseSweeps):
     pass

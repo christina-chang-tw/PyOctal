@@ -3,8 +3,7 @@ import math
 import pandas as pd
 
 from pyoctal.instruments import AgilentE3640A, Agilent8163B
-from pyoctal.base import BaseSweeps
-from pyoctal.util.file_operations import export_to_csv
+from pyoctal.instruments.base import BaseSweeps
 
 class PulseSweeps(BaseSweeps):
     """

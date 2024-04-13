@@ -11,11 +11,11 @@ from pyoctal.instruments import (
     KeysightE8257D,
     FiberlabsAMP
 )
-from pyoctal.util.util import (
+from pyoctal.utils.util import (
     setup_rootlogger,
     load_config
 )
-from pyoctal.util.formatter import CustomArgparseFormatter
+from pyoctal.utils.formatter import CustomArgparseFormatter
 
 
 LOG_FNAME = "./logging.log"

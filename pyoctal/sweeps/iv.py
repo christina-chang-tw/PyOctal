@@ -1,4 +1,6 @@
 import time
+from os.path import join
+
 import pandas as pd
 
 from pyoctal.instruments import (
@@ -7,8 +9,8 @@ from pyoctal.instruments import (
     AgilentE3640A,
     Keithley2400
 )
-from pyoctal.base import BaseSweeps
-from pyoctal.util.file_operations import export_to_csv
+from pyoctal.instruments.base import BaseSweeps
+from pyoctal.utils.file_operations import export_to_csv
 
 class IVSweeps(BaseSweeps):
     """
@@ -59,7 +61,7 @@ class IVSweeps(BaseSweeps):
         self.df["Voltage [V]"] = self.volts
         self.df["Current [A]"] = self.currs
         
-        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, filename=join(self.folder, f"{self.fname}.csv"))
 
         vs.set_laser_volt(0) 
         vs.set_laser_state(0) # turn laser off
@@ -87,7 +89,7 @@ class IVSweeps(BaseSweeps):
         self.df["Current [A]"] = self.currs
         self.df["Amplifier [dB]"] = optics
         
-        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, filename=join(self.folder, f"{self.fname}.csv"))
 
         pm.set_volt(0) 
         pm.set_output_state(0) # turn laser off
@@ -114,7 +116,7 @@ class IVSweeps(BaseSweeps):
                 data = (volt1, volt2, curr1, curr2, optical)
                 df.loc[len(df)] = data
         
-        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, filename=join(self.folder, f"{self.fname}.csv"))
         pm1.set_volt(0)
         pm1.set_output_state(0) # turn laser off
         pm2.set_volt(0)
@@ -137,7 +139,7 @@ class IVSweeps(BaseSweeps):
         self.df["Voltage [V]"] = self.volts
         self.df["Current [A]"] = self.currs
         
-        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, filename=join(self.folder, f"{self.fname}.csv"))
 
         pm.set_volt(0) 
         pm.set_output_state(0) # turn laser off
@@ -164,9 +166,9 @@ class IVSweeps(BaseSweeps):
         self.df["Current [A]"] = self.currs
 
         # export V-Is
-        export_to_csv(data=currents, folder=self.folder, fname=f'{self.fname}_VIs.csv')
+        export_to_csv(data=currents, filename=join(self.folder, f"{self.fname}_VIs.csv"))
         # export V-I
-        export_to_csv(data=self.df, folder=self.folder, fname=self.fname)
+        export_to_csv(data=self.df, filename=join(self.folder, f"{self.fname}.csv"))
 
         smu.set_laser_volt(0) 
         smu.set_laser_state(0) # turn laser off
