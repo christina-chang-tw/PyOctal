@@ -11,8 +11,8 @@ from pyoctal.utils.util import get_callable_funcs
 class TestClassCalls:
     sim_fpath = './tests/sim_dev.yaml'
     sim_rm = sim_fpath + '@sim'
-    untestable_files = ("thorlabsAPT", 'keysightPAS', "fiberlabsAMP")
-    untestable_modules = ['BaseInstrument','BaseSweeps','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT', 'FiberlabsAMP', "Agilent816xB"]
+    untestable_files = ("thorlabsAPT", 'keysightPAS', "fiberlabsAMP","base")
+    untestable_modules = ['BaseInstrument','BaseSweeps','DeviceID','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT', 'FiberlabsAMP', "Agilent816xB"]
     
     def test_instr_initialization(self):
         """ Test that the instruments can all be connected. """
