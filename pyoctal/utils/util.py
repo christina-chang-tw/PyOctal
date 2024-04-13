@@ -66,6 +66,17 @@ def pyversion_check():
 def get_func_name() -> str:
     return inspect.stack()[1].function
 
+def get_callable_funcs(obj) -> str:
+    """ Get all callable (unhidden) functions of a class in a nice format style. """ 
+
+    func, _ = zip(*inspect.getmembers(object=obj, predicate=inspect.isfunction))
+    
+    correct_func = []
+    for obj in func:
+        if not obj.startswith('__') and not obj.startswith('_'):
+            correct_func.append(obj)
+
+    return correct_func
 
 def load_config(fpath: str):
     """ 
