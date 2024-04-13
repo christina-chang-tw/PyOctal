@@ -26,7 +26,7 @@ class AMPSweeps(BaseSweeps):
     ----------
     ttype_configs: dict
         Test type specific configuration parameters
-    instr_addrs: map
+    addrs: map
         All instrument addresses
     rm:
         Pyvisa resource manager
@@ -36,8 +36,8 @@ class AMPSweeps(BaseSweeps):
         Filename
     """
 
-    def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
-        super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
+    def __init__(self, ttype_configs: dict, addrs: dict, rm, folder: str, fname: str):
+        super().__init__(addrs=addrs, rm=rm, folder=folder, fname=fname)
         self.prediction = ttype_configs.prediction
         self.mode = ttype_configs.mode
         self.start = ttype_configs.start

@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 #   COM  Device = COMx                                    #     
 ###########################################################
                                                           
-INSTR_ADDRS = {                                               
+addrs = {                                               
     "Agilent8163B_Addr": "GPIB0::25::INSTR",              
     "KeysightE8257D_Addr": "",   
     "KeysightFlexDCA_Addr": "",
@@ -103,7 +103,7 @@ def setup(instr, configs):
     rm = pyvisa.ResourceManager()
 
     instr_configs = configs[instr]
-    addrs = configs.instr_addrs
+    addrs = configs.addrs
 
     if instr == "agilent816xB":
         if instr_configs.model == "8163":  

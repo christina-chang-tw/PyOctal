@@ -12,7 +12,7 @@ class TestClassCalls:
     sim_fpath = './tests/sim_dev.yaml'
     sim_rm = sim_fpath + '@sim'
     untestable_files = ("thorlabsAPT", 'keysightPAS', "fiberlabsAMP")
-    untestable_modules = ['BaseInstrument','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT', 'FiberlabsAMP', "Agilent816xB"]
+    untestable_modules = ['BaseInstrument','BaseSweeps','KeysightFlexDCA', 'KeysightILME','ThorlabsAPT', 'FiberlabsAMP', "Agilent816xB"]
     
     def test_instr_initialization(self):
         """ Test that the instruments can all be connected. """

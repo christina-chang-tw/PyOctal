@@ -6,7 +6,7 @@ folder: "./xxx" # provide either relative or absolute path
 fname: "xxx"  # filename       e.g. a.csv
 func: "run_curr"
 
-instr_addrs:
+addrs:
   amp: "GPIB0::1::INSTR"
 
 ## DC Sweeps  ###########################################

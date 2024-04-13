@@ -20,7 +20,7 @@ class DCSweeps(BaseSweeps):
     ----------
     ttype_configs: dict
         Test type specific configuration parameters
-    instr_addrs: map
+    addrs: map
         All instrument addresses
     rm:
         Pyvisa resource manager
@@ -29,8 +29,8 @@ class DCSweeps(BaseSweeps):
     fname: str
         Filename
     """
-    def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
-        super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
+    def __init__(self, ttype_configs: dict, addrs: dict, rm, folder: str, fname: str):
+        super().__init__(addrs=addrs, rm=rm, folder=folder, fname=fname)
         self.v_start = ttype_configs.v_start
         self.v_stop = ttype_configs.v_stop
         self.v_step = ttype_configs.v_step

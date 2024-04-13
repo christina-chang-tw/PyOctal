@@ -23,7 +23,7 @@ class ILossSweep(BaseSweeps):
     ----------
     ttype_configs: dict
         Test type specific configuration parameters
-    instr_addrs: map
+    addrs: map
         All instrument addresses
     rm:
         Pyvisa resource manager
@@ -32,8 +32,8 @@ class ILossSweep(BaseSweeps):
     fname: str
         Filename
     """
-    def __init__(self, ttype_configs: dict, instr_addrs: dict, rm, folder: str, fname: str):
-        super().__init__(instr_addrs=instr_addrs, rm=rm, folder=folder, fname=fname)
+    def __init__(self, ttype_configs: dict, addrs: dict, rm, folder: str, fname: str):
+        super().__init__(addrs=addrs, rm=rm, folder=folder, fname=fname)
         self.w_start = ttype_configs.w_start
         self.w_stop = ttype_configs.w_stop
         self.w_step = ttype_configs.w_step

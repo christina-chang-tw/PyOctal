@@ -137,8 +137,8 @@ def log_setup_info(ttype, configs, ttype_configs):
     logger.info(f'{"Test Type":<10} : {ttype:<12}')
     logger.info(f'{"Funcion":<10} : {configs.func:<12}')
     logger.info(f'{"Address":<10} :')
-    for instr_type in configs.instr_addrs.keys():
-        addr = configs.instr_addrs[instr_type]
+    for instr_type in configs.addrs.keys():
+        addr = configs.addrs[instr_type]
         if isinstance(addr, list):
             addr_str = ", ".join(addr)
             no = len(addr)
@@ -199,7 +199,7 @@ def test_distribution(ttype, configs, ttype_configs):
     sweep = cls(
         rm=rm,
         ttype_configs=ttype_configs, 
-        instr_addrs=configs.instr_addrs,
+        addrs=configs.addrs,
         folder=configs.folder,
         fname=configs.fname,
     )

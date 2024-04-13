@@ -6,7 +6,7 @@
 #   GPIB Device = GPIBx::x::INSTR                         #
 #   COM  Device = COMx                                    #     
 ###########################################################                                                      
-instr_addrs:                                             
+addrs:                                             
     "Agilent816xB_Addr": "GPIB0::20::INSTR"            
     "KeysightE8257D_Addr": ""
     "KeysightFlexDCA_Addr": ""

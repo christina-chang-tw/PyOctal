@@ -213,7 +213,7 @@ class BaseSweeps(object):
 
     Parameters
     ----------
-    instr_addrs: list, tuple, str
+    addrs: list, tuple, str
         All instrument addresses that need to be connected
     rm:
         Pyvisa resource manager
@@ -222,9 +222,9 @@ class BaseSweeps(object):
     fname: str
         Filename 
     """
-    def __init__(self, instr_addrs: Union[tuple,list,str], rm, folder: str, fname: str):
+    def __init__(self, addrs: Union[tuple,list,str], rm, folder: str, fname: str):
         self._rm = rm
-        self._addrs = instr_addrs
+        self._addrs = addrs
         self.folder = folder
         self.fname = fname
 

@@ -25,12 +25,12 @@ Example
 ```yaml
 # In the corresponding YAML file
 # one device
-instr_addrs:
+addrs:
   vs: "GPIB0::25::INSTR"
   osc: "GPIB0::20::INSTR"
 
 # Two devices of same type
-instr_addrs:
+addrs:
   smu: 
     - "GPIB0::25::INSTR"
     - "GPIB0::24::INSTR"
