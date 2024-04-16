@@ -112,14 +112,9 @@ class Agilent816xB(BaseInstrument):
         """ Set the detector calibration value [dB]. """
         self.write(f"{self.detect}:correction {value}dB")
 
-    def set_detect_trig_response(self, in_rsp: str, out_rsp: str):
-        """ Set the detector trigger response for both input and output. """
-        self.write(f"trigger{self.sens_num}:channel{self.sens_chan}:input {in_rsp}")
-        self.write(f"trigger{self.src_num}:channel{self.sens_chan}:output {out_rsp}")
-
     def set_detect_func_mode(self, mode: Union[tuple,list]):
         """ Set the detector function status. """
-        self.write(f"{self.laser}:function:state {mode[0]},{mode[1]}")
+        self.write(f"{self.detect}:function:state {mode[0]},{mode[1]}")
     
     def set_detect_func_params(self, mode: str, params: Union[tuple,list]):
         """ Set the detector function parameters. """
@@ -166,11 +161,6 @@ class Agilent816xB(BaseInstrument):
         """ Set the laser power [dBm]. """
         self.write(f"{self.laser}:power:level:immediate:amplitude {power}dBm")
 
-    def set_laser_trig_response(self, in_rsp: str, out_rsp: str):
-        """ Set the laser trigger response. """
-        self.write(f"trigger{self.src_num}:channel{self.src_chan}:input {in_rsp}")
-        self.write(f"trigger{self.src_num}:channel{self.src_chan}:output {out_rsp}")
-
     def set_laser_unit(self, unit: str):
         """ Set the laser unit. """
         self.write(f"{self.laser}:power:unit {unit}") # set the source unit in dBm
@@ -178,6 +168,10 @@ class Agilent816xB(BaseInstrument):
     def get_laser_data(self, mode: str) -> list:
         """ Get the laser data. """
         return self.query_binary_values(f"{self.laser}:read:data? {mode}")
+    
+    def get_laser_points(self, mode: str) -> int:
+        """ Get the laser data points. """
+        return int(self.query(f"{self.laser}:read:points? {mode}"))
     
     def get_laser_state(self) -> bool:
         """ Get the laser output state. """
@@ -190,15 +184,17 @@ class Agilent816xB(BaseInstrument):
     def get_laser_wav_max(self) -> float:
         """ Get the laser's maximum wavelength. """
         return self.query_float(f"{self.laser}:wavelength? MAX")
+
+
     
     ## TRIGGER COMMANDS ###################################
     def set_trig_config(self, config: int):
         """ Set the configuration of trigger. """
         self.write(f"trigger:conf {config}")
 
-    def set_trig_contmode_state(self, state: bool):
+    def set_trig_contmode_state(self, num: int, chan: int, state: bool):
         """ Set the trigger continuous mode state. """
-        self.write(f"initiate{self.sens_num}:channel{self.sens_chan}:continuous {state}")
+        self.write(f"initiate{num}:channel{chan}:continuous {state}")
 
     def set_trig_output(self, mode: str):
         """ Specify when an output trigger is generated. """
@@ -207,6 +203,12 @@ class Agilent816xB(BaseInstrument):
     def get_trig_output(self) -> str:
         """ Specify when an output trigger is generated. """
         return self.query("trigger:output?")
+    
+    def set_trig_responses(self, num: int, chan: int, in_rsp: str, out_rsp: str):
+        """ Set the laser trigger response. """
+        self.write(f"trigger{num}:channel{chan}:input {in_rsp}")
+        self.write(f"trigger{num}:channel{chan}:output {out_rsp}")
+
 
 
     ### SWEEP COMMANDS ####################################
@@ -246,11 +248,23 @@ class Agilent816xB(BaseInstrument):
     def set_sweep_tdwell(self, tdwell: float):
         """ Set the dwelling time for the laser. """
         self.write(f"{self.laser}:dwell {tdwell}s")
+
+    def set_sweep_soft_trig(self):
+        """ Set the soft trigger for the sweep. Doesn't cause a PM to take measurement. """
+        self.write(f"{self.laser}:wavelength:sweep:softtrigger")
     
     def get_sweep_state(self) -> int: # 0 - stop, 1 - start, 2 - pause, 3 - continue
         """ Get the sweep state. """
         return int(self.query(f"{self.laser}:wavelength:sweep:state?"))
+    
+    def get_sweep_flag(self) -> bool:
+        """ Get the sweep flag. """
+        return self.query_bool(f"{self.laser}:wavelength:sweep:flag?")
         
+    def get_sweep_trigno(self) -> int:
+        """ Get the laser trigger number. """
+        return int(self.query(f"{self.laser}:wavelength:sweep:exp?"))
+
 
     # Complicated functions
     def run_sweep_manual(self, power: float=10.0, lambda_start: float=1535.0, lambda_stop: float=1575.0, lambda_step: float=5.0):
@@ -316,21 +330,24 @@ class Agilent816xB(BaseInstrument):
         """
         self.set_unit(source="dBm", sensor="Watt")
 
+        # laser setup
         if power is None:
             self.set_laser_pow(power=power)
         self.set_laser_wav(wavelength=start)
         self.set_laser_state(state=1)
         
-
+        # detector setup
+        self.set_detect_func_mode(mode=("logging", "stop"))
         self.set_detect_wav(wavelength=1550)
         self.set_detect_avgtime(period=1e-04)
-        self.set_detect_calibration_val(value=0)
         self.set_detect_autorange(1)
 
-        self.set_trig_config(config=3)
-        self.set_laser_trig_response(in_rsp="ignored", out_rsp="stfinished")
-        self.set_detect_trig_response(in_rsp="smeasure", out_rsp="disabled")
+        # trigger setup
+        self.set_trig_config(config="loop")
+        self.set_trig_responses(self.src_num, self.src_chan, in_rsp="ignored", out_rsp="stfinished")
+        self.set_trig_responses(self.sens_num, self.sens_chan, in_rsp="smeasure", out_rsp="disabled")
         
+        # sweep setup
         self.set_sweep_mode(mode="continuous")
         self.set_sweep_repeat_mode(mode="oneway")
         self.set_sweep_cycles(cycles=cycles)
@@ -338,25 +355,34 @@ class Agilent816xB(BaseInstrument):
         self.set_sweep_start_stop(start=start, stop=stop)
         self.set_sweep_step(step=step)
         self.set_sweep_speed(speed=speed)
+        self.set_sweep_wav_logging(status=1)
+        trigno = self.get_sweep_trigno()
+
         
-        self.set_detect_func_mode(mode=("logging", "stop"))
-        trigno = self.get_detect_trigno()
         self.set_detect_func_params(mode="logging", params=(trigno, tavg))
         self.set_detect_func_mode(mode=("logging", "start"))
-        
+
         self.set_sweep_state(state="start")
+        
 
         # wait for the sweep to finish
         while self.get_sweep_state():
-            pass
+            continue
+
+        # wait until all points are logged
+        while self.get_laser_points(mode="logging") < trigno:
+            continue
+
+        wavelengths = self.get_laser_data(mode="logging")
 
         # Wait until the detector data acquisition is completed
-        while self.get_detect_func_state().endswith("progress"):
+        while "no" not in self.get_detect_func_state().lower():
             time.sleep(0.1)
 
         powers = self.get_detect_func_result()
-        wavelengths = np.linspace(start, stop, trigno)
         self.set_detect_func_mode(mode=("logging","stop"))
+
+        self.reset()
 
         return wavelengths, powers
 
