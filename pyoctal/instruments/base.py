@@ -1,4 +1,4 @@
-import pyvisa
+from pyvisa import ResourceManager
 from typing import Union
 import textwrap
 import logging
@@ -12,7 +12,7 @@ def list_resources():
     Function that prints and returns a list with all the available resources in the PC. 
     """
     # List of the available resources
-    resources = pyvisa.ResourceManager().list_resources()
+    resources = ResourceManager().list_resources()
     logger.info('Available resources in the PC:')
     logger.info(resources)
     return resources

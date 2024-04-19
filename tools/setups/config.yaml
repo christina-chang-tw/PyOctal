@@ -1,0 +1,24 @@
+# Description: Configuration file for the setups
+
+# setup for 8163/4B lightwave meter
+816xB:
+  class: Agilent8163B
+  addr: GPIB0::25::INSTR
+  wavelength: 1550 # [nm]
+  power: 0 # [dBm]
+  period: 0.2 # [s]
+  reset: False
+  op_operation: False # if true, find operating point
+  op_config:
+    db: -3 # [dB]
+    wavelength: 1550 # [nm]
+    xrange: 0.1 # [nm] the span from the center wavelength
+    step: 0.1 # [pm]
+    speed: 5 # [nm/s]
+
+# setup for power source
+E3640A:
+  class: AgilentE3640A
+  addr: GPIB0::5::INSTR
+  voltage: 0 # [V]
+  current: 0 # [A]

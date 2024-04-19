@@ -2,7 +2,7 @@ import os
 from glob import glob
 import importlib
 import inspect
-import pyvisa
+from pyvisa import ResourceManager
 import yaml
 
 from pyoctal.instruments.base import DeviceID
@@ -22,7 +22,7 @@ class TestClassCalls:
 
         # get parameters straight from the yaml file
         
-        rm = pyvisa.ResourceManager(self.sim_rm)
+        rm = ResourceManager(self.sim_rm)
         addr = rm.list_resources()[0]
         identity = configs["devices"]["device 1"]["dialogues"][0]["r"]
         tested_module = []
@@ -54,7 +54,7 @@ class TestClassCalls:
         """ Test that the instruments all have a class docstring and display it when tested. """
 
         # get the address from opening up another resource manager
-        rm = pyvisa.ResourceManager(self.sim_rm)
+        rm = ResourceManager(self.sim_rm)
         addr = rm.list_resources()[0]
         tested_module = []
 
