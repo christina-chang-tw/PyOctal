@@ -18,15 +18,15 @@ addrs:
 agilent816xB:
   model: "8164" # "8163" or "8164" type
   wavelength: 1550 # [nm]
-  power: 10 # [dBm]
+  power: 13 # [dBm]
   period: 200.0E-03 # [s]
   reset: false
   op: # find operating wavelength configuration
-    db: -3
-    target: 1535 # [nm]
-    xrange: 10 # [nm]
-    step: 5 # [pm]
-    speed: 5 # [nm/s]
+    # db: -3
+    # target: 1535 # [nm]
+    # xrange: 10 # [nm]
+    # step: 5 # [pm]
+    # speed: 5 # [nm/s]
 #####################################################
 
 # high_speed ########################################

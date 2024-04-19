@@ -77,7 +77,6 @@ class Agilent816xB(BaseInstrument):
 
     def set_wavelength(self, wavelength: float):
         """ Set both laser and detector wavelength [nm]. """
-        wavelength = wavelength * 1e-09
         self.set_detect_wav(wavelength)
         self.set_laser_wav(wavelength)
 
@@ -124,7 +123,7 @@ class Agilent816xB(BaseInstrument):
         elif mode == "minmax" or "minm": # params = [mode, data_pts]
             self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
         elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
-            self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s") 
+            self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s")
         else:
             raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
 
@@ -133,25 +132,33 @@ class Agilent816xB(BaseInstrument):
         """ Get the detector power. """
         return self.query_float(f"read{self.sens_num}:channel{self.sens_chan}:power?")
     
-    def get_detect_trigno(self) -> int:
+    def get_trigno(self) -> int:
         """ Get the detector trigger number. """
-        return int(self.query(f"{self.detect}:wavelength:sweep:exp?"))
+        return int(self.query("source:channel:wavelength:sweep:exp?"))
     
     def get_detect_func_state(self) -> str:
         """ Get the detector function state. """
-        rsp = self.query(f"{self.detect}:function:state?").split(",")
-        return rsp[1].lower()
+        rsp = self.query(f"{self.detect}:function:state?")
+        return rsp.lower()
     
     def get_detect_func_result(self) -> list:
         """ Get the detector function result. """
         return self.query_binary_values(f"{self.detect}:function:result?")
+    
+    def get_detect_func_result_block(self, offset: int, dpts: int) -> list:
+        """ Get the detector function result. """
+        return self.query_binary_values(f"{self.detect}:function:result:block? {offset},{dpts}", datatype="d")
 
 
 
     ### LASER COMMANDS ###################################
+    def set_laser_am_state(self, state: bool):
+        """ Set the laser amplitude modulation state. """
+        self.write(f"{self.laser}:am:state {state}")
+
     def set_laser_wav(self, wavelength: float):
         """ Set the laser wavelength [nm]. """
-        self.write(f"{self.laser}:wavelength {wavelength}nm")
+        self.write(f"{self.laser}:wavelength:fixed {wavelength}nm")
     
     def set_laser_state(self, state: bool):
         """ Set the laser output state. """
@@ -167,7 +174,7 @@ class Agilent816xB(BaseInstrument):
 
     def get_laser_data(self, mode: str) -> list:
         """ Get the laser data. """
-        return self.query_binary_values(f"{self.laser}:read:data? {mode}")
+        return self.query_binary_values(f"{self.laser}:read:data? {mode}", datatype="d")
     
     def get_laser_points(self, mode: str) -> int:
         """ Get the laser data points. """
@@ -186,6 +193,8 @@ class Agilent816xB(BaseInstrument):
         return self.query_float(f"{self.laser}:wavelength? MAX")
 
 
+    
+    
     
     ## TRIGGER COMMANDS ###################################
     def set_trig_config(self, config: int):
@@ -302,7 +311,7 @@ class Agilent816xB(BaseInstrument):
             return wavelengths, powers
         
 
-    def run_laser_sweep_auto(self, power: float=None, start: float=1535.0, stop: float=1575.0, step: float=5.0, cycles: int=1, tavg: float=100E-06, speed: float=5) -> np.array:
+    def run_laser_sweep_auto(self, power: float=None, start: float=1535.0, stop: float=1575.0, step: float=5.0, cycles: int=1, tavg: float=0, speed: float=5) -> np.array:
         """ 
         Use internal sweep module to sweep through wavelengths. 
         
@@ -335,6 +344,7 @@ class Agilent816xB(BaseInstrument):
             self.set_laser_pow(power=power)
         self.set_laser_wav(wavelength=start)
         self.set_laser_state(state=1)
+        self.set_laser_am_state(0)
         
         # detector setup
         self.set_detect_func_mode(mode=("logging", "stop"))
@@ -351,7 +361,7 @@ class Agilent816xB(BaseInstrument):
         self.set_sweep_mode(mode="continuous")
         self.set_sweep_repeat_mode(mode="oneway")
         self.set_sweep_cycles(cycles=cycles)
-        self.set_sweep_tdwell(tdwell=0)
+        self.set_sweep_tdwell(tdwell=1e-04)
         self.set_sweep_start_stop(start=start, stop=stop)
         self.set_sweep_step(step=step)
         self.set_sweep_speed(speed=speed)
@@ -369,14 +379,16 @@ class Agilent816xB(BaseInstrument):
         while self.get_sweep_state():
             continue
 
+
         # wait until all points are logged
-        while self.get_laser_points(mode="logging") < trigno:
+        while self.get_laser_points(mode="llogging") < trigno:
             continue
 
-        wavelengths = self.get_laser_data(mode="logging")
+        wavelengths = self.get_laser_data(mode="llogging")
+
 
         # Wait until the detector data acquisition is completed
-        while "no" not in self.get_detect_func_state().lower():
+        while self.get_detect_func_state().lower().endswith("progress"):
             time.sleep(0.1)
 
         powers = self.get_detect_func_result()
@@ -420,15 +432,16 @@ class Agilent816xB(BaseInstrument):
         float
             The wavelength that corresponds to the target value
         """
-        import matplotlib.pyplot as plt
-
-        wavelengths, powers = self.run_laser_sweep_auto(start=target-xrange/2, stop=target+xrange/2, 
-                                                        step=step, speed=speed)
+        wavelengths, powers = self.run_laser_sweep_auto(
+            start=target-xrange/2, stop=target+xrange/2, step=step, speed=speed)
+        
 
         # convert to dB so resonances function will work
         powers = 10*np.log10(powers)
 
         peak_idxs = resonances(data=powers, cutoff=cutoff, distance=distance)
+
+        import matplotlib.pyplot as plt
 
         plt.plot(wavelengths, powers)
         plt.show()

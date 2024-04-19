@@ -158,9 +158,9 @@ class BaseInstrument:
         """ Convert the value return from a query to float. """
         return float(self._instr.query(cmd).rstrip())
     
-    def query_binary_values(self, cmd) -> list:
+    def query_binary_values(self, cmd, *args, **kwargs) -> list:
         """ Convert the value return from a query to binary values. """
-        return self._instr.query_binary_values(cmd, is_big_endian=False)
+        return self._instr.query_binary_values(cmd, is_big_endian=False, *args, **kwargs)
     
     def get_idn(self) -> DeviceID:
         """ Get the identity string and parsed by DeviceID class. """

@@ -112,9 +112,11 @@ def setup(instr, configs):
             cls = Agilent8164B
         mm = cls(addr=addrs.Agilent816xB_Addr, rm=rm)
 
-        if instr_configs.op is not None and instr_configs.op.keys() is not None:
+        if instr_configs.get("op") and instr_configs.op.keys() is not None:
             PrintInfo.agilent816xB_op_print(instr_configs.op)
-            mm.find_op_wavelength(**instr_configs.op)
+            wavelength = mm.find_op_wavelength(**instr_configs.op)
+            mm.setup(reset=instr_configs.reset, wavelength=wavelength, power=instr_configs.power, period=instr_configs.period)
+
         else:
             PrintInfo.agilent816xB_print(instr_configs)
             mm.setup(reset=instr_configs.reset, wavelength=instr_configs.wavelength, power=instr_configs.power, period=instr_configs.period)

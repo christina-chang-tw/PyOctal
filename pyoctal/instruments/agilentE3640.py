@@ -33,7 +33,7 @@ class AgilentE3640A(BaseInstrument):
 
     def set_params(self, volt: float, curr: float):
         """ Set the laser voltage [V] and current [A]. """
-        self.write(f"apply {volt}, {curr}")
+        self.write(f"apply {volt} , {curr}")
 
     def get_output_state(self) -> bool:
         """ Get the laser output state. """

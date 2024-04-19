@@ -2,8 +2,8 @@
 
 --- # document start
 ### General variables for testing #################
-folder: "./xxx" # provide either relative or absolute path
-fname: "xxx"  # filename       e.g. a.csv
+folder: "" # provide either relative or absolute path
+fname: "output"  # filename       e.g. a.csv
 func: "run_curr"
 
 addrs:
