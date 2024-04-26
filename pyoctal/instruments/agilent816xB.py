@@ -63,6 +63,7 @@ class Agilent816xB(BaseInstrument):
         """ Make waveguide alignment easier for users """
         if reset:
             self.reset()
+            
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(power)

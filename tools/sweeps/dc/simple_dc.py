@@ -11,6 +11,7 @@ python -m tools.sweeps.dc.simple_dc
 import time
 from os.path import dirname
 from os import makedirs
+import numpy as np
 
 from tqdm import tqdm
 import pandas as pd
@@ -28,39 +29,56 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
 
     currents = []
     opowers = []
+    voltages = np.arange(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])
+    tol = 0.0008
 
     mm.setup(reset=0, wavelength=mm_config["wavelength"], power=mm_config["power"], period=mm_config["period"])
+    
+    # check if the limits are set correctly
+    if pm.get_params()[0] < pm_config["stop"]:
+        pm.set_params(pm_config["stop"], 0.1)
 
-    for volt in tqdm(range(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])):
+    # turn on the power meter if it is not already on
+    if not pm.get_output_state():
+        pm.set_output_state(1)
 
+    for volt in tqdm(voltages, desc="DC Sweep"):
+
+        prev = pm.get_curr()
         pm.set_volt(volt)
-        time.sleep(0.1)
-        currents.append(pm.get_curr()) # get the current value
+        
+        # make sure that the voltage source is stable
+        while abs(pm.get_curr()-prev) > tol:
+            prev = pm.get_curr()
+            time.sleep(0.2)
+            continue
 
+        currents.append(pm.get_curr()) # get the current value
         opowers.append(mm.get_detect_pow())
         
-    export_to_csv(data=pd.DataFrame({"Voltage [V]": volt, "Current [A]": currents, "Optical power [W]": opowers}), filename=filename)
+    export_to_csv(data=pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents, "Optical power [W]": opowers}), filename=filename)
     
     pm.set_volt(0)
-    pm.set_output_state(0)
 
 
 def main():
+    # power meter
     pm_config = {
-        "addr": "GPIB0::5::INSTR",
+        "addr": "GPIB0::4::INSTR",
         "start": 0, # [V]
         "stop": 5, # [V]
         "step": 1, # [V]
     }
 
+    # laser/detector source
     mm_config = {
-        "addr": "GPIB0::6::INSTR",
+        "addr": "GPIB0::20::INSTR",
         "wavelength": 1550, # [nm]
         "power": 10, # [dBm]
         "period": 0.1, # [s]
     }
 
-    filename = "data.csv"
+    filename = "./data.csv"
 
     # check that the directory exists first, else create it.
     makedirs(dirname(filename), exist_ok=True)

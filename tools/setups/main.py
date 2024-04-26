@@ -26,7 +26,7 @@ def main():
 
     # Read the setup file
     with open(args.file, "r", encoding="utf-8") as file:
-        setups = yaml.load(file)
+        setups = yaml.load(file, Loader=yaml.FullLoader)
 
     # Check if the setup exists
     if args.name not in setups.keys():
