@@ -1,3 +1,14 @@
+"""
+main.py
+=======
+This script is used to setup the instruments based on the configuration file.
+The configuration file is a YAML file that contains the setup for the instruments default to tools/setups/config.yaml.
+
+To run this script:
+python -m tools.setups.main <name> [--file <path_to_file>]
+"""
+
+
 from argparse import ArgumentParser
 import yaml
 from pyvisa import ResourceManager
@@ -19,7 +30,7 @@ def main():
 
     # Check if the setup exists
     if args.name not in setups.keys():
-        raise ValueError(f"Setup {args.name} not found in {args.file}")
+        raise ValueError(f"Setup {args.name} not found in {args.file}. Make sure that the name matches!")
     
     setup = setups[args.name]
 
