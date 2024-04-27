@@ -1,5 +1,6 @@
 from pyoctal.instruments.base import BaseInstrument
 import sys
+from time import time
 
 class AgilentE3640A(BaseInstrument):
     """
@@ -54,11 +55,23 @@ class AgilentE3640A(BaseInstrument):
         """ Get the laser voltage [V]. """
         return self.query_float("measure:voltage?")
     
-    def wait_until_stable(self, tol: float=0.0008) -> None:
-        """ Wait until the current is stable. """
-        prev_curr = sys.maxsize
+    def wait_until_stable(self, tol: float=0.0008, max_time: float=20) -> None:
+        """ 
+        Wait until the current is stable. 
+        
+        Parameters
+        ----------
+        tol: float
+            The tolerance for the current to be stable.
+        max_time: float
+            The maximum time to wait for the current to be stable.
+        """
+        start_time = time()
+        prev_curr = self.get_curr()
         while True:
             curr = self.get_curr()
             if abs(curr - prev_curr) <= tol:
                 break
+            elif time() - start_time > max_time:
+                sys.exit("Timeout: Current did not stabilize.")
             prev_curr = curr
