@@ -1,3 +1,6 @@
+"""
+This script is used to sweep the voltage of a single source and measure the power of the output of a MZI.
+"""
 from os.path import join
 from os import makedirs
 
@@ -15,7 +18,6 @@ def run_one_source_mzi(rm: ResourceManager, pm_config: dict, mm_config: dict):
     pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
     mm = Agilent8164B(addr=mm_config["addr"], rm=rm)
     avg = 3
-    tol = 0.00005
 
     powers = []
     currents = []
@@ -26,19 +28,16 @@ def run_one_source_mzi(rm: ResourceManager, pm_config: dict, mm_config: dict):
 
     for volt in tqdm(voltages):
 
-        prev_curr = sys.maxsize
         pm.set_volt(volt)
         power = 0
         
         # wait until the current is stable
-        while np.abs(pm.get_curr() - prev_curr) > tol:
-            prev_curr = pm.get_curr()
-            continue
+        pm.wait_until_stable()
 
         for _ in range(avg):
             power += mm.get_detect_pow()
         powers.append(power/avg)
-        currents.append(prev_curr)
+        currents.append(pm.get_curr())
 
     pm.set_volt(0)
     pm.set_output_state(0)

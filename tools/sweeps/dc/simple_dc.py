@@ -30,7 +30,6 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
     currents = []
     opowers = []
     voltages = np.arange(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])
-    tol = 0.0008
 
     mm.setup(reset=0, wavelength=mm_config["wavelength"], power=mm_config["power"], period=mm_config["period"])
     
@@ -44,14 +43,9 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
 
     for volt in tqdm(voltages, desc="DC Sweep"):
 
-        prev = pm.get_curr()
         pm.set_volt(volt)
         
-        # make sure that the voltage source is stable
-        while abs(pm.get_curr()-prev) > tol:
-            prev = pm.get_curr()
-            time.sleep(0.2)
-            continue
+        pm.wait_until_stable()
 
         currents.append(pm.get_curr()) # get the current value
         opowers.append(mm.get_detect_pow())

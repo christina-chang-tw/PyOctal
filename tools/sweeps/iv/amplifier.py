@@ -29,8 +29,7 @@ def run_DSP7265_one(rm: ResourceManager, amp_config: dict, pm_config: dict):
     for volt in tqdm(voltages):
         pm.set_volt(volt)
         
-        while abs(pm.get_volt() - volt) > 0.001:
-            time.sleep(0.1)
+        pm.wait_until_stable()
 
         currents.append(pm.get_curr())
         opowers.append(amp.get_mag())
@@ -66,8 +65,7 @@ def run_DSP7265_dual(rm: ResourceManager, amp_config: dict, pm1_config: dict, pm
         for volt2 in pm2_voltages:
             pm2.set_volt(volt2)
 
-            while abs(pm2.get_volt() - volt2) > 0.001:
-                time.sleep(0.1)
+            pm2.wait_until_stable()
 
             curr2 = pm2.get_curr()
             opower = amp.get_mag()

@@ -1,4 +1,5 @@
 from pyoctal.instruments.base import BaseInstrument
+import sys
 
 class AgilentE3640A(BaseInstrument):
     """
@@ -52,3 +53,12 @@ class AgilentE3640A(BaseInstrument):
     def get_volt(self) -> float:
         """ Get the laser voltage [V]. """
         return self.query_float("measure:voltage?")
+    
+    def wait_until_stable(self, tol: float=0.0008) -> None:
+        """ Wait until the current is stable. """
+        prev_curr = sys.maxsize
+        while True:
+            curr = self.get_curr()
+            if abs(curr - prev_curr) <= tol:
+                break
+            prev_curr = curr

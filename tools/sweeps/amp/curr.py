@@ -1,3 +1,15 @@
+"""
+curr.py
+=======
+This script is used to sweep the current of an amplifier 
+and measure the wavelength v.s. loss at different current levels.
+The data will be saved in the specified folder alongisde the OMR files.
+If prediction is specified, the script will also train a linear regression model.
+
+To run this script:
+    python -m tools.sweeps.amp.curr
+"""
+
 from os.path import join
 
 from tqdm import tqdm
@@ -8,7 +20,7 @@ from pyvisa import ResourceManager
 
 from sklearn.linear_model import LinearRegression
 
-from pyoctal.utils.file_operations import export_to_excel, export_to_csv
+from pyoctal.utils.file_operations import export_to_csv
 from pyoctal.instruments import FiberlabsAMP, KeysightILME
 from pyoctal.instruments.keysightPAS import export_to_omr
 
@@ -58,7 +70,7 @@ def predict(model, fpath: str, wavelength: float, loss: float):
     return predicted
 
 
-def run_curr(rm: ResourceManager, amp_config: dict, folder: str, prediction: bool=False): 
+def run_curr(rm: ResourceManager, amp_config: dict, folder: str, prediction: bool=False):
     """
     Obtain wavelength v.s. loss at different current levels.
 

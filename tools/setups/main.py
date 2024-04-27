@@ -2,10 +2,11 @@
 main.py
 =======
 This script is used to setup the instruments based on the configuration file.
-The configuration file is a YAML file that contains the setup for the instruments default to tools/setups/config.yaml.
+The configuration file is a YAML file that contains the setup for the instruments 
+default to tools/setups/config.yaml.
 
 To run this script:
-python -m tools.setups.main <name> [--file <path_to_file>]
+    python -m tools.setups.main <name> [--file <path_to_file>]
 """
 
 

@@ -53,12 +53,11 @@ def run_E3640A(rm: ResourceManager, pm_config: dict):
     for volt in tqdm(voltages):
         pm.set_volt(volt)
         
-        while abs(pm.get_volt() - volt) > 0.001:
-            time.sleep(0.1)
+        pm.wait_until_stable()
 
         currents.append(pm.get_curr())
     
-    pm.set_volt(0) 
+    pm.set_volt(0)
     pm.set_output_state(0) # turn laser off
     return pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents})
 

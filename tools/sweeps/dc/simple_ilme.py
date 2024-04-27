@@ -4,7 +4,6 @@ ILME to obtain the spectrums at different DC bias voltages.
 """
 from os import makedirs
 from os.path import join
-import time
 
 import numpy as np
 from pyvisa import ResourceManager
@@ -21,13 +20,12 @@ def run_ilme(rm: ResourceManager, pm_config: dict, folder: str):
     pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
     ilme = KeysightILME()
     ilme.activate()
-    currents = []
     df = pd.DataFrame()
 
     for volt in tqdm(np.arange(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])):
         pm.set_volt(volt)
-        time.sleep(0.1)
-        currents.append(pm.get_curr()) # get the current value
+
+        pm.wait_until_stable()
 
         ilme.start_meas()
         wavelength, loss, omr_data = ilme.get_result()

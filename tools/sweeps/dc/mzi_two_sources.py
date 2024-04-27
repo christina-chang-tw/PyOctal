@@ -1,7 +1,6 @@
 from os import makedirs
 from os.path import join
 from sys import maxsize
-import time
 
 import numpy as np
 from pyvisa import ResourceManager
@@ -18,7 +17,6 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
     changes with the voltage of the MZI and the ring.
     """
     avg = 3
-    tol = 5e-05
 
     heater_pm = AgilentE3640A(addr=hpm_config["addr"], rm=rm)
     ring_pm = AgilentE3640A(addr=rpm_config["addr"], rm=rm)
@@ -42,19 +40,17 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
         mm.setup(0, 1550, 10, 0.2)
 
         for volt in heater_voltages:
-            prev_curr = maxsize
+
             heater_pm.set_volt(volt)
             
             # wait until the current is stable
-            while np.abs(heater_pm.get_curr() - prev_curr) > tol:
-                prev_curr = heater_pm.get_curr()
-                continue
+            heater_pm.wait_until_stable()
 
             power = 0
             for _ in range(avg):
                 power += mm.get_detect_pow()
             powers.append(power/avg)
-            currents.append(prev_curr)
+            currents.append(heater_pm.get_curr())
 
         export_to_csv(data=pd.DataFrame({"Voltage [V]": heater_voltages, "Power [W]": powers, "Current [A]": currents}), filename=join(folder, f"ring{ring_v}.csv"))
         

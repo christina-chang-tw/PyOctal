@@ -14,15 +14,11 @@ def run_one_source(rm: ResourceManager, pm_config: dict, mm_config: dict, folder
     pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
     mm = Agilent8163B(addr=mm_config["addr"], rm=rm)
 
-    currents = []
-
     for volt in tqdm(range(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])):
 
         pm.set_volt(volt)
-        time.sleep(0.1)
-        currents.append(pm.get_curr()) # get the current value
 
-        pm.set_volt(0)
+        pm.wait_until_stable()
 
         # get the loss v.s. wavelength
         wavelengths, powers = mm.run_laser_sweep_auto(
