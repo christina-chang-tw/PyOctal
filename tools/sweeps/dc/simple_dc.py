@@ -8,8 +8,7 @@ To run this script:
 python -m tools.sweeps.dc.simple_dc
 """
 
-import time
-from os.path import dirname
+from os.path import join
 from os import makedirs
 import numpy as np
 
@@ -18,7 +17,7 @@ import pandas as pd
 from pyvisa import ResourceManager
 
 from pyoctal.instruments import AgilentE3640A, Agilent8163B
-from pyoctal.utils.file_operations import export_to_csv
+from pyoctal.utils.file_operations import export_to_excel
 
 
 def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
@@ -28,7 +27,9 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
 
 
     currents = []
+    powers = []
     opowers = []
+    detected_voltages = []
     voltages = np.arange(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])
 
     mm.setup(reset=0, wavelength=mm_config["wavelength"], power=mm_config["power"], period=mm_config["period"])
@@ -45,13 +46,19 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
 
         pm.set_volt(volt)
         
-        pm.wait_until_stable()
+        # make sure that the voltage source is stable
+        while abs(pm.get_curr()-prev) > tol:
+            prev = pm.get_curr()
+            continue
 
-        currents.append(pm.get_curr()) # get the current value
+        volt = pm.get_volt()
+        curr = pm.get_curr()
+        detected_voltages.append(volt)
+        currents.append(curr) # get the current value
+        powers.append(volt*curr)
         opowers.append(mm.get_detect_pow())
         
-    export_to_csv(data=pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents, "Optical power [W]": opowers}), filename=filename)
-    
+    export_to_excel(data=pd.DataFrame({"Voltage [V]": voltages, "Detected Voltage [V]": detected_voltages, "Current [A]": currents, "Power [W]": powers, "Optical power [W]": opowers}), filename=filename, sheet_names=["data"])
     pm.set_volt(0)
 
 
@@ -60,8 +67,8 @@ def main():
     pm_config = {
         "addr": "GPIB0::5::INSTR",
         "start": 0, # [V]
-        "stop": 5, # [V]
-        "step": 1, # [V]
+        "stop": 8, # [V]
+        "step": 0.025, # [V]
     }
 
     # laser/detector source
@@ -71,14 +78,17 @@ def main():
         "power": 10, # [dBm]
         "period": 0.1, # [s]
     }
+    filename = "file1"
 
-    filename = "./data.csv"
 
+
+
+    folder = "Z:\Dave T\pointcloud_mmi"
     # check that the directory exists first, else create it.
-    makedirs(dirname(filename), exist_ok=True)
+    makedirs(folder, exist_ok=True)
     rm = ResourceManager()
 
-    run(rm, pm_config, mm_config, filename)
+    run(rm, pm_config, mm_config, join(folder, f"{filename}.xlsx"))
 
 if __name__ == "__main__":
     main()
