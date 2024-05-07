@@ -59,7 +59,7 @@ class Agilent816xB(BaseInstrument):
         self.laser = f"source{self.src_num}:channel{self.src_chan}"
         self.detect = f"sense{self.sens_num}:channel{self.sens_chan}"
 
-    def setup(self, reset: bool, wavelength: float=1550, power: float=10, period: float=200e-03):
+    def setup(self, reset: bool, wavelength: float=1550, power: float=10, period: float=200e-03, *_, **__):
         """ Make waveguide alignment easier for users """
         if reset:
             self.reset()
@@ -68,13 +68,14 @@ class Agilent816xB(BaseInstrument):
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(power)
         self.set_detect_avgtime(period=period) # avgtime = 200ms
-        self.set_unit(source="dBm", sensor="Watt")
+        self.set_unit(source="dBm", sensor="Watt")   
         if not self.get_laser_state():
+            self.unlock("1234")
             self.set_laser_state(1)
 
     def unlock(self, code: str):
         """ Unlock the instrument with a code. """
-        self.write(f"lock {0},{code}") # code = 1234
+        self.write(f"lock 0,{code}") # code = 1234
 
     def set_wavelength(self, wavelength: float):
         """ Set both laser and detector wavelength [nm]. """
@@ -159,7 +160,7 @@ class Agilent816xB(BaseInstrument):
 
     def set_laser_wav(self, wavelength: float):
         """ Set the laser wavelength [nm]. """
-        self.write(f"{self.laser}:wavelength:fixed {wavelength}nm")
+        self.write(f"{self.laser}:wavelength:fixed {wavelength} nm")
     
     def set_laser_state(self, state: bool):
         """ Set the laser output state. """
@@ -514,11 +515,11 @@ class Agilent8164B(Agilent816xB):
     """
     def __init__(self, addr: str, rm, src_num: int=0, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr, 
-            rm=rm, 
-            src_num=src_num, 
-            src_chan=src_chan, 
-            sens_num=sens_num, 
-            sens_chan=sens_chan
+            addr=addr,
+            rm=rm,
+            src_num=src_num,
+            src_chan=src_chan,
+            sens_num=sens_num,
+            sens_chan=sens_chan,
         )
     

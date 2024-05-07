@@ -13,13 +13,14 @@ To run this script:
 from argparse import ArgumentParser
 import yaml
 from pyvisa import ResourceManager
+from typing import Union
 
 from pyoctal.instruments import Agilent8163B, AgilentE3640A, Agilent8164B
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("name", help="Name of the setup")
-    parser.add_argument("--file", help="Path to the setup file", default="tools/setups/config.yaml")
+    parser.add_argument("--file", help="Path to the setup file", default="tools/setups/config.yaml", required=False)
     
     args = parser.parse_args()
 
@@ -37,18 +38,17 @@ def main():
 
     # Import the setup class
     rm = ResourceManager()
-    cls = globals()[setup["class"]]
-    cls = cls(addr=setup["addr"], rm=rm)
+    cls = globals()[setup.pop("class")]
+    cls = cls(addr=setup.pop("addr"), rm=rm)
 
     # Setup the instrument
-    print("Setting up the instrument.")
-    if setup["class"] in (Agilent8163B, Agilent8164B):
+    if isinstance(cls, Union[Agilent8163B, Agilent8164B]):
         if setup["op_operation"]:
             wavelength = cls.find_op_wavelength(**setup["op_config"])
             setup["wavelength"] = wavelength
         cls.setup(**setup)
 
-    elif setup["class"] == AgilentE3640A:
+    elif isinstance(cls, AgilentE3640A):
         cls.setup(**setup)
     print("Setup complete.")
 

@@ -1,15 +1,14 @@
 from os import makedirs
 from os.path import join
-from sys import maxsize
+import time
 
 import numpy as np
 from pyvisa import ResourceManager
 from tqdm import tqdm
 import pandas as pd
 
-from pyoctal.instruments import AgilentE3640A, KeysightILME, Agilent8164B
+from pyoctal.instruments import AgilentE3640A, Agilent8164B
 from pyoctal.utils.file_operations import export_to_csv
-from pyoctal.instruments.keysightPAS import export_to_omr
 
 def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dict, mm_config: dict, folder: str):
     """ 
@@ -18,12 +17,14 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
     """
     avg = 3
 
-    heater_pm = AgilentE3640A(addr=hpm_config["addr"], rm=rm)
-    ring_pm = AgilentE3640A(addr=rpm_config["addr"], rm=rm)
-    mm = Agilent8164B(addr=mm_config["addr"], rm=rm)
+    heater_pm = AgilentE3640A(addr=hpm_config.pop["addr"], rm=rm)
+    ring_pm = AgilentE3640A(addr=rpm_config.pop["addr"], rm=rm)
+    mm = Agilent8164B(addr=mm_config.pop["addr"], rm=rm)
+    mm.setup(**mm_config)
 
     heater_voltages = np.arange(hpm_config["start"], hpm_config["stop"] + hpm_config["step"], hpm_config["step"])
     ring_voltages = np.arange(rpm_config["start"], rpm_config["stop"] + rpm_config["step"], rpm_config["step"])
+
 
     heater_pm.set_output_state(1)
     heater_pm.set_params(hpm_config["stop"], 0.5)
@@ -37,8 +38,6 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
         
         ring_pm.set_volt(ring_v)
 
-        mm.setup(0, 1550, 10, 0.2)
-
         for volt in heater_voltages:
 
             heater_pm.set_volt(volt)
@@ -46,20 +45,20 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
             # wait until the current is stable
             heater_pm.wait_until_stable()
 
+            time.sleep(0.2)
             power = 0
             for _ in range(avg):
                 power += mm.get_detect_pow()
             powers.append(power/avg)
             currents.append(heater_pm.get_curr())
 
-        export_to_csv(data=pd.DataFrame({"Voltage [V]": heater_voltages, "Power [W]": powers, "Current [A]": currents}), filename=join(folder, f"ring{ring_v}.csv"))
+        export_to_csv(data=pd.DataFrame({"Voltage [V]": heater_voltages, "Current [A]": currents, "Electrical Power [W]": heater_voltages*currents,"Power [W]": powers}), filename=join(folder, f"ring{ring_v}.csv"))
         
         
         max_v = heater_voltages[np.argmax(powers)]
         min_v = heater_voltages[np.argmin(powers)]
         max_min_voltages[i] = [ring_v, max_v, min_v]
-    
-    np.savetxt(join(folder, f"max_min_voltages.csv"), max_min_voltages, delimiter=",")
+
     heater_pm.set_volt(0)
     heater_pm.set_output_state(0)
     ring_pm.set_volt(0)
@@ -68,27 +67,32 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
 
 def main():
     rm = ResourceManager()
-    folder = "data"
+    folder = r"C:\Users\Lab2052\Desktop\Users\Christina\2024-5-06\s4_2_ramzi_ring_g200\min"
 
     rpm_config = {
         "addr": "GPIB0::5::INSTR",
         "start": 0, # [V]
-        "stop": 2, # [V]
-        "step": 0.01, # [V]
+        "stop": 3, # [V]
+        "step": 0.5, # [V]
     }
     hpm_config = {
         "addr": "GPIB0::6::INSTR",
         "start": 0, # [V]
-        "stop": 3, # [V]
-        "step": 0.5, # [V]
+        "stop": 2.2, # [V]
+        "step": 0.02, # [V]
     }
     mm_config = {
         "addr": "GPIB0::20::INSTR",
+        "wavelength": 1551.85 # [nm]
     }
 
     makedirs(folder, exist_ok=True)
 
-    run_ring_assisted_mzi(rm, rpm_config, hpm_config, mm_config, folder)
+    wavelengths = [1548.6, 1551.793]
+
+    for wavelength in wavelengths:
+        mm_config["wavelength"] = wavelength
+        run_ring_assisted_mzi(rm, rpm_config=rpm_config, hpm_config=hpm_config, mm_config=mm_config, folder=join(folder, str(wavelength)))
 
 if __name__ == "__main__":
     main()

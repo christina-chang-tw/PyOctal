@@ -58,7 +58,7 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
 def main():
     # power meter
     pm_config = {
-        "addr": "GPIB0::4::INSTR",
+        "addr": "GPIB0::5::INSTR",
         "start": 0, # [V]
         "stop": 5, # [V]
         "step": 1, # [V]

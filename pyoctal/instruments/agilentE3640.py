@@ -17,9 +17,10 @@ class AgilentE3640A(BaseInstrument):
     def __init__(self, addr: str, rm):
         super().__init__(rsc_addr=addr, rm=rm)
 
-    def setup(self):
+    def setup(self, voltage: float, current: float):
         self.reset()
         self.set_output_state(state=1)
+        self.set_params(voltage, current)
 
     def set_output_state(self, state: bool):
         """ Set the laser output state. """
