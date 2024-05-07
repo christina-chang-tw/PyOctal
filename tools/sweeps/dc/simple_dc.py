@@ -46,10 +46,7 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
 
         pm.set_volt(volt)
         
-        # make sure that the voltage source is stable
-        while abs(pm.get_curr()-prev) > tol:
-            prev = pm.get_curr()
-            continue
+        pm.wait_until_stable()
 
         volt = pm.get_volt()
         curr = pm.get_curr()
@@ -58,7 +55,7 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
         powers.append(volt*curr)
         opowers.append(mm.get_detect_pow())
         
-    export_to_excel(data=pd.DataFrame({"Voltage [V]": voltages, "Detected Voltage [V]": detected_voltages, "Current [A]": currents, "Power [W]": powers, "Optical power [W]": opowers}), filename=filename, sheet_names=["data"])
+    export_to_excel(data=pd.DataFrame({"Voltage [V]": voltages, "Detected Voltage [V]": detected_voltages, "Current [A]": currents, "Electrical Power [W]": powers, "Optical power [W]": opowers}), filename=filename, sheet_names=["data"])
     pm.set_volt(0)
 
 
@@ -79,8 +76,6 @@ def main():
         "period": 0.1, # [s]
     }
     filename = "file1"
-
-
 
 
     folder = "Z:\Dave T\pointcloud_mmi"
