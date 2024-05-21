@@ -58,7 +58,6 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: str):
     export_to_excel(data=pd.DataFrame({"Voltage [V]": voltages, "Detected Voltage [V]": detected_voltages, "Current [A]": currents, "Electrical Power [W]": powers, "Optical power [W]": opowers}), filename=filename, sheet_names=["data"])
     pm.set_volt(0)
 
-
 def main():
     # power meter
     pm_config = {

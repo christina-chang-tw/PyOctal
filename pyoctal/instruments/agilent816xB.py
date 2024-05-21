@@ -196,6 +196,10 @@ class Agilent816xB(BaseInstrument):
     def get_laser_wav_max(self) -> float:
         """ Get the laser's maximum wavelength. """
         return self.query_float(f"{self.laser}:wavelength? MAX")
+    
+    def get_laser_wav(self) -> float:
+        """ Get the laser wavelength. """
+        return self.query_float(f"{self.laser}:wavelength?")
 
 
     
@@ -278,6 +282,25 @@ class Agilent816xB(BaseInstrument):
     def get_sweep_trigno(self) -> int:
         """ Get the laser trigger number. """
         return int(self.query(f"{self.laser}:wavelength:sweep:exp?"))
+    
+    def find_resonance(self, srange: float=1e-09) -> float:
+        """ Find the resonance wavelength based on the current wavelength. """
+        curr_wav = self.get_laser_wav()
+
+        # quick search for the resonance by finding the minimum
+        # power value within the range of the current wavelength
+        powers = []
+        search_wavelengths = np.linspace(curr_wav-srange/2, curr_wav+srange/2, num=10)
+        for wavelength in search_wavelengths:
+            self.set_wavelength(wavelength)
+            powers.append(self.get_detect_pow())
+        arg = np.argmin(powers)
+
+        if arg == 0 or arg == len(powers)-1:
+            print("Warning: Resonance not found. Please adjust the search range.")
+
+        return search_wavelengths[arg]        
+
 
 
     # Complicated functions
@@ -445,11 +468,6 @@ class Agilent816xB(BaseInstrument):
         powers = 10*np.log10(powers)
 
         peak_idxs = resonances(data=powers, cutoff=cutoff, distance=distance)
-
-        import matplotlib.pyplot as plt
-
-        plt.plot(wavelengths, powers)
-        plt.show()
 
         if len(peak_idxs) == 0:
             raise ValueError("No resonances found. Please adjust the parameters.")
