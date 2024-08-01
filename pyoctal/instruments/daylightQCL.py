@@ -1,4 +1,4 @@
-from collections import namedTuple
+from collections import namedtuple
 
 from pyvisa import ResourceManager
 
@@ -16,7 +16,7 @@ class DaylightQCL(BaseInstrument):
         Pyvisa resource manager
     """
 
-    _rcontrol = namedTuple("rcontrol", ["wn", "curr", "freq", "pw", "mode"])
+    _rcontrol = namedtuple("rcontrol", ["wn", "curr", "freq", "pw", "mode"])
 
     def __init__(self, addr: str, rm: ResourceManager):
         super().__init__(rsc_addr=addr, rm=rm)
