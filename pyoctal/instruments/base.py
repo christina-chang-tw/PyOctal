@@ -109,11 +109,11 @@ class BaseInstrument:
 
             # make sure that we know the device type
             if instr_type not in known_type:
-                raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}:
+                raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: \
                                 {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
             self._identity = self.get_idn()
         else:
-            raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}:
+            raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: \
                             {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
 
 

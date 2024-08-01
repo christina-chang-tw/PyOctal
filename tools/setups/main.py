@@ -33,7 +33,7 @@ def main():
 
     # Check if the setup exists
     if args.name not in setups.keys():
-        raise ValueError(f"Setup {args.name} not found in {args.file}.
+        raise ValueError(f"Setup {args.name} not found in {args.file}. \
                          Make sure that the name matches!")
 
     setup = setups[args.name]
