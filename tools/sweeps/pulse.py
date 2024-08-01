@@ -4,9 +4,9 @@ Pulse Sweeps
 This sweeps through the voltage range and obtains the information
 about the insertion loss against wavelength .
 """
+import math
 
 import numpy as np
-import math
 import pandas as pd
 from pyvisa import ResourceManager
 
@@ -19,6 +19,9 @@ def phase_calculation(
     prev_phase: float,
     prev_phase_change: float
     ):
+    """
+    Calculate the phase and phase change.
+    """
     data = power/transmission - 1
     data = 1 if data > 1 else -1 if data < -1 else data
     phase = math.acos(data)
@@ -28,15 +31,17 @@ def phase_calculation(
     return phase, phase_change, phase_change_avg
 
 def step_amount_calculation(phase_change_avg: float):
+    """
+    Adjust the step amount depending on the average phase change.
+    """
     # Change step_V depending on average phase change
     if phase_change_avg <= 0.005:
         return 0.025
-    elif 0.005 < phase_change_avg <=0.01:
+    if 0.005 < phase_change_avg <=0.01:
         return 0.005
-    elif 0.01 < phase_change_avg < 0.03:
+    if 0.01 < phase_change_avg < 0.03:
         return 0.0025
-    else:
-        return 0.001
+    return 0.001
 
 def get_pulse_response_sw(rm: ResourceManager, mm_config: dict, pm_config: dict):
     """ Get pulse response at a single wavelength. """
@@ -45,7 +50,7 @@ def get_pulse_response_sw(rm: ResourceManager, mm_config: dict, pm_config: dict)
 
     mm.set_detect_autorange(auto=True)
     mm.set_wavelength(mm_config["wavelength"])
-            
+
     volt_curr_data = []
     powers = []
     phases = []
@@ -66,7 +71,9 @@ def get_pulse_response_sw(rm: ResourceManager, mm_config: dict, pm_config: dict)
             powers.append(powers)
 
 
-            phase, phase_change, phase_change_avg = phase_calculation(current_power, pm_config["avg_transmission_at_quad"], last_phase, last_phase_change)
+            phase, phase_change, phase_change_avg = phase_calculation(
+                current_power, pm_config["avg_transmission_at_quad"],last_phase, last_phase_change
+            )
             phases.append([counter, volt, phase, phase_change, phase_change_avg])
 
             step_amount = step_amount_calculation(phase_change_avg)
@@ -78,8 +85,8 @@ def get_pulse_response_sw(rm: ResourceManager, mm_config: dict, pm_config: dict)
 
     return volt_curr_data, powers, phases
 
-
 def main():
+    """ Entry point."""
     mm_config = {
         "addr": "GPIB0::20::INSTR",
         "wavelength": 1550, # [nm]
@@ -102,8 +109,12 @@ def main():
 
     np.savetxt(current_fname, volt_curr_data, delimiter=",")
     np.savetxt(power_fname, powers, delimiter=",")
-    df = pd.DataFrame(phases, columns=["Measurement Number", "Voltage applied", " Current phase", "Phase change", "Phase change average"])
-    df.to_csv(phase_fname, index=False)
+    pd.DataFrame(
+        phases,
+        columns=["Measurement Number", "Voltage applied",
+                 "Current phase", "Phase change", "Phase change average"]
+    ).to_csv(phase_fname, index=False)
+
 
 if __name__ == "__main__":
     main()

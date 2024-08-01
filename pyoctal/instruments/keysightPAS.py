@@ -2,15 +2,14 @@
 
 import math
 import time
-from typing import Tuple
+from typing import Tuple, List
 from pathlib import Path
-from os.path import dirname
 from os import makedirs
 
 import numpy as np
 import win32com.client
 
-class BasePAS(object):
+class BasePAS:
     """
     A base Photonics Application Suite class.
     
@@ -22,26 +21,33 @@ class BasePAS(object):
     server_addr: str
         The address of the software
     """
-    def __init__(self, server_addr: str):
+    def __init__(self, server_addr: str, config_path: Path=None):
         # connect to Engine Manager
         self.engine_mgr = win32com.client.Dispatch(server_addr)
-        # list all engines running
+        # List all engines running
         self.engine_ids = self.engine_mgr.EngineIDs
-        self.connect()
+        self.connect(config_path)
 
-    def connect(self):
+    def connect(self, config_path: Path):
         # always connect to the first engine
-        self.engine = self.engine_mgr.OpenEngine(self.engine_ids[0])
-        self.activate()
-        activating = 0
-        start = time.time()
+        if self.engine_ids:
+            self.engine = self.engine_mgr.OpenEngine(self.engine_ids[0])
 
-        # Check engine activation status
-        while activating == 0:
-            time.sleep(0.5) 
-            activating = self.engine_state()
-            if time.time() - start > 30:
-                raise TimeoutError("Timeout error: check devices connection")
+        else:
+            self.engine = self.engine_mgr.NewEngine()
+            if config_path: 
+                self.load_configuration(config_path.absolute())
+            self.activate()
+            activating = 0
+            start = time.time()
+
+            # Check engine activation status
+            while activating == 0:
+                time.sleep(0.5) 
+                activating = self.engine_state()
+                if time.time() - start > 30:
+                    raise TimeoutError("Timeout error: check devices connection")
+        
 
     def activate(self):
         """ Active the engine. """
@@ -80,7 +86,12 @@ class BasePAS(object):
     
     def __repr__(self) -> str:
         return f"{self.__get_name()}()"
-
+    
+    def __enter__(self):
+        return self
+    
+    def __exit__(self):
+        self.quit()
 
 class KeysightILME(BasePAS):
     """
@@ -89,10 +100,10 @@ class KeysightILME(BasePAS):
     This can control Agilent 8163B.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.no_channels = 1
         server_addr = "AgServerIL.EngineMgr"
-        super().__init__(server_addr=server_addr)
+        super().__init__(server_addr=server_addr, *args, **kwargs)
 
 
     def sweep_params(self, start: float=1540, stop: float=1575, step: float=5, power: float=10):
@@ -179,7 +190,7 @@ class KeysightILME(BasePAS):
         """ Stop a measurement. """
         self.engine.StopMeasurement()
 
-    def get_result(self) -> Tuple[list, list, tuple]:
+    def get_result(self) -> Tuple[List, Tuple]:
         """ 
         Obtain result after the measurement.
         
@@ -205,18 +216,15 @@ class KeysightILME(BasePAS):
         return self.get_wavelength(IOMRGraph, data_per_curve), ydata, IOMRFile
     
     @staticmethod
-    def get_wavelength(IOMRGraph, data_per_curve) -> tuple:
+    def get_wavelength(IOMRGraph, data_per_curve) -> Tuple:
         """ Get all wavelength datapoints from a measurement. """
         xstart = IOMRGraph.xStart
         xstep = IOMRGraph.xStep
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
-        return tuple(np.divide(xdata, 1e-9))
+        return Tuple(np.divide(xdata, 1e-9))
 
 
-def export_to_omr(data, filename: str):
-    makedirs(dirname(filename), exist_ok=True)
-    data.Write(Path(filename).absolute())
-        
-
-        
+def export_to_omr(data, filename: Path):
+    makedirs(filename.parent, exist_ok=True)
+    data.Write(filename.absolute())
 

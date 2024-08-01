@@ -1,7 +1,6 @@
-from typing import Union
+from typing import Union, List
 import time
 import sys
-import math
 
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
@@ -139,7 +138,7 @@ class FiberlabsAMP(BaseInstrument):
         self.write(f"setalc,{chan},{power}")
 
 
-    def get_mon_output_power(self) -> list:
+    def get_mon_output_power(self) -> List:
         """ Get output power level [mW]. """
         powers = self.query_monitor("monout", all_chan=True)
         print(powers)
@@ -147,26 +146,26 @@ class FiberlabsAMP(BaseInstrument):
         print(powers)
         return powers
     
-    def get_mon_input_power(self) -> list:
+    def get_mon_input_power(self) -> List:
         """ Get input power level [mW]. """
         powers = self.query_monitor("monin", all_chan=True)
         powers = list(map(dbm_to_watt, powers))
         return powers
     
-    def get_mon_ret_power(self) -> list:
+    def get_mon_ret_power(self) -> List:
         """ Get return power level [mW]. """
         powers = self.query_monitor("monret", all_chan=True)
         powers = list(map(dbm_to_watt, powers))
         return powers
     
-    def get_mon_pump_curr(self, chan: int=None) -> Union[list, float]:
+    def get_mon_pump_curr(self, chan: int=None) -> Union[List, float]:
         """ Get monitor of pumpLD forward current (mA). """
         if not chan:
             # all channels' forward current
             return self.query_monitor("monldc,", all_chan=True)
         return self.query_monitor(f"monldc,{chan}", all_chan=False)
         
-    def get_mon_pump_temp(self, chan: int=None) -> Union[list, float]:
+    def get_mon_pump_temp(self, chan: int=None) -> Union[List, float]:
         """ Get monitor of pumpLD temperature (deg.C). """
         if not chan:
             # all channels' forward current

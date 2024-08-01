@@ -1,8 +1,8 @@
-from pyoctal.instruments.base import BaseInstrument
-from pyoctal.utils.error import *
-
 import time
-from typing import Union
+from typing import Union, List, Tuple
+
+from pyoctal.instruments.base import BaseInstrument
+from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
 
 class AmetekDSP7230(BaseInstrument):
     """
@@ -26,11 +26,10 @@ class AmetekDSP7230(BaseInstrument):
     def get_x_volt(self) -> float:
         """ Get the module x voltage. """
         return self.query_float("x.?")
-    
+
     def get_y_volt(self) -> float:
         """ Get the module y voltage. """
         return self.query_float("y.?")
-    
 
 class AmetekDSP7265(BaseInstrument):
     """
@@ -63,17 +62,20 @@ class AmetekDSP7265(BaseInstrument):
     def set_osc(self, freq: float):
         """ Set the frequency. """
         self.write(f"of {freq}")
-    
+
     def set_user_eq(self, eq: str):
         """ Set the equation. """
-        if not isinstance(eq, Union[list, tuple]):
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}. Param should be a list")
+        if not isinstance(eq, Union[List, Tuple]):
+            raise ValueError(
+                f"Error code {PARAM_INVALID_ERR:x}: \
+                {error_message[PARAM_INVALID_ERR]}. Param should be a list"
+            )
         self.write(f'defequ {" ".join(eq)}')
 
     def set_dual_tc(self, tc: int):
         tconst_dict = {
         #   time constant (ms) : n
-            5: 7, 
+            5: 7,
             10: 8,
             20: 9,
             50: 10,
@@ -134,11 +136,11 @@ class AmetekDSP7265(BaseInstrument):
     def get_mag1(self) -> float:
         """ Get the magnitude of module 1. """
         return self.query_float("mag1.?")
-    
+
     def get_mag2(self) -> float:
         """ Get the magnitude of module 2. """
         return self.query_float("mag2.?")
-    
+
     def get_eq1(self) -> float:
         """ Get the equation 1. """
         return self.query_float("equ1.?")

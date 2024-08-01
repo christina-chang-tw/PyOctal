@@ -1,6 +1,8 @@
-from pyoctal.instruments.base import BaseInstrument
 import sys
 from time import time
+from typing import List
+
+from pyoctal.instruments.base import BaseInstrument
 
 class AgilentE3640A(BaseInstrument):
     """
@@ -29,7 +31,7 @@ class AgilentE3640A(BaseInstrument):
     def set_volt(self, volt: float):
         """ Set the laser voltage [V]. """
         self.write(f"voltage {volt}")
-    
+
     def set_curr(self, curr: float):
         """ Set the laser current [A]. """
         self.write(f"current {curr}")
@@ -42,7 +44,7 @@ class AgilentE3640A(BaseInstrument):
         """ Get the laser output state. """
         return self.query_bool("output?")
 
-    def get_params(self) -> list: # return [volt, curr]
+    def get_params(self) -> List: # return [volt, curr]
         """ Get the laser voltage [V] and current [A]. """
         params = self.query("apply?").split(",") # split the str up by ,
         params = [float(i.replace('"', '')) for i in params]
@@ -55,7 +57,7 @@ class AgilentE3640A(BaseInstrument):
     def get_volt(self) -> float:
         """ Get the laser voltage [V]. """
         return self.query_float("measure:voltage?")
-    
+
     def wait_until_stable(self, tol: float=0.0008, max_time: float=20) -> None:
         """ 
         Wait until the current is stable. 
@@ -73,6 +75,6 @@ class AgilentE3640A(BaseInstrument):
             curr = self.get_curr()
             if abs(curr - prev_curr) <= tol:
                 break
-            elif time() - start_time > max_time:
+            if time() - start_time > max_time:
                 sys.exit("Timeout: Current did not stabilize.")
             prev_curr = curr

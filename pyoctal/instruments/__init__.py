@@ -1,7 +1,6 @@
 """
 Import all instruments here to shorten the imports
 """
-from pyoctal.utils.error import *
 import sys
 
 __platform__ = ("cygwin", "win32") # Windows OS system
@@ -36,13 +35,15 @@ from .ttiTGF3162 import TTiTGF3162
 
 __all__ = [
         "Agilent8163B",
-        "AgilentE3645",
+        "Agilent8164B",
         "AgilentE3640A",
         "AgilentDSO8000",
         "AmetekDSP7230",
         "AmetekDSP7265",
         "Arroyo6301",
         "DaylightQCL",
+        "EXFOXTA50",
+        "FiberlabsAMP",
         "Keithley2400",
         "Keithley6487",
         "Keysight86100D",

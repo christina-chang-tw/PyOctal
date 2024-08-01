@@ -18,4 +18,3 @@ class AgilentDSO8000(BaseInstrument):
     def get_mag(self, chan: int) -> float:
         """ Get the magnitude of a channel. """
         return self.query_float(f"measure:vamplitude? channel{chan}")
-    

@@ -9,18 +9,17 @@ If prediction is specified, the script will also train a linear regression model
 To run this script:
     python -m tools.sweeps.amp.curr
 """
-
-from os.path import join
+from pathlib import Path
+from os import makedirs
+import pickle
 
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-import pickle
 from pyvisa import ResourceManager
 
 from sklearn.linear_model import LinearRegression
 
-from pyoctal.utils.file_operations import export_to_csv
 from pyoctal.instruments import FiberlabsAMP, KeysightILME
 from pyoctal.instruments.keysightPAS import export_to_omr
 
@@ -70,7 +69,8 @@ def predict(model, fpath: str, wavelength: float, loss: float):
     return predicted
 
 
-def run_curr(rm: ResourceManager, amp_config: dict, folder: str, prediction: bool=False):
+def run_curr(rm: ResourceManager, amp_config: dict,
+             folder: Path, ilme_config: Path=None, prediction: bool=False):
     """
     Obtain wavelength v.s. loss at different current levels.
 
@@ -78,32 +78,30 @@ def run_curr(rm: ResourceManager, amp_config: dict, folder: str, prediction: boo
     and the program will automatically set the driving current of each
     channel for you starting from the smallest channel.
     """
-
-    amp = FiberlabsAMP(addr=amp_config["addr"], rm=rm)
-    ilme = KeysightILME()
-    ilme.activate()
-
     currents = np.linspace(amp_config["start"], amp_config["stop"], amp_config["step"])
 
-    # initialise a 2d loss array for model training
-    if prediction:
-        loss_2d_arr = np.zeros(shape=(ilme.get_dpts(), len(currents)))
-
-    # make sure to set channel 1 to ACC mode
+    amp = FiberlabsAMP(addr=amp_config["addr"], rm=rm)
     amp.set_ld_mode(chan=1, mode=amp_config.get("mode"))
     amp.set_all_curr(curr=0)
     amp.set_output_state(state=1)
 
-    for j, curr in tqdm(enumerate(currents), desc="Currents", total=len(currents)):
-        amp.set_curr_smart(mode=amp_config.get("mode"), val=curr)
-        ilme.start_meas()
-        wavelength, loss, omr_data = ilme.get_result()
-
+    with KeysightILME(config_path=ilme_config) as ilme:
+        # initialise a 2d loss array for model training
         if prediction:
-            loss_2d_arr[:,j] = loss
+            loss_2d_arr = np.zeros(shape=(ilme.get_dpts(), len(currents)))
 
-        export_to_csv(pd.DataFrame({"Wavelength": wavelength, "Loss [dB]": loss}), sheet_names="data", folder=folder, fname=f"{curr}A.xlsx")
-        export_to_omr(omr_data, join(folder, f"{curr}A.omr"))
+        for j, curr in tqdm(enumerate(currents), desc="Currents", total=len(currents)):
+            amp.set_curr_smart(mode=amp_config.get("mode"), val=curr)
+            ilme.start_meas()
+            wavelength, loss, omr_data = ilme.get_result()
+
+            if prediction:
+                loss_2d_arr[:,j] = loss
+
+            pd.DataFrame(
+                {"Wavelength": wavelength, "Loss [dB]": loss}
+            ).to_csv(folder / f"{curr}A.csv", index=False)
+            export_to_omr(omr_data, filename=folder / f"{curr}A.omr")
 
     if prediction:
         dpts = []
@@ -112,16 +110,17 @@ def run_curr(rm: ResourceManager, amp_config: dict, folder: str, prediction: boo
                 dpts.append((curr, wlength, loss_2d_arr[i,j]))
         dpts = np.array(dpts)
         # Save the data for developing model in the future.
-        np.save(f"{folder}/model_data.npy", dpts)
+        np.save(folder / "model_data.npy", dpts)
         model = linear_regression(dpts)
         # save the model to a .pkl file for future usage
-        with open(f"{folder}/model.pkl", "wb") as file:
+        with open(folder / "model.pkl", "wb") as file:
             pickle.dump(model, file)
 
     amp.set_output_state(state=0)
 
 
 def main():
+    """ Entry point."""
     rm = ResourceManager()
     amp_config = {
         "addr": "GPIB0::1::INSTR",
@@ -130,7 +129,9 @@ def main():
         "step": 10, # [mA] or [mW]
         "mode": "ACC", # ACC or ALC
     }
-    folder = "data"
+    folder = Path("data")
+    makedirs(folder, exist_ok=True)
+
     run_curr(rm, amp_config, folder, prediction=True)
 
 if __name__ == "__main__":

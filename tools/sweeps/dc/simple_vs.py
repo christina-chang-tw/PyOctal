@@ -1,20 +1,20 @@
-import time
-from os.path import join
 from os import makedirs
+from pathlib import Path
 
 from tqdm import tqdm
 import pandas as pd
 from pyvisa import ResourceManager
 
 from pyoctal.instruments import AgilentE3640A, Agilent8163B
-from pyoctal.utils.file_operations import export_to_csv
 
-def run_one_source(rm: ResourceManager, pm_config: dict, mm_config: dict, folder: str):
+def run_one_source(rm: ResourceManager, pm_config: dict, mm_config: dict, folder: Path):
     """ Run only with instrument. Require one voltage source """
     pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
     mm = Agilent8163B(addr=mm_config["addr"], rm=rm)
 
-    for volt in tqdm(range(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])):
+    voltages = range(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])
+
+    for volt in tqdm(voltages):
 
         pm.set_volt(volt)
 
@@ -29,16 +29,17 @@ def run_one_source(rm: ResourceManager, pm_config: dict, mm_config: dict, folder
             speed=mm_config["speed"],
             cycles=mm_config["cycles"],
             )
-        
-        export_to_csv(data=pd.DataFrame({"Wavelengths [m]": wavelengths, "Power [W]": powers}), filename=join(folder, f"{volt}.csv"))
-    
+
+        pd.DataFrame({
+            "Wavelengths [m]": wavelengths,
+            "Power [W]": powers
+        }).to_csv(folder / f"{volt}V.csv", index=False)
+
     pm.set_volt(0)
     pm.set_output_state(0)
 
-
-
-
 def main():
+    """ Entry point."""
     pm_config = {
         "addr": "GPIB0::5::INSTR",
         "start": 0, # [V]
@@ -56,7 +57,7 @@ def main():
         "cycles": 1,
     }
 
-    folder = "data"
+    folder = Path("data")
     makedirs(folder, exist_ok=True)
     rm = ResourceManager()
 

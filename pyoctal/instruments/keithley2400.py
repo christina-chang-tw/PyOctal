@@ -1,8 +1,8 @@
+import time
+from typing import Tuple, List
+
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import *
-
-import time
-from typing import Tuple
 
 class Keithley2400(BaseInstrument):
     """
@@ -130,7 +130,7 @@ class Keithley2400(BaseInstrument):
 		
 
     # Complex functions
-    def meas_curr_buf(self, volt: float, num, speed) -> Tuple[list, float]:
+    def meas_curr_buf(self, volt: float, num, speed) -> Tuple[List, float]:
         """ measure average current? """
         self.set_laser_volt(volt=volt)
         self.set_detect_npl_cycles(speed=speed)

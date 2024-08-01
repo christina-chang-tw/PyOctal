@@ -1,4 +1,3 @@
-
 # Error Code Definition
 INCOMPATIBLE_OS_ERR = 100
 PYTHON_VER_ERROR = 101

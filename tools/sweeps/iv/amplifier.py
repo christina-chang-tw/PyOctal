@@ -1,6 +1,5 @@
-import time
-from os.path import join
-from os import makedirs
+from pathlib import Path
+from typing import Dict
 
 import pandas as pd
 import numpy as np
@@ -12,10 +11,23 @@ from pyoctal.instruments import (
     AgilentE3640A,
 )
 
-from pyoctal.utils.file_operations import export_to_csv
 
+def run_DSP7265_one(rm: ResourceManager, amp_config: Dict,
+                    pm_config: Dict, filename: Path):
+    """
+    Run with one power meter and one amplifier.
 
-def run_DSP7265_one(rm: ResourceManager, amp_config: dict, pm_config: dict):
+    Parameters
+    ----------
+    rm: ResourceManager
+        Pyvisa resource manager
+    amp_config: dict
+        Amplifier configuration
+    pm_config: dict
+        Power meter configuration
+    filename: Path
+        The filename to save the data to
+    """
     pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
     amp = AmetekDSP7265(addr=amp_config["addr"], rm=rm)
 
@@ -24,11 +36,13 @@ def run_DSP7265_one(rm: ResourceManager, amp_config: dict, pm_config: dict):
 
     currents = []
     opowers = []
-    voltages = np.linspace(pm_config["start"], pm_config["stop"] + pm_config["step"], pm_config["step"])
+    voltages = np.linspace(
+        pm_config["start"], pm_config["stop"] + pm_config["step"], pm_config["step"]
+    )
 
     for volt in tqdm(voltages):
         pm.set_volt(volt)
-        
+
         pm.wait_until_stable()
 
         currents.append(pm.get_curr())
@@ -39,9 +53,30 @@ def run_DSP7265_one(rm: ResourceManager, amp_config: dict, pm_config: dict):
     pm.set_output_state(0)
     amp.set_mag(0)
 
-    return pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents, "Optical Power [W]": opowers})
+    pd.DataFrame({
+        "Voltage [V]": voltages,
+        "Current [A]": currents,
+        "Optical Power [W]": opowers 
+    }).to_csv(filename, index=False)
 
-def run_DSP7265_dual(rm: ResourceManager, amp_config: dict, pm1_config: dict, pm2_config: dict):
+def run_DSP7265_dual(rm: ResourceManager, amp_config: Dict,
+                     pm1_config:Dict,pm2_config: Dict, filename: Path):
+    """
+    Run with two power meters and one amplifier.
+
+    Parameters
+    ----------
+    rm: ResourceManager
+        Pyvisa resource manager
+    amp_config: dict
+        Amplifier configuration
+    pm1_config: dict
+        Power meter 1 configuration
+    pm2_config: dict
+        Power meter 2 configuration
+    filename: Path
+        The filename to save the data to
+    """
     pm1 = AgilentE3640A(addr=pm1_config["addr"], rm=rm)
     pm2 = AgilentE3640A(addr=pm2_config["addr"], rm=rm)
     amp = AmetekDSP7265(addr=amp_config["addr"], rm=rm)
@@ -51,11 +86,17 @@ def run_DSP7265_dual(rm: ResourceManager, amp_config: dict, pm1_config: dict, pm
     pm2.set_volt(0)
     pm2.set_output_state(1)
 
-    df = pd.DataFrame(columns=["Volt1 [V]", "Volt2 [V]", "Current1 [A]", "Current2 [A]", "Optical [W]"])
+    df = pd.DataFrame(
+        columns=["Volt1 [V]", "Volt2 [V]", "Current1 [A]", "Current2 [A]", "Optical [W]"]
+    )
 
-    pm1_voltages = np.linspace(pm1_config["start"], pm1_config["stop"] + pm1_config["step"], pm1_config["step"])
+    pm1_voltages = np.linspace(
+        pm1_config["start"], pm1_config["stop"] + pm1_config["step"], pm1_config["step"]
+    )
 
-    pm2_voltages = np.linspace(pm2_config["start"], pm2_config["stop"] + pm2_config["step"], pm2_config["step"])
+    pm2_voltages = np.linspace(
+        pm2_config["start"], pm2_config["stop"] + pm2_config["step"], pm2_config["step"]
+    )
 
     for volt1 in tqdm(pm1_voltages):
 
@@ -78,10 +119,11 @@ def run_DSP7265_dual(rm: ResourceManager, amp_config: dict, pm1_config: dict, pm
     pm2.set_output_state(0)
     amp.set_mag(0)
 
-    return df
+    df.to_csv(filename, index=False)
 
 
 def main():
+    """ Entry point."""
     rm = ResourceManager()
     amp_config = {
         "addr": "GPIB0::6::INSTR",
@@ -99,9 +141,8 @@ def main():
         "step": 0.1, # [V]
     }
 
-    df = run_DSP7265_dual(rm, amp_config, pm1_config, pm2_config)
-    makedirs("data", exist_ok=True)
-    export_to_csv(df, "data/dual_pm.csv")
+    filename = "a.csv"
+    run_DSP7265_dual(rm, amp_config, pm1_config, pm2_config, filename)
 
 
 if __name__ == "__main__":

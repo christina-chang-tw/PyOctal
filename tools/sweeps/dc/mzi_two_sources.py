@@ -1,5 +1,5 @@
 from os import makedirs
-from os.path import join
+from pathlib import Path
 import time
 
 import numpy as np
@@ -8,9 +8,9 @@ from tqdm import tqdm
 import pandas as pd
 
 from pyoctal.instruments import AgilentE3640A, Agilent8164B
-from pyoctal.utils.file_operations import export_to_csv
 
-def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dict, mm_config: dict, folder: str):
+def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict,
+                          hpm_config: dict, mm_config: dict, folder: Path):
     """ 
     Try to see how the output power of a specific wavelength
     changes with the voltage of the MZI and the ring.
@@ -22,26 +22,29 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
     mm = Agilent8164B(addr=mm_config.pop["addr"], rm=rm)
     mm.setup(**mm_config)
 
-    heater_voltages = np.arange(hpm_config["start"], hpm_config["stop"] + hpm_config["step"], hpm_config["step"])
-    ring_voltages = np.arange(rpm_config["start"], rpm_config["stop"] + rpm_config["step"], rpm_config["step"])
-
+    heater_voltages = np.arange(
+        hpm_config["start"], hpm_config["stop"] + hpm_config["step"], hpm_config["step"]
+    )
+    ring_voltages = np.arange(
+        rpm_config["start"], rpm_config["stop"] + rpm_config["step"], rpm_config["step"]
+    )
 
     heater_pm.set_output_state(1)
     heater_pm.set_params(hpm_config["stop"], 0.5)
     ring_pm.set_output_state(1)
     ring_pm.set_params(rpm_config["stop"], 0.1)
-    
+
     max_min_voltages = np.zeros(shape=(len(ring_voltages), 3))
     for i, ring_v in tqdm(enumerate(ring_voltages), total=len(ring_voltages)):
         powers = []
         currents = []
-        
+
         ring_pm.set_volt(ring_v)
 
         for volt in heater_voltages:
 
             heater_pm.set_volt(volt)
-            
+
             # wait until the current is stable
             heater_pm.wait_until_stable()
 
@@ -52,9 +55,13 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
             powers.append(power/avg)
             currents.append(heater_pm.get_curr())
 
-        export_to_csv(data=pd.DataFrame({"Voltage [V]": heater_voltages, "Current [A]": currents, "Electrical Power [W]": heater_voltages*currents,"Power [W]": powers}), filename=join(folder, f"ring{ring_v}.csv"))
-        
-        
+        pd.DataFrame({
+            "Voltage [V]": heater_voltages,
+            "Current [A]":currents,
+            "Electrical Power [W]": heater_voltages*currents,
+            "Power [W]": powers}
+        ).to_csv(filename=folder / f"ring{ring_v}.csv", index=False)
+
         max_v = heater_voltages[np.argmax(powers)]
         min_v = heater_voltages[np.argmin(powers)]
         max_min_voltages[i] = [ring_v, max_v, min_v]
@@ -64,10 +71,10 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
     ring_pm.set_volt(0)
     ring_pm.set_output_state(0)
 
-
 def main():
+    """ Entry point."""
     rm = ResourceManager()
-    folder = r"C:\Users\Lab2052\Desktop\Users\Christina\2024-5-06\s4_2_ramzi_ring_g200\min"
+    folder = Path(r"C:\Users\Lab2052\Desktop\Users\Christina\2024-5-06\s4_2_ramzi_ring_g200\min")
 
     rpm_config = {
         "addr": "GPIB0::5::INSTR",
@@ -86,13 +93,9 @@ def main():
         "wavelength": 1551.85 # [nm]
     }
 
-    makedirs(folder, exist_ok=True)
+    makedirs(folder.parent, exist_ok=True)
 
-    wavelengths = [1548.6, 1551.793]
-
-    for wavelength in wavelengths:
-        mm_config["wavelength"] = wavelength
-        run_ring_assisted_mzi(rm, rpm_config=rpm_config, hpm_config=hpm_config, mm_config=mm_config, folder=join(folder, str(wavelength)))
+    run_ring_assisted_mzi(rm, rpm_config=rpm_config, hpm_config=hpm_config, mm_config=mm_config, folder=folder)
 
 if __name__ == "__main__":
     main()

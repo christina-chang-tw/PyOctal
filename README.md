@@ -61,9 +61,9 @@ The Anaconda version must
 - Support your current Windows OS system
 - Able to create a Python 3.6 environment
 
-Install Anaconda version which supports your OS system and make sure all listed packages in `requirements.txt` are installed.
+Install Anaconda version which supports your OS system and make sure all Listed packages in `requirements.txt` are installed.
 
-To install packages, go to Enviornments tab, select not installed, and then search up the packages. There are some packages that might not be listed because the channel which contain them are not imported upon installation. If that is the case, search up the python package and find the corresponding channel and include it in Anaconda environment. 
+To install packages, go to Enviornments tab, select not installed, and then search up the packages. There are some packages that might not be Listed because the channel which contain them are not imported upon installation. If that is the case, search up the python package and find the corresponding channel and include it in Anaconda environment. 
 
 If your Anaconda does not use Python 3.6 for its environment, it will fail to install `pyvisa`. Firstly, make sure that the current Anaconda python version is at least 3.6. Once the condition is satisfied, create a new environment with Anaconda Prompt and specify Python version as Python 3.6. After the new environment is successfully created, it can be viewed under Environments tab. The packages can then be installed on this new environment without errors.
 

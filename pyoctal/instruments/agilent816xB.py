@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List, Tuple
 import sys
 import time
 
@@ -9,7 +9,7 @@ from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
 
 
-def resonances(data: np.array, cutoff: float, distance: int) -> list:
+def resonances(data: np.array, cutoff: float, distance: int) -> List:
     """ 
     Find the resonances in the spectrum. 
     
@@ -22,13 +22,12 @@ def resonances(data: np.array, cutoff: float, distance: int) -> list:
 
     Returns
     -------
-    list
+    List
         The resonances found in the spectrum
     """
     peaks, _ = find_peaks(data, distance=distance)
     peaks = peaks[data[peaks] - min(data) > cutoff]
     return peaks
-    
 
 
 class Agilent816xB(BaseInstrument):
@@ -50,7 +49,8 @@ class Agilent816xB(BaseInstrument):
     sens_chan: int
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int, src_chan: int, sens_num: int, sens_chan: int):
+    def __init__(self, addr: str, rm, src_num: int,
+                 src_chan: int, sens_num: int, sens_chan: int):
         super().__init__(rsc_addr=addr, rm=rm)
         self.src_num = src_num
         self.src_chan = src_chan
@@ -59,19 +59,20 @@ class Agilent816xB(BaseInstrument):
         self.laser = f"source{self.src_num}:channel{self.src_chan}"
         self.detect = f"sense{self.sens_num}:channel{self.sens_chan}"
 
-    def setup(self, reset: bool, wavelength: float=1550, power: float=10, period: float=200e-03, *_, **__):
+    def setup(self, reset: bool, wavelength: float=1550,
+              power: float=10, period: float=200e-03):
         """ Make waveguide alignment easier for users """
         if reset:
             self.reset()
 
         if not self.get_laser_state():
             self.set_laser_state(1)
-            
+
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(power)
         self.set_detect_avgtime(period=period) # avgtime = 200ms
-        self.set_unit(source="dBm", sensor="Watt")   
+        self.set_unit(source="dBm", sensor="Watt")
         if not self.get_laser_state():
             self.unlock("1234")
             self.set_laser_state(1)
@@ -116,45 +117,48 @@ class Agilent816xB(BaseInstrument):
         """ Set the detector calibration value [dB]. """
         self.write(f"{self.detect}:correction {value}dB")
 
-    def set_detect_func_mode(self, mode: Union[tuple,list]):
+    def set_detect_func_mode(self, mode: Union[Tuple, List]):
         """ Set the detector function status. """
         self.write(f"{self.detect}:function:state {mode[0]},{mode[1]}")
-    
-    def set_detect_func_params(self, mode: str, params: Union[tuple,list]):
+
+    def set_detect_func_params(self, mode: str, params: Union[Tuple, List]):
         """ Set the detector function parameters. """
         mode = mode.lower()
-        if mode == "logging" or "logg": # params = [data_pts, avg_time]
-            self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s") 
-        elif mode == "minmax" or "minm": # params = [mode, data_pts]
-            self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}") 
-        elif mode == "stability" or "stab": # params = [total_time, period, avg_time]
-            self.write(f"{self.detect}:function:parameter:stability {params[0]}s,{params[1]}s,{params[2]}s")
+        if mode in ("logging", "logg"): # params = [data_pts, avg_time]
+            self.write(f"{self.detect}:function:parameter:logging {params[0]},{params[1]}s")
+        elif mode in ("minmax", "minm"): # params = [mode, data_pts]
+            self.write(f"{self.detect}:function:parameter:minmax {params[0]},{params[1]}")
+        elif mode in ("stability", "stab"): # params = [total_time, period, avg_time]
+            self.write(f"{self.detect}:function:parameter \
+                       :stability {params[0]}s,{params[1]}s,{params[2]}s")
         else:
-            raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}")
+            raise ValueError(
+                f"Error code {PARAM_INVALID_ERR:x}: {error_message[PARAM_INVALID_ERR]}"
+            )
 
 
     def get_detect_pow(self) -> float:
         """ Get the detector power. """
         return self.query_float(f"read{self.sens_num}:channel{self.sens_chan}:power?")
-    
+
     def get_trigno(self) -> int:
         """ Get the detector trigger number. """
         return int(self.query("source:channel:wavelength:sweep:exp?"))
-    
+
     def get_detect_func_state(self) -> str:
         """ Get the detector function state. """
         rsp = self.query(f"{self.detect}:function:state?")
         return rsp.lower()
-    
-    def get_detect_func_result(self) -> list:
+
+    def get_detect_func_result(self) -> List:
         """ Get the detector function result. """
         return self.query_binary_values(f"{self.detect}:function:result?")
-    
-    def get_detect_func_result_block(self, offset: int, dpts: int) -> list:
+
+    def get_detect_func_result_block(self, offset: int, dpts: int) -> List:
         """ Get the detector function result. """
-        return self.query_binary_values(f"{self.detect}:function:result:block? {offset},{dpts}", datatype="d")
-
-
+        return self.query_binary_values(
+            f"{self.detect}:function:result:block? {offset},{dpts}", datatype="d"
+        )
 
     ### LASER COMMANDS ###################################
     def set_laser_am_state(self, state: bool):
@@ -164,7 +168,7 @@ class Agilent816xB(BaseInstrument):
     def set_laser_wav(self, wavelength: float):
         """ Set the laser wavelength [nm]. """
         self.write(f"{self.laser}:wavelength:fixed {wavelength} nm")
-    
+
     def set_laser_state(self, state: bool):
         """ Set the laser output state. """
         self.write(f"{self.laser}:power:state {state}")
@@ -177,18 +181,18 @@ class Agilent816xB(BaseInstrument):
         """ Set the laser unit. """
         self.write(f"{self.laser}:power:unit {unit}") # set the source unit in dBm
 
-    def get_laser_data(self, mode: str) -> list:
+    def get_laser_data(self, mode: str) -> List:
         """ Get the laser data. """
         return self.query_binary_values(f"{self.laser}:read:data? {mode}", datatype="d")
-    
+
     def get_laser_points(self, mode: str) -> int:
         """ Get the laser data points. """
         return int(self.query(f"{self.laser}:read:points? {mode}"))
-    
+
     def get_laser_state(self) -> bool:
         """ Get the laser output state. """
         self.query_bool(f"{self.laser}:power:state?")
-    
+
     def get_laser_wav_min(self) -> float:
         """ Get the laser's minimum wavelength. """
         return self.query_float(f"{self.laser}:wavelength? MIN")
@@ -196,15 +200,11 @@ class Agilent816xB(BaseInstrument):
     def get_laser_wav_max(self) -> float:
         """ Get the laser's maximum wavelength. """
         return self.query_float(f"{self.laser}:wavelength? MAX")
-    
+
     def get_laser_wav(self) -> float:
         """ Get the laser wavelength. """
         return self.query_float(f"{self.laser}:wavelength?")
 
-
-    
-    
-    
     ## TRIGGER COMMANDS ###################################
     def set_trig_config(self, config: int):
         """ Set the configuration of trigger. """
@@ -221,20 +221,19 @@ class Agilent816xB(BaseInstrument):
     def get_trig_output(self) -> str:
         """ Specify when an output trigger is generated. """
         return self.query("trigger:output?")
-    
+
     def set_trig_responses(self, num: int, chan: int, in_rsp: str, out_rsp: str):
         """ Set the laser trigger response. """
         self.write(f"trigger{num}:channel{chan}:input {in_rsp}")
         self.write(f"trigger{num}:channel{chan}:output {out_rsp}")
-
-
 
     ### SWEEP COMMANDS ####################################
     def set_sweep_mode(self, mode: str): # STEP, MAN, CONT
         """ Set the sweep mode. """
         self.write(f"{self.laser}:sweep:mode {mode}")
 
-    def set_sweep_state(self, state: Union[int, str]): # 0 - stop, 1 - start, 2 - pause, 3 - continue
+    # 0 - stop, 1 - start, 2 - pause, 3 - continue
+    def set_sweep_state(self, state: Union[int, str]):
         """ Set the sweep state. """
         self.write(f"{self.laser}:wavelength:sweep:state {state}")
 
@@ -250,7 +249,7 @@ class Agilent816xB(BaseInstrument):
         """ Set the start and stop wavelength sweep [nm]. """
         self.write(f"{self.laser}:wavelength:sweep:start {start}nm")
         self.write(f"{self.laser}:wavelength:sweep:stop {stop}nm")
-    
+
     def set_sweep_wav_logging(self, status: bool):
         """ Set the logging for the sweep. """
         self.write(f"{self.laser}:wavelength:sweep:llogging {status}")
@@ -270,19 +269,19 @@ class Agilent816xB(BaseInstrument):
     def set_sweep_soft_trig(self):
         """ Set the soft trigger for the sweep. Doesn't cause a PM to take measurement. """
         self.write(f"{self.laser}:wavelength:sweep:softtrigger")
-    
+
     def get_sweep_state(self) -> int: # 0 - stop, 1 - start, 2 - pause, 3 - continue
         """ Get the sweep state. """
         return int(self.query(f"{self.laser}:wavelength:sweep:state?"))
-    
+
     def get_sweep_flag(self) -> bool:
         """ Get the sweep flag. """
         return self.query_bool(f"{self.laser}:wavelength:sweep:flag?")
-        
+
     def get_sweep_trigno(self) -> int:
         """ Get the laser trigger number. """
         return int(self.query(f"{self.laser}:wavelength:sweep:exp?"))
-    
+
     def find_resonance(self, srange: float=1e-09) -> float:
         """ Find the resonance wavelength based on the current wavelength. """
         curr_wav = self.get_laser_wav()
@@ -299,17 +298,21 @@ class Agilent816xB(BaseInstrument):
         if arg == 0 or arg == len(powers)-1:
             print("Warning: Resonance not found. Please adjust the search range.")
 
-        return search_wavelengths[arg]        
+        return search_wavelengths[arg]
 
 
 
     # Complicated functions
-    def run_sweep_manual(self, power: float=10.0, lambda_start: float=1535.0, lambda_stop: float=1575.0, lambda_step: float=5.0):
+    def run_sweep_manual(self, power: float=10.0, lambda_start: float=1535.0,
+                         lambda_stop: float=1575.0, lambda_step: float=5.0):
         """ Step through each wavelength purely by changing the output laser wavelength. """
         lambda_range = (self.get_laser_wav_min(), self.get_laser_wav_min())
         if lambda_start <= lambda_range[0] and lambda_stop >= lambda_range[1]:
-            raise ValueError(f"Wavelength out of range. Please be within {lambda_range[0]} and {lambda_range[1]}.")
-        
+            raise ValueError(
+                f"Wavelength out of range. \
+                Please be within {lambda_range[0]} and {lambda_range[1]}."
+            )
+
         wavelengths = []
         powers = []
         self.set_detect_autorange(1)
@@ -337,9 +340,11 @@ class Agilent816xB(BaseInstrument):
             powers.append(detected_power)
 
             return wavelengths, powers
-        
 
-    def run_laser_sweep_auto(self, power: float=None, start: float=1535.0, stop: float=1575.0, step: float=5.0, cycles: int=1, tavg: float=0, speed: float=5) -> np.array:
+
+    def run_laser_sweep_auto(self, power: float=None, start: float=1535.0,
+                             stop: float=1575.0, step: float=5.0, cycles: int=1,
+                             tavg: float=0, speed: float=5) -> np.array:
         """ 
         Use internal sweep module to sweep through wavelengths. 
         
@@ -373,7 +378,7 @@ class Agilent816xB(BaseInstrument):
         self.set_laser_wav(wavelength=start)
         self.set_laser_state(state=1)
         self.set_laser_am_state(0)
-        
+
         # detector setup
         self.set_detect_func_mode(mode=("logging", "stop"))
         self.set_detect_wav(wavelength=1550)
@@ -382,9 +387,11 @@ class Agilent816xB(BaseInstrument):
 
         # trigger setup
         self.set_trig_config(config="loop")
-        self.set_trig_responses(self.src_num, self.src_chan, in_rsp="ignored", out_rsp="stfinished")
-        self.set_trig_responses(self.sens_num, self.sens_chan, in_rsp="smeasure", out_rsp="disabled")
-        
+        self.set_trig_responses(self.src_num, self.src_chan,
+                                in_rsp="ignored", out_rsp="stfinished")
+        self.set_trig_responses(self.sens_num, self.sens_chan,
+                                in_rsp="smeasure", out_rsp="disabled")
+
         # sweep setup
         self.set_sweep_mode(mode="continuous")
         self.set_sweep_repeat_mode(mode="oneway")
@@ -396,24 +403,21 @@ class Agilent816xB(BaseInstrument):
         self.set_sweep_wav_logging(status=1)
         trigno = self.get_sweep_trigno()
 
-        
         self.set_detect_func_params(mode="logging", params=(trigno, tavg))
         self.set_detect_func_mode(mode=("logging", "start"))
 
         self.set_sweep_state(state="start")
-        
+
 
         # wait for the sweep to finish
         while self.get_sweep_state():
             continue
-
 
         # wait until all points are logged
         while self.get_laser_points(mode="llogging") < trigno:
             continue
 
         wavelengths = self.get_laser_data(mode="llogging")
-
 
         # Wait until the detector data acquisition is completed
         while self.get_detect_func_state().lower().endswith("progress"):
@@ -426,14 +430,13 @@ class Agilent816xB(BaseInstrument):
 
         return wavelengths, powers
 
-
     def find_op_wavelength(self, db: float, target: float, xrange: float=20e-09, speed: float=5,
                            step: float=5, cutoff: float=10, distance: float=100,
                            tol: float=1e-09) -> float:
         """
-        Find the operating wavelength that corresponds to a certain dB point from the maximum power level.
-        This wavelength should be on the lefthand side of the resonance and should be the closest to
-        the target wavelength.
+        Find the operating wavelength that corresponds to a certain dB point 
+        from the maximum power level. This wavelength should be on the lefthand side of the 
+        resonance and should be the closest to the target wavelength.
 
         Parameters
         ----------
@@ -462,7 +465,6 @@ class Agilent816xB(BaseInstrument):
         """
         wavelengths, powers = self.run_laser_sweep_auto(
             start=target-xrange/2, stop=target+xrange/2, step=step, speed=speed)
-        
 
         # convert to dB so resonances function will work
         powers = 10*np.log10(powers)
@@ -485,7 +487,6 @@ class Agilent816xB(BaseInstrument):
 
         return wavelengths[target_idx]
 
-
 class Agilent8163B(Agilent816xB):
     """
     Agilent 8163B Lightwave Multimeter VISA Library.
@@ -505,13 +506,14 @@ class Agilent8163B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=1, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+    def __init__(self, addr: str, rm, src_num: int=1,
+                 src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr, 
-            rm=rm, 
-            src_num=src_num, 
-            src_chan=src_chan, 
-            sens_num=sens_num, 
+            addr=addr,
+            rm=rm,
+            src_num=src_num,
+            src_chan=src_chan,
+            sens_num=sens_num,
             sens_chan=sens_chan
         )
 
@@ -534,7 +536,8 @@ class Agilent8164B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=0, src_chan: int=1, sens_num: int=2, sens_chan: int=1):
+    def __init__(self, addr: str, rm, src_num: int=0,
+                 src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
             addr=addr,
             rm=rm,
@@ -543,4 +546,3 @@ class Agilent8164B(Agilent816xB):
             sens_num=sens_num,
             sens_chan=sens_chan,
         )
-    

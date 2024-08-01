@@ -1,6 +1,6 @@
 # Instruments
 
-Supported instruments are listed below:
+Supported instruments are Listed below:
 | Manufacturer | Model       | Description | Tested |
 | ------------ | ----------- | ----------- | ------ |
 | Agilent (Keysight)      | 8163B       | Lightwave Multimeter | Yes |

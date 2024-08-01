@@ -1,6 +1,7 @@
 import time
-from os.path import join
 from os import makedirs
+from pathlib import Path
+from typing import Dict
 
 from tqdm import tqdm
 import pandas as pd
@@ -13,21 +14,32 @@ from pyoctal.instruments import (
     Keithley2400
 )
 
-from pyoctal.utils.file_operations import export_to_csv
+def run_6487(rm: ResourceManager, vs_config: Dict, filename: Path):
+    """
+    Measure current using Keithley 6487.
 
-def run_6487(rm: ResourceManager, vs_config: dict):
+    Parameters
+    ----------
+    rm: ResourceManager
+        Pyvisa resource manager
+    vs_config: dict
+        Configuration for Keithley 6487
+    filename: Path
+        file to save the data
+    """
     vs = Keithley6487(addr=vs_config["addr"], rm=rm)
 
     vs.set_laser_volt(0)
     vs.set_laser_state(1) # turn the laser on
-    
-    voltages = np.linspace(vs_config["start"], vs_config["stop"] + vs_config["step"], vs_config["step"])
+
+    voltages = np.linspace(vs_config["start"],
+                           vs_config["stop"] + vs_config["step"], vs_config["step"])
 
     currents = []
 
     for volt in tqdm(voltages):
         vs.set_laser_volt(volt)
-        
+
         # make sure that the voltage is stable
         while abs(vs.get_laser_volt() - volt) > 0.001:
             time.sleep(0.1)
@@ -37,44 +49,70 @@ def run_6487(rm: ResourceManager, vs_config: dict):
     vs.set_laser_volt(0)
     vs.set_laser_state(0) # turn the laser off
 
-    return pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents})
+    pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents}).to_csv(filename)
 
 
-def run_E3640A(rm: ResourceManager, pm_config: dict):
+def run_E3640A(rm: ResourceManager, pm_config: Dict, filename: Path):
+    """
+    Measure current using Agilent E3640A.
+
+    Parameters
+    ----------
+    rm: ResourceManager
+        Pyvisa resource manager
+    pm_config: dict
+        Configuration for Keithley 6487
+    filename: Path
+        file to save the data
+    """
     pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
 
     pm.set_volt(0)
     pm.set_output_state(1) # turn the output on
 
-    voltages = np.linspace(pm_config["start"], pm_config["stop"] + pm_config["step"], pm_config["step"])
+    voltages = np.linspace(pm_config["start"],
+                           pm_config["stop"] + pm_config["step"], pm_config["step"])
 
     currents = []
 
     for volt in tqdm(voltages):
         pm.set_volt(volt)
-        
+
         pm.wait_until_stable()
 
         currents.append(pm.get_curr())
-    
+
     pm.set_volt(0)
     pm.set_output_state(0) # turn laser off
-    return pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents})
 
+    pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents}).to_csv(filename)
 
-def run_2400(rm: ResourceManager, smu_config: dict):
+def run_2400(rm: ResourceManager, smu_config: Dict, folder: Path):
+    """
+    Measure current using Keithley 2400.
+
+    Parameters
+    ----------
+    rm: ResourceManager
+        Pyvisa resource manager
+    pm_config: dict
+        Configuration for Keithley 6487
+    folder: Path
+        The folde to save the files
+    """
     smu = Keithley2400(addr=smu_config["addr"], rm=rm)
     smu.set_laser_volt(0)
     smu.set_laser_state(1) # turn the laser on
 
-    voltages = np.linspace(smu_config["start"], smu_config["stop"] + smu_config["step"], smu_config["step"])
+    voltages = np.linspace(smu_config["start"],
+                           smu_config["stop"] + smu_config["step"], smu_config["step"])
 
     df = pd.DataFrame()
     currents = []
 
     for volt in tqdm(voltages):
         smu.set_laser_volt(volt)
-        
+
         while abs(smu.get_laser_volt() - volt) > 0.001:
             time.sleep(0.1)
 
@@ -84,20 +122,28 @@ def run_2400(rm: ResourceManager, smu_config: dict):
     smu.set_laser_volt(0)
     smu.set_laser_state(0) # turn the laser off
 
-    return df, pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents})
-
+    df.to_csv(folder / "2400.csv")
+    pd.DataFrame({
+        "Voltage [V]": voltages,
+        "Current [A]": currents
+    }).to_csv(folder / "2400_currents.csv")
 
 def main():
+    """ Entry point."""
     rm = ResourceManager()
-    folder = "data"
-    makedirs(folder, exist_ok=True)
+    path = Path(r"data")
 
-    vs_config = {
-        "addr": "GPIB0::1::INSTR",
-        "start": 0, # [V]
-        "stop": 2, # [V]
-        "step": 0.01, # [V]
-    }
+    if path.is_dir():
+        makedirs(path, exist_ok=True)
+    else:
+        makedirs(path.parent, exist_ok=True)
+
+    # vs_config = {
+    #     "addr": "GPIB0::1::INSTR",
+    #     "start": 0, # [V]
+    #     "stop": 2, # [V]
+    #     "step": 0.01, # [V]
+    # }
 
     pm_config = {
         "addr": "GPIB0::2::INSTR",
@@ -106,22 +152,14 @@ def main():
         "step": 0.01, # [V]
     }
 
-    smu_config = {
-        "addr": "GPIB0::3::INSTR",
-        "start": 0, # [V]
-        "stop": 2, # [V]
-        "step": 0.01, # [V]
-    }
+    # smu_config = {
+    #     "addr": "GPIB0::3::INSTR",
+    #     "start": 0, # [V]
+    #     "stop": 2, # [V]
+    #     "step": 0.01, # [V]
+    # }
 
-    df = run_6487(rm, vs_config)
-    export_to_csv(data=df, filename=join(folder, "6487.csv"))
-
-    df = run_E3640A(rm, pm_config)
-    export_to_csv(data=df, filename=join(folder, "E3640A.csv"))
-
-    df, df2 = run_2400(rm, smu_config)
-    export_to_csv(data=df, filename=join(folder, "2400.csv"))
-    export_to_csv(data=df2, filename=join(folder, "2400_currents.csv"))
+    run_E3640A(rm, pm_config, path)
 
 if __name__ == "__main__":
     main()

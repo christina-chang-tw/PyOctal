@@ -1,8 +1,8 @@
+from typing import Union, List, Tuple
+import numpy as np
+
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import *
-
-from typing import Union
-import numpy as np
 
 class TTiTGF3162(BaseInstrument):
     """
@@ -56,7 +56,7 @@ class TTiTGF3162(BaseInstrument):
         """ Load arbitrary waveform. """
         self.write(f"arbload arb{memchan}")
 
-    def set_arb_waveform(self, array: Union[list, tuple], memchan: int):
+    def set_arb_waveform(self, array: Union[List, Tuple], memchan: int):
         """ 
         Set arbitrary waveform.
         
@@ -74,6 +74,6 @@ class TTiTGF3162(BaseInstrument):
         y = 0.999*np.ones(2)
         self.set_arb_waveform(y, memchan)
 
-    def get_arb_waveform(self, memchan: int) -> Union[list,tuple]:
+    def get_arb_waveform(self, memchan: int) -> Union[List,Tuple]:
         """ Get the arbitrary waveform. """
         return self.query_binary_values(f"arb{memchan}?")

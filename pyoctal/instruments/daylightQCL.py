@@ -1,7 +1,6 @@
-from pyoctal.instruments.base import BaseInstrument
-from pyoctal.utils.error import *
+from collections import namedTuple
 
-from collections import namedtuple
+from pyoctal.instruments.base import BaseInstrument
 
 class DaylightQCL(BaseInstrument):
     """
@@ -15,11 +14,17 @@ class DaylightQCL(BaseInstrument):
         Pyvisa resource manager
     """
 
-    _rcontrol = namedtuple("rcontrol", ["wn", "curr", "freq", "pw", "mode"])
+    _rcontrol = namedTuple("rcontrol", ["wn", "curr", "freq", "pw", "mode"])
 
     def __init__(self, addr: str, rm):
         super().__init__(rsc_addr=addr, rm=rm)
-        self._range = self._rcontrol(wn=(9260.0, 9999.0), curr=(0.0, 925.0), freq=(1.0, 100.0), pw=(0.04, 0.5), mode=(1.0, 4.0))
+        self._range = self._rcontrol(
+            wn=(9260.0, 9999.0),
+            curr=(0.0, 925.0),
+            freq=(1.0, 100.0),
+            pw=(0.04, 0.5),
+            mode=(1.0, 4.0)
+        )
 
     def set_freq(self, freq: float):
         """ Set frequency [Hz]. """

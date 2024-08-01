@@ -8,20 +8,21 @@ default to tools/setups/config.yaml.
 To run this script:
     python -m tools.setups.main <name> [--file <path_to_file>]
 """
-
+from typing import Union
 
 from argparse import ArgumentParser
 import yaml
 from pyvisa import ResourceManager
-from typing import Union
 
 from pyoctal.instruments import Agilent8163B, AgilentE3640A, Agilent8164B
 
 def main():
+    """ Entry point."""
     parser = ArgumentParser()
     parser.add_argument("name", help="Name of the setup")
-    parser.add_argument("--file", help="Path to the setup file", default="tools/setups/config.yaml", required=False)
-    
+    parser.add_argument("--file", help="Path to the setup file",
+                        default="tools/setups/config.yaml", required=False)
+
     args = parser.parse_args()
 
     print(f"Setting up {args.name} from {args.file}")
@@ -32,8 +33,9 @@ def main():
 
     # Check if the setup exists
     if args.name not in setups.keys():
-        raise ValueError(f"Setup {args.name} not found in {args.file}. Make sure that the name matches!")
-    
+        raise ValueError(f"Setup {args.name} not found in {args.file}.
+                         Make sure that the name matches!")
+
     setup = setups[args.name]
 
     # Import the setup class

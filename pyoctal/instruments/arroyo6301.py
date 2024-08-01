@@ -34,5 +34,3 @@ class Arroyo6301(BaseInstrument):
     def get_laser_curr(self) -> float:
         """ Set the laser current [A]. """
         return self.query_float("laser:ldi?")
-    
-    

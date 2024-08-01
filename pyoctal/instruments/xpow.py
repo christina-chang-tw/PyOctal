@@ -1,3 +1,5 @@
+from typing import List
+
 from pyoctal.instruments.base import BaseInstrument
 
 class NicsLabXPOW(BaseInstrument):
@@ -31,7 +33,7 @@ class NicsLabXPOW(BaseInstrument):
         """ Calibrate a single channel. """
         self.write(f"CH:{chan}:CALIB:{volt}")
 
-    def cvcali_all(self, volts: list):
+    def cvcali_all(self, volts: List):
         """ Calibrate all channels. """
         for chan in range(self.channel_number):
             self.cvcalibrate_single(chan+1, volts[chan])
@@ -40,7 +42,7 @@ class NicsLabXPOW(BaseInstrument):
         """ Set the laser voltage [V]. """
         self.write(f"CH:{chan}:VOLT:{volt}")
 
-    def set_volt_all(self, volts: list):
+    def set_volt_all(self, volts: List):
         """ Set the laser voltage [V] for all channels. """
         for chan in range(self.channel_number):
             self.set_volt_single(chan+1, volts[chan])
@@ -49,7 +51,7 @@ class NicsLabXPOW(BaseInstrument):
         " Set output voltage for a group of channels. "
         self.write(f"CH:{chmin}-{chmax}:{volt}")
 
-    def set_range_all(self, ranges: list):
+    def set_range_all(self, ranges: List):
         for chan in range(self.channel_number):
             self.write(f"CH:{chan+1}:SVR:{ranges[chan]}")
 
@@ -59,7 +61,7 @@ class NicsLabXPOW(BaseInstrument):
         self.write(f"CH:{chan}:CURR:{curr}")
 
 
-    def set_curr_all(self, currs: list):
+    def set_curr_all(self, currs: List):
         """ Set the laser voltage [V] for all channels. """
         for chan in range(self.channel_number):
             self.set_curr_single(chan+1, currs[chan])

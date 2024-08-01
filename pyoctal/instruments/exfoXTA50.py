@@ -18,7 +18,7 @@ class EXFOXTA50(BaseInstrument):
     @property
     def serial_no(self):
         return self.query("serial_number?")
-    
+
     def set_freq(self, freq: float):
         """ Set frequency [THz]. """
         self.write(f"freq={freq}")
@@ -38,16 +38,15 @@ class EXFOXTA50(BaseInstrument):
     def get_fwhm(self) -> float:
         """ Get full-width half maximum frequency. """
         return self.query_float("fwhm?")
-    
+
     def get_wavelength(self) -> float:
         """ Set laser output state. """
         return self.query_float("lambda?")
-    
+
     def is_seq_running(self) -> bool:
         """ Check if a sequence is still being executed. """
         return self.query_bool("sequence_running?")
-    
+
     def set_local(self):
         """ Switch to local control. """
         self.write("local")
-
