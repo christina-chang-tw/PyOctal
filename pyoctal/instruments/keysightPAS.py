@@ -29,13 +29,14 @@ class BasePAS:
         self.connect(config_path)
 
     def connect(self, config_path: Path):
+        """ Connect to the engine. """
         # always connect to the first engine
         if self.engine_ids:
             self.engine = self.engine_mgr.OpenEngine(self.engine_ids[0])
 
         else:
             self.engine = self.engine_mgr.NewEngine()
-            if config_path: 
+            if config_path:
                 self.load_configuration(config_path.absolute())
             self.activate()
             activating = 0
@@ -43,11 +44,11 @@ class BasePAS:
 
             # Check engine activation status
             while activating == 0:
-                time.sleep(0.5) 
+                time.sleep(0.5)
                 activating = self.engine_state()
                 if time.time() - start > 30:
                     raise TimeoutError("Timeout error: check devices connection")
-        
+
 
     def activate(self):
         """ Active the engine. """
@@ -60,7 +61,7 @@ class BasePAS:
     def engine_state(self):
         """ Check the engine state. """
         return self.engine.Active
-    
+
     def quit(self):
         """ Quit the engine. """
         self.deactivate()
@@ -80,17 +81,17 @@ class BasePAS:
 
     def __get_name(self) -> str:
         return self.__class__.__name__
-    
+
     def __str__(self) -> str:
         return f"Photonics Application Suite: {self.__get_name()} "
-    
+
     def __repr__(self) -> str:
         return f"{self.__get_name()}()"
-    
+
     def __enter__(self):
         return self
-    
-    def __exit__(self):
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.quit()
 
 class KeysightILME(BasePAS):
@@ -177,7 +178,7 @@ class KeysightILME(BasePAS):
     @property
     def measurement_result(self):
         return self.engine.MeasurementResult
-    
+
     @property
     def busy(self):
         return self.engine.Busy
@@ -202,19 +203,19 @@ class KeysightILME(BasePAS):
         busy = True
 
         # Wait for the sweep to finish
-        while busy == True:
+        while busy is True:
             time.sleep(0.1)
             busy = self.engine.Busy
-        
+
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
         data_per_curve = IOMRGraph.dataPerCurve
 
-        #TODO: check if the channel number is always 1
+        # Need to check if the channel number is always 1
         ydata = IOMRGraph.YData
     
         return self.get_wavelength(IOMRGraph, data_per_curve), ydata, IOMRFile
-    
+
     @staticmethod
     def get_wavelength(IOMRGraph, data_per_curve) -> Tuple:
         """ Get all wavelength datapoints from a measurement. """
@@ -225,6 +226,6 @@ class KeysightILME(BasePAS):
 
 
 def export_to_omr(data, filename: Path):
+    """ Export the data to an OMR file. """
     makedirs(filename.parent, exist_ok=True)
     data.Write(filename.absolute())
-

@@ -1,10 +1,10 @@
-from pyoctal.instruments.base import BaseInstrument
-from pyoctal.utils.error import *
+from typing import Tuple
 
 import numpy as np
 import matplotlib.pyplot as plot
-from typing import Tuple
 
+from pyoctal.instruments.base import BaseInstrument
+from pyoctal.utils.error import *
 
 class TektronixScope(BaseInstrument):
     """
@@ -29,7 +29,7 @@ class TektronixScope(BaseInstrument):
     def set_meas_source(self, src: str):
         """ Set measurement source number. """
         self.write(f"measurement:immed:source {src}")
-    
+
     def set_meas_type(self, typ: str):
         """ Set measurement source type. """
         self.write(f"measurement:immed:type {typ}")
@@ -42,48 +42,54 @@ class TektronixScope(BaseInstrument):
     def get_wfmo_ymult(self) -> float:
         """ Get voltage scale. """
         return self.query_float("wfmoutpre:ymult?")
-    
+
     def get_wfmo_yoff(self) -> float:
         """ Get voltage offset. """
         return self.query_float("wfmoutpre:yoff?")
-    
+
     def get_wfmo_yzero(self) -> float:
         """ Get voltage zero. """
         return self.query_float("wfmoutpre:yzero?")
-    
+
     # Wfmp
     def get_wfmp_ymult(self, src: str) -> float:
         # get voltage scale
         return self.query_float(f"wfmp:{src}:ymult?")
-    
+
     def get_wfmp_yoff(self, src: str) -> float:
         """ Get voltage offset. """
         return self.query_float(f"wfmp:{src}:yoff?")
-    
+
     def get_wfmp_yzero(self, src: str) -> float:
         """ Get voltage zero. """
         return self.query_float(f"wfmp:{src}:yzero?")
-    
+
     def get_wfmp_xunit(self) -> str:
+        """ Get x-axis unit. """
         return self.query("wfmp:xunit?")
-    
+
     def get_wfmp_yunit(self) -> str:
+        """ Get y-axis unit. """
         return self.query("wfmp:yunit?")
-    
+
     def get_wfmp_units(self) -> Tuple[str, str]:
+        """ Get x and y axis units. """
         return self.get_wfmp_xunit(), self.get_wfmp_yunit()
 
     # Horizontal
     def get_horizontal_recordlength(self) -> int:
+        """ Get the horizontal record length. """
         return int(self.query("horizontal:recordlength?"))
-    
+
     def get_horizontal_scale(self) -> float:
+        """ Get the horizontal scale. """
         return self.query_float("horizontal:main:scale?")
-    
+
     def get_horizontal_pos(self) -> float:
+        """ Get the horizontal position. """
         # get timescale offset
         return self.query_float("horizontal:main:position?")
-    
+
 
     # Data
     def set_data_format(self, datafmt: str="asci"):

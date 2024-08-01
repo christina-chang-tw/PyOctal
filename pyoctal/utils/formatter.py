@@ -37,7 +37,7 @@ class CustomLogConsoleFormatter(logging.Formatter):
     """ Get a colourful terminal output for different logging level. """
 
     fmat = "%(message)s"
- 
+
     FORMATS = {
         logging.DEBUG: Colours.cyan + fmat + Colours.reset,
         logging.INFO: Colours.grey + fmat + Colours.reset,
@@ -52,7 +52,9 @@ class CustomLogConsoleFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-class CustomArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+class CustomArgparseFormatter(
+    argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter
+):
     """ Display default values in the helper message. """
 
     def _get_help_string(self, action):
@@ -76,9 +78,9 @@ class Publication:
     """ Set the publication quality figure settings. """
     @staticmethod
     def set_basics():
-        fp = mpl.font_manager.FontProperties(fname=r"C:\Users\tyc1g20\Downloads\Helvetica_Font_Family\Helvetica 400.ttf")
-        legendsize = 6
-        small_font = 6
+        """
+        Set the basic settings for the publication quality figures.
+        """
         medium_font = 8
         large_font = 10
 
@@ -95,7 +97,7 @@ class Publication:
         mpl.rcParams['axes.titlesize'] = large_font
         mpl.rcParams['axes.titleweight'] = "bold"
         mpl.rcParams['axes.xmargin'] = 0
-        mpl.rcParams['axes.grid'] = False  
+        mpl.rcParams['axes.grid'] = False
         mpl.rcParams['axes.grid.which'] = 'both'
         mpl.rcParams['grid.linewidth'] = 0.3
         mpl.rcParams['grid.color'] = 'D3D3D3'
@@ -116,20 +118,23 @@ class Publication:
         mpl.rcParams['savefig.bbox'] = 'tight'
         mpl.rcParams['scatter.marker'] = 'x'
         mpl.rcParams['lines.markersize'] = 5
-        
 
     @staticmethod
     def get_one_col_figsize():
+        """ Get the figure size for one column. """
         return (9/2.54)
-    
+
     @staticmethod
     def get_two_col_figsize():
+        """ Get the figure size for two columns. """
         return (18/2.54)
-    
+
     @staticmethod
     def cm2inch(val):
+        """ Convert cm to inch. """
         return val/2.54
-    
+
     @property
     def dpi(self):
+        """ Get the default dpi. """
         return 400

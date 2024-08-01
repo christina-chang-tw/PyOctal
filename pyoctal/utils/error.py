@@ -1,4 +1,5 @@
 # Error Code Definition
+# pylint: disable=C0301
 INCOMPATIBLE_OS_ERR = 100
 PYTHON_VER_ERROR = 101
 RESOURCE_ADDR_UNKNOWN_ERR = 102
@@ -34,5 +35,3 @@ error_message = {
     INSTR_NOT_EXIST: "Required instruments for this sweep do not exist. Check instrument address in YAML file.",
     INSTR_MATCH_STRING_INCOR: "Match strings for instruments is incorrect.",
 }
-
-

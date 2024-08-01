@@ -7,7 +7,18 @@ from pathlib import Path
 
 import pandas as pd
 
-def export_to_excel(data: Union[pd.DataFrame, List, Tuple], filename: Path, sheet_names: Union[Tuple, List]):
+def export_to_excel(data: Union[pd.DataFrame, List, Tuple],
+                    filename: Path, sheet_names: Union[Tuple, List]):
+    """
+    Export data to an Excel file.
+
+    Parameters
+    ----------
+    data: Union[pd.DataFrame, List, Tuple]
+        Data to be exported
+    filename: Path
+        File name to be saved
+    """
     makedirs(filename.parent, exist_ok=True)
 
     with pd.ExcelWriter(filename) as writer:

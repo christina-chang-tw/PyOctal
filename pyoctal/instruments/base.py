@@ -247,10 +247,10 @@ class BaseSweeps:
     def instrment_check(match, addr_list):
         """ Check if all instruments needed for a test are present. """
         if isinstance(match, str) and match not in addr_list:
-            raise Exception(f"Error code {INSTR_NOT_EXIST:x}:
+            raise Exception(f"Error code {INSTR_NOT_EXIST:x}: \
                             {error_message[INSTR_NOT_EXIST]}")
         elif isinstance(match, Union[Tuple, List]) and not all([dev_type in addr_list for dev_type in match]):
-            raise Exception(f"Error code {INSTR_NOT_EXIST:x}:
+            raise Exception(f"Error code {INSTR_NOT_EXIST:x}: \
                             {error_message[INSTR_NOT_EXIST]}")
 
 

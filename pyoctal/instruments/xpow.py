@@ -23,11 +23,10 @@ class NicsLabXPOW(BaseInstrument):
     @property
     def max_current(self):
         return self.max_curr
-    
+
     @property
     def max_voltage(self):
         return self.max_volt
-
 
     def cvcali_single(self, chan: int, volt: float):
         """ Calibrate a single channel. """

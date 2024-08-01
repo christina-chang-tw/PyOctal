@@ -18,12 +18,12 @@ class ThorlabsPM100(BaseInstrument):
     def read(self):
         """ Read the PM power (as shown on the display). """
         return self.query("read?")
-    
+
     def meas_power(self) -> float:
         """ Measure the PM power (as shown on the display). """
         self.write("measure:power")
         return self.query_float("fetch?")
-    
+
     def set_data_encd(self, enc_type: str):
         self.write(f"data:encd {enc_type}")
 
