@@ -99,7 +99,7 @@ class BaseInstrument:
 
     def connect(self):
         """ Establishing a connection to the device. """
-        if self._addr in self.list_resource(): # Checking if the resource is available
+        if self._addr in self.list_resources(): # Checking if the resource is available
             self._instr = self._rm.open_resource(self._addr)
             self._instr.read_termination = self._read_termination
             self._instr.write_termination = self._write_termination
