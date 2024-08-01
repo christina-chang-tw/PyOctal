@@ -1,6 +1,8 @@
 from typing import Union, List, Tuple
 import numpy as np
 
+from pyvisa import ResourceManager
+
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import *
 
@@ -16,7 +18,7 @@ class TTiTGF3162(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm):
+    def __init__(self, addr: str, rm: ResourceManager):
         super().__init__(rsc_addr=addr, rm=rm)
 
     def set_freq(self, freq: float):

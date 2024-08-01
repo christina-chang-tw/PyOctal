@@ -1,5 +1,7 @@
 from typing import List
 
+from pyvisa import ResourceManager
+
 from pyoctal.instruments.base import BaseInstrument
 
 class NicsLabXPOW(BaseInstrument):
@@ -14,7 +16,7 @@ class NicsLabXPOW(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm):
+    def __init__(self, addr: str, rm: ResourceManager):
         super().__init__(rsc_addr=addr, rm=rm)
         self.max_curr = 300
         self.max_volt = 29

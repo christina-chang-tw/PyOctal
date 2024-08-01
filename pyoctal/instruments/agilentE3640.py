@@ -2,6 +2,8 @@ import sys
 from time import time
 from typing import List
 
+from pyvisa import ResourceManager
+
 from pyoctal.instruments.base import BaseInstrument
 
 class AgilentE3640A(BaseInstrument):
@@ -16,7 +18,7 @@ class AgilentE3640A(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm):
+    def __init__(self, addr: str, rm: ResourceManager):
         super().__init__(rsc_addr=addr, rm=rm)
 
     def setup(self, voltage: float, current: float):

@@ -1,6 +1,8 @@
 import time
 from typing import Union, List, Tuple
 
+from pyvisa import ResoureManager
+
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
 
@@ -16,7 +18,7 @@ class AmetekDSP7230(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm):
+    def __init__(self, addr: str, rm: ResourceManager):
         super().__init__(rsc_addr=addr, rm=rm)
 
     def get_mag(self) -> float:

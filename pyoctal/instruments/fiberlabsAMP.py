@@ -2,6 +2,8 @@ from typing import Union, List
 import time
 import sys
 
+from pyvisa import ResourceManager
+
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
 from pyoctal.utils.util import watt_to_dbm, dbm_to_watt
@@ -18,7 +20,7 @@ class FiberlabsAMP(BaseInstrument):
     rm:
         Pyvisa resource manager
     """
-    def __init__(self, addr: str, rm: str):
+    def __init__(self, addr: str, rm: ResourceManager):
         super().__init__(rsc_addr=addr, rm=rm, read_termination="")
         self._chan_curr_max = 1048 # [mA]
         self._chan_power_max = 398.11 # [mW]

@@ -1,6 +1,8 @@
 import time
 from typing import Tuple, List
 
+from pyvisa import ResourceManager
+
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import *
 
@@ -16,7 +18,7 @@ class Keithley2400(BaseInstrument):
         Pyvisa resource manager
     """
     
-    def __init__(self, addr: str, rm):
+    def __init__(self, addr: str, rm: ResourceManager):
          super().__init__(rsc_addr=addr, rm=rm)
 
     def initiate(self):

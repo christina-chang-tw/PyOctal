@@ -1,3 +1,5 @@
+from pyvisa import ResourceManager
+
 from pyoctal.instruments.base import BaseInstrument
 
 class AgilentDSO8000(BaseInstrument):
@@ -12,7 +14,7 @@ class AgilentDSO8000(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm):
+    def __init__(self, addr: str, rm: ResourceManager):
         super().__init__(rsc_addr=addr, rm=rm)
 
     def get_mag(self, chan: int) -> float:

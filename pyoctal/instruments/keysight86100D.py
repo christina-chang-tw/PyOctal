@@ -1,7 +1,8 @@
-from pyoctal.instruments.base import BaseInstrument
-from pyoctal.utils.error import *
-
 from typing import Union
+
+from pyvisa import ResourceManager
+
+from pyoctal.instruments.base import BaseInstrument
 
 class Keysight86100D(BaseInstrument):
     """
@@ -19,7 +20,7 @@ class Keysight86100D(BaseInstrument):
         The clock recovery number
     """
 
-    def __init__(self, addr: str, rm, chan: int=1, clk_num: int=1):
+    def __init__(self, addr: str, rm: ResourceManager, chan: int=1, clk_num: int=1):
         super().__init__(rsc_addr=addr, rm=rm)
         self.chan = chan
         self.clk_num = clk_num

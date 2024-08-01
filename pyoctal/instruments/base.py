@@ -129,12 +129,12 @@ class BaseInstrument:
             raise ValueError(f"Error code {COND_INVALID_ERR:x}: {error_message[COND_INVALID_ERR]}")
         elif len(cond) == 2 and all(isinstance(n, Union[float, int]) for n in cond):
             if not cond[0] < value < cond[1]: # check the value is within range
-                raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}:
+                raise ValueError(f"Error code {PARAM_OUT_OF_RANGE_ERR:x}: \
                                  {error_message[PARAM_OUT_OF_RANGE_ERR]}.\n \
                                  Need to be between {cond[0]} and {cond[1]}.")
         else:
             if value not in cond: # check the value is in a List/Tuple
-                raise ValueError(f"Error code {PARAM_INVALID_ERR:x}:
+                raise ValueError(f"Error code {PARAM_INVALID_ERR:x}: \
                                  {error_message[PARAM_INVALID_ERR]}.\n \
                                  \nPlease select one of the values: {[', '.join(val) for val in cond]}")
 

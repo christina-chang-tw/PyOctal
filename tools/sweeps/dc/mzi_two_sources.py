@@ -95,7 +95,13 @@ def main():
 
     makedirs(folder.parent, exist_ok=True)
 
-    run_ring_assisted_mzi(rm, rpm_config=rpm_config, hpm_config=hpm_config, mm_config=mm_config, folder=folder)
+    run_ring_assisted_mzi(
+        rm=rm,
+        rpm_config=rpm_config,
+        hpm_config=hpm_config,
+        mm_config=mm_config,
+        folder=folder
+    )
 
 if __name__ == "__main__":
     main()
