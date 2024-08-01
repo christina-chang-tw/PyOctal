@@ -1,7 +1,7 @@
 import time
 from typing import Union, List, Tuple
 
-from pyvisa import ResoureManager
+from pyvisa import ResourceManager
 
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
