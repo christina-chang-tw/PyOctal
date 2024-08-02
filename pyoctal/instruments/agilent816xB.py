@@ -88,8 +88,8 @@ class Agilent816xB(BaseInstrument):
 
     def set_unit(self, source: str, sensor: str):
         """ Set the power unit of the laser and detector. """
-        self.write(f"power:unit {source}") # set the source unit in dBm
-        self.write(f"sense:power:unit {sensor}") # set sensor unit
+        self.write(f"{self.laser}:power:unit {source}") # set the source unit in dBm
+        self.write(f"{self.detect}:power:unit {sensor}") # set sensor unit
 
 
     ### DETECTOR COMMANDS ###############################
@@ -167,8 +167,8 @@ class Agilent816xB(BaseInstrument):
 
     def set_laser_wav(self, wavelength: float):
         """ Set the laser wavelength [nm]. """
-        self.write(f"{self.laser}:wavelength:fixed {wavelength} nm")
-
+        self.write(f"{self.laser}:wavelength:fixed {wavelength}nm")
+    
     def set_laser_state(self, state: bool):
         """ Set the laser output state. """
         self.write(f"{self.laser}:power:state {state}")
@@ -281,7 +281,7 @@ class Agilent816xB(BaseInstrument):
     def get_sweep_trigno(self) -> int:
         """ Get the laser trigger number. """
         return int(self.query(f"{self.laser}:wavelength:sweep:exp?"))
-
+    
     def find_resonance(self, srange: float=1e-09) -> float:
         """ Find the resonance wavelength based on the current wavelength. """
         curr_wav = self.get_laser_wav()
@@ -289,13 +289,14 @@ class Agilent816xB(BaseInstrument):
         # quick search for the resonance by finding the minimum
         # power value within the range of the current wavelength
         powers = []
-        search_wavelengths = np.linspace(curr_wav-srange/2, curr_wav+srange/2, num=10)
+        search_wavelengths = np.linspace(curr_wav-srange*2/3, curr_wav+srange*1/3, num=int(srange//5e-10+1))*1e+09
         for wavelength in search_wavelengths:
             self.set_wavelength(wavelength)
             powers.append(self.get_detect_pow())
         arg = np.argmin(powers)
 
         if arg == 0 or arg == len(powers)-1:
+            print(powers)
             print("Warning: Resonance not found. Please adjust the search range.")
 
         return search_wavelengths[arg]

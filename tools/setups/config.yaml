@@ -20,5 +20,5 @@
 E3640A:
   class: AgilentE3640A
   addr: GPIB0::5::INSTR
-  voltage: 3 # [V]
+  voltage: 0 # [V]
   current: 0.1 # [A]

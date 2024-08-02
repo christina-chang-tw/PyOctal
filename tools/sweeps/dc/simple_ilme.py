@@ -34,10 +34,10 @@ def run_ilme(rm: ResourceManager, pm_config: dict, folder: Path, ilme_config: Pa
 def main():
     """ Entry point."""
     pm_config = {
-        "addr": "GPIB0::5::INSTR",
+        "addr": "GPIB0::6::INSTR",
         "start": 0, # [V]
-        "stop": 3, # [V]
-        "step": 0.5, # [V]
+        "stop": 0, # [V]
+        "step": 1, # [V]
     }
 
     folder = r"C:\Users\Lab2052\Desktop\Users\Christina\2024-5-07\s4_2_ramzi_ring_g200\simple_ilme4"
