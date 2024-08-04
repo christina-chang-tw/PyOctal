@@ -21,7 +21,7 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("name", help="Name of the setup")
     parser.add_argument("--file", help="Path to the setup file",
-                        default="tools/setups/config.yaml", required=False)
+                        default="tools/setups/config.yml", required=False)
 
     args = parser.parse_args()
 

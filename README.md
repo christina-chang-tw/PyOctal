@@ -143,46 +143,26 @@ This package supports installation using pip allowing users to expand the projec
 ## Getting Started
 
 ### How to Run a Test?
-Everything is this repository should be run as a python module. It uses argparse package to parse command line information to the program. You should pass in a .yaml file to set all the parameters.
+There has been a refactoring in this module. It used to be using argparse as an interface, but due to have more and more testings to be added, I have chosen to run each file individually and those files are stored in the *tools* directory.
 
 **Sweeps**
 
-These are the optical tests that are currently implemented by this library. These can be run by running `sweep_main.py` as a module from the root directory.
-
-| Tests     | Instruments  | Description    |
-| --------- | ------------ | -------------- |
-| passive   | ILME, Agilent 8163B | Insertion loss testing using PAS ILME engine |
-|           | Agilent 8163B       | Manual insertion loss testing |
-| dc        | | dc sweeps |
-
-Before you run a test, please make sure that you set all parameters correctly in the corresponding configuration file! All configuration files should be stored under `config` folder.
-
 ```bash
 # Example: 
-# (1) General helper message
-> python -m tools.sweep_main -h
-# (2) Run a passive test without specifying anything
-> python -m tools.sweep_main -t passive
-# (3) Run a dc sweep test with logging level as DEBUG and specify the config file path
-> python -m tools.sweep_main -t dc --config ./config/test.yaml
+> python -m tools.sweeps.pulse
 ```
 
 **Instrument Setup**
 
-An interface to easily setup an instrument.
+An interface to easily setup an instrument. Go to tools > setups > config.yml to change the settings for the corresponding instrument.
 | Test    | Instrument | Description    |
 |---------| ---------- |----------------|
-| agilent8163B | Agilent 8163B | Setup the multimeter to the auto-range and desired wavelength and output power |
-| h_speed | Setup the clock frequency for both clock signal generator and oscilloscope |
+| agilent816xB | Agilent 8163B, 8164B | Setup the multimeter to the auto-range and desired wavelength and output power |
+| E3640A | Set the output voltage and current limit for the DC power source |
 
 ```bash
 # Example: 
-# (1) General helper message
-> python -m tools.instr_main -h
-# (2) Helper message for specific instrument(s)
-> python -m tools.instr_main agilent8163B -h
-# (3) Setup 8163B wavelength at 1550nm and power at 10dBm
-> python -m tools.instr_main agilent8163B -w 1550 -p 10
+> python -m tools.setups.main 816xB
 ```
 
 ### Debugging issues
