@@ -157,6 +157,16 @@ class KeysightILME(BasePAS):
         """ Set the sweep rate in nm/s. """
         self.engine.SweepRate = rate
 
+        
+    @property
+    def tls_output_port(self):
+        return self.engine.TLSOutputPort
+    
+    @tls_output_port.setter
+    def tls_output_port(self, port: int):
+        self.engine.TLSOutputPort = port
+
+
     @property
     def tls_power(self) -> float:
         """ Get the laser power in dBm. """
@@ -176,12 +186,38 @@ class KeysightILME(BasePAS):
         self.engine.NumberOfScans = scan
 
     @property
+    def range_decrement(self):
+        return self.engine.RangeDecrement
+    
+    @range_decrement.setter
+    def range_decrement(self, decrement: int):
+        self.engine.RangeDecrement = decrement
+
+    @property
     def measurement_result(self):
         return self.engine.MeasurementResult
 
     @property
+    def pwm_ranges(self):
+        return self.engine.PWMRanges
+
+    @property
+    def pwm_sensitivity(self):
+        return self.engine.PWMSensitivity
+    
+    @property
+    def zero_pwm_channels(self):
+        return self.engine.ZeroPWMChannels
+
+    
+    
+    @property
     def busy(self):
         return self.engine.Busy
+    
+    def tls_zeroing(self):
+        """ Zero the TLS. """
+        self.engine.ZeroTLS()
 
     def start_meas(self):
         """ Start one-shot measurement. """

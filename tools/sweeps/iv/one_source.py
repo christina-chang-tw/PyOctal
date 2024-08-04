@@ -27,6 +27,8 @@ def run_6487(rm: ResourceManager, vs_config: Dict, filename: Path):
     filename: Path
         file to save the data
     """
+
+def run_6487(rm: ResourceManager, vs_config: dict):
     vs = Keithley6487(addr=vs_config["addr"], rm=rm)
 
     vs.set_laser_volt(0)
@@ -74,6 +76,7 @@ def run_E3640A(rm: ResourceManager, pm_config: Dict, filename: Path):
                            pm_config["stop"] + pm_config["step"], pm_config["step"])
 
     currents = []
+    pm.set_params(pm_config["stop"], 0.1)
 
     for volt in tqdm(voltages):
         pm.set_volt(volt)
@@ -146,9 +149,9 @@ def main():
     # }
 
     pm_config = {
-        "addr": "GPIB0::2::INSTR",
+        "addr": "GPIB0::6::INSTR",
         "start": 0, # [V]
-        "stop": 2, # [V]
+        "stop": 10, # [V]
         "step": 0.01, # [V]
     }
 
