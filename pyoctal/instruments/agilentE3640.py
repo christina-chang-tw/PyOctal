@@ -25,6 +25,9 @@ class AgilentE3640A(BaseInstrument):
         self.reset()
         self.set_output_state(state=1)
         self.set_params(voltage, current)
+        
+    def disconnect(self):
+        self.write("display on")
 
     def set_output_state(self, state: bool):
         """ Set the voltage output state. """

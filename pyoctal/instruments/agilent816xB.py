@@ -77,6 +77,10 @@ class Agilent816xB(BaseInstrument):
         if not self.get_laser_state():
             self.unlock("1234")
             self.set_laser_state(1)
+            
+    def disconnect(self):
+        """ Disconnect the instrument. """
+        self.write("display:lockout off")
 
     def unlock(self, code: str):
         """ Unlock the instrument with a code. """
