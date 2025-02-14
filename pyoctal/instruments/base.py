@@ -83,23 +83,23 @@ class BaseInstrument:
     termination: str
         The termination character when pyvisa is communicating with the instrument
     """
-    def __init__(self, rsc_addr: str, rm: ResourceManager, **kwargs):
+    def __init__(self, rm: ResourceManager, **kwargs):
         # Communicate with the resource and identify it
-        self._addr = rsc_addr
+        self._addr = None
         self._rm = rm
         self._rm.timeout = 25e+03
         # check which type of resources it is connecting to and automatically determine the read and write termination
         # character based on the resource address
         self._write_termination = kwargs.get("write_termination", "\n")
         self._read_termination = kwargs.get("read_termination", "\n")
-        if rsc_addr.startswith("ASRL"):
-            self._read_termination = "\r\n"
-        self.connect()
 
 
-    def connect(self):
+    def connect(self, addr: str=None):
         """ Establishing a connection to the device. """
-        if self._addr in self.list_resources(): # Checking if the resource is available
+        self._addr = addr
+        if self._addr.startswith("ASRL"):
+            self._read_termination = "\r\n"
+        if addr in self.list_resources(): # Checking if the resource is available
             self._instr = self._rm.open_resource(self._addr)
             self._instr.read_termination = self._read_termination
             self._instr.write_termination = self._write_termination
@@ -109,11 +109,11 @@ class BaseInstrument:
 
             # make sure that we know the device type
             if instr_type not in known_type:
-                raise Exception(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: \
+                raise ValueError(f"Error code {RESOURCE_CLASS_UNKNOWN_ERR:x}: \
                                 {error_message[RESOURCE_CLASS_UNKNOWN_ERR]}")
             self._identity = self.get_idn()
         else:
-            raise Exception(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: \
+            raise ValueError(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: \
                             {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
 
 

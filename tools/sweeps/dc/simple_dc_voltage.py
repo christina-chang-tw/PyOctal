@@ -21,8 +21,10 @@ from pyoctal.utils.file_operations import export_to_excel
 
 def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: Path):
     """ Run only with instrument. Require one voltage source """
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
-    mm = Agilent8163B(addr=mm_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
+    mm = Agilent8163B(rm=rm)
+    mm.connect(addr=mm_config["addr"])
 
 
     currents = []

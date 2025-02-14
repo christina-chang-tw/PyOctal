@@ -9,8 +9,10 @@ from pyoctal.instruments import AgilentE3640A, Agilent8163B
 
 def run_one_source(rm: ResourceManager, pm_config: dict, mm_config: dict, folder: Path):
     """ Run only with instrument. Require one voltage source """
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
-    mm = Agilent8163B(addr=mm_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
+    mm = Agilent8163B(rm=rm)
+    mm.connect(addr=mm_config["addr"])
 
     voltages = range(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])
 

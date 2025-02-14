@@ -21,16 +21,14 @@ class BasePAS:
     server_addr: str
         The address of the software
     """
-    def __init__(self, server_addr: str, config_path: Path=None):
-        # connect to Engine Manager
+    def __init__(self, server_addr: str):
+        # always connect to the first engine
         self.engine_mgr = win32com.client.Dispatch(server_addr)
         # List all engines running
         self.engine_ids = self.engine_mgr.EngineIDs
-        self.connect(config_path)
 
-    def connect(self, config_path: Path):
-        """ Connect to the engine. """
-        # always connect to the first engine
+    def connect(self, config_path: Path=None):
+        """ Connect to the engine. """        
         if self.engine_ids:
             self.engine = self.engine_mgr.OpenEngine(self.engine_ids[0])
 

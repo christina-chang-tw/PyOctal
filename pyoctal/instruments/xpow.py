@@ -16,8 +16,8 @@ class NicsLabXPOW(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm: ResourceManager):
-        super().__init__(rsc_addr=addr, rm=rm)
+    def __init__(self, rm: ResourceManager):
+        super().__init__(rm=rm)
         self.max_curr = 300
         self.max_volt = 29
         self.channel_number = 8

@@ -41,7 +41,8 @@ def main():
     # Import the setup class
     rm = ResourceManager()
     cls = globals()[setup.pop("class")]
-    cls = cls(addr=setup.pop("addr"), rm=rm)
+    cls = cls(rm=rm)
+    cls.connect(setup.pop("addr")) 
 
     # Setup the instrument
     if isinstance(cls, Union[Agilent8163B, Agilent8164B]):

@@ -16,18 +16,21 @@ def run_ilme(rm: ResourceManager, pm_config: dict, folder: Path, ilme_config: Pa
     """ Run with ILME engine """
     voltages = np.arange(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])
 
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
     pm.set_output_state(1)
+    
+    ilme = KeysightILME()
+    ilme.connect(config_path=ilme_config)
 
-    with KeysightILME(config_path=ilme_config) as ilme:
-        for volt in tqdm(voltages, desc="Sweeping voltages"):
-            pm.set_params(volt, 0.1)
-            pm.wait_until_stable()
+    for volt in tqdm(voltages, desc="Sweeping voltages"):
+        pm.set_params(volt, 0.1)
+        pm.wait_until_stable()
 
-            ilme.start_meas()
-            _, _, omr_data = ilme.get_result()
+        ilme.start_meas()
+        _, _, omr_data = ilme.get_result()
 
-            export_to_omr(omr_data, folder / f"heater_{volt}V.omr")
+        export_to_omr(omr_data, folder / f"heater_{volt}V.omr")
 
     pm.set_volt(0)
 

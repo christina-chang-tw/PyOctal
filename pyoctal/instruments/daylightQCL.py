@@ -18,8 +18,8 @@ class DaylightQCL(BaseInstrument):
 
     _rcontrol = namedtuple("rcontrol", ["wn", "curr", "freq", "pw", "mode"])
 
-    def __init__(self, addr: str, rm: ResourceManager):
-        super().__init__(rsc_addr=addr, rm=rm)
+    def __init__(self, rm: ResourceManager):
+        super().__init__(rm=rm)
         self._range = self._rcontrol(
             wn=(9260.0, 9999.0),
             curr=(0.0, 925.0),

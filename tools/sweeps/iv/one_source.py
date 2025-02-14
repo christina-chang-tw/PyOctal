@@ -14,22 +14,9 @@ from pyoctal.instruments import (
     Keithley2400
 )
 
-def run_6487(rm: ResourceManager, vs_config: Dict, filename: Path):
-    """
-    Measure current using Keithley 6487.
-
-    Parameters
-    ----------
-    rm: ResourceManager
-        Pyvisa resource manager
-    vs_config: dict
-        Configuration for Keithley 6487
-    filename: Path
-        file to save the data
-    """
-
-def run_6487(rm: ResourceManager, vs_config: dict):
-    vs = Keithley6487(addr=vs_config["addr"], rm=rm)
+def run_6487(rm: ResourceManager, vs_config: dict, filename: Path):
+    vs = Keithley6487(rm=rm)
+    vs.connect(addr=vs_config["addr"])
 
     vs.set_laser_volt(0)
     vs.set_laser_state(1) # turn the laser on
@@ -67,7 +54,8 @@ def run_E3640A(rm: ResourceManager, pm_config: Dict, filename: Path):
     filename: Path
         file to save the data
     """
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
 
     pm.set_volt(0)
     pm.set_output_state(1) # turn the output on
@@ -103,7 +91,8 @@ def run_2400(rm: ResourceManager, smu_config: Dict, folder: Path):
     folder: Path
         The folde to save the files
     """
-    smu = Keithley2400(addr=smu_config["addr"], rm=rm)
+    smu = Keithley2400(rm=rm)
+    smu.connect(addr=smu_config["addr"])
     smu.set_laser_volt(0)
     smu.set_laser_state(1) # turn the laser on
 

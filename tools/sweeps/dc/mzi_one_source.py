@@ -15,8 +15,10 @@ from pyoctal.instruments import AgilentE3640A, Agilent8164B
 
 def run_one_source_mzi(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: Path):
     """ Run only with instrument. Require one voltage source """
-    pm = AgilentE3640A(addr=pm_config.pop["addr"], rm=rm)
-    mm = Agilent8164B(addr=mm_config.pop["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config.pop["addr"])
+    mm = Agilent8164B(rm=rm)
+    mm.connect(addr=mm_config.pop["addr"])
     mm.setup(**mm_config)
 
     avg = 3

@@ -8,13 +8,11 @@ To run this script:
 python -m tools.sweeps.dc.simple_dc
 """
 from os import makedirs
-from pathlib import Path
 
 import numpy as np
 from tqdm import tqdm
 import pandas as pd
 from pyvisa import ResourceManager
-import time
 
 from pyoctal.instruments import AgilentE3640A, Agilent8164B
 from pyoctal.utils.file_operations import export_to_excel
@@ -35,9 +33,12 @@ def run(rm: ResourceManager, pm_config: dict, pm2_config: dict, mm_config: dict,
     filename: Path
         The filename to save the data to
     """
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
-    pm2 = AgilentE3640A(addr=pm2_config["addr"], rm=rm)
-    mm = Agilent8164B(addr=mm_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
+    pm2 = AgilentE3640A(rm=rm)
+    pm2.connect(addr=pm2_config["addr"])
+    mm = Agilent8164B(rm=rm)
+    mm.connect(addr=mm_config["addr"])
 
     currents = []
     powers = []
