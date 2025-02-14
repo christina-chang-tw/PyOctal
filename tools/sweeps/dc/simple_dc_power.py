@@ -78,6 +78,7 @@ def run(rm: ResourceManager, pm_config: dict, pm2_config: dict, mm_config: dict,
         
     pd.DataFrame({"Voltage [V]": voltages, "Detected Voltage [V]": detected_voltages, "Current [A]": currents, "Electrical Power [W]": powers, "Optical power [W]": opowers}).to_csv(filename, index=False)
     pm.set_volt(0)
+    rm.close()
 
 
 def main():

@@ -116,6 +116,7 @@ def main():
         columns=["Measurement Number", "Voltage applied",
                  "Current phase", "Phase change", "Phase change average"]
     ).to_csv(phase_fname, index=False)
+    rm.close()
 
 
 if __name__ == "__main__":

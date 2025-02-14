@@ -33,6 +33,7 @@ def run_ilme(rm: ResourceManager, pm_config: dict, folder: Path, ilme_config: Pa
         export_to_omr(omr_data, folder / f"heater_{volt}V.omr")
 
     pm.set_volt(0)
+    rm.close()
 
 def main():
     """ Entry point."""

@@ -60,6 +60,7 @@ def run_DSP7265_one(rm: ResourceManager, amp_config: Dict,
         "Current [A]": currents,
         "Optical Power [W]": opowers 
     }).to_csv(filename, index=False)
+    rm.close()
 
 def run_DSP7265_dual(rm: ResourceManager, amp_config: Dict,
                      pm1_config:Dict,pm2_config: Dict, filename: Path):
@@ -125,6 +126,7 @@ def run_DSP7265_dual(rm: ResourceManager, amp_config: Dict,
     amp.set_mag(0)
 
     df.to_csv(filename, index=False)
+    rm.close()
 
 
 def main():

@@ -54,6 +54,7 @@ def run_one_source_mzi(rm: ResourceManager, pm_config: dict, mm_config: dict, fi
     df["Power [W]"] = powers
 
     df.to_csv(filename, index=False)
+    rm.close()
 
 
 def main():

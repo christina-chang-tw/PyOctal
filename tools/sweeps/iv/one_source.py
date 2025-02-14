@@ -39,6 +39,7 @@ def run_6487(rm: ResourceManager, vs_config: dict, filename: Path):
     vs.set_laser_state(0) # turn the laser off
 
     pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents}).to_csv(filename)
+    rm.close()
 
 
 def run_E3640A(rm: ResourceManager, pm_config: Dict, filename: Path):
@@ -77,6 +78,7 @@ def run_E3640A(rm: ResourceManager, pm_config: Dict, filename: Path):
     pm.set_output_state(0) # turn laser off
 
     pd.DataFrame({"Voltage [V]": voltages, "Current [A]": currents}).to_csv(filename)
+    rm.close()
 
 def run_2400(rm: ResourceManager, smu_config: Dict, folder: Path):
     """
@@ -119,6 +121,7 @@ def run_2400(rm: ResourceManager, smu_config: Dict, folder: Path):
         "Voltage [V]": voltages,
         "Current [A]": currents
     }).to_csv(folder / "2400_currents.csv")
+    rm.close()
 
 def main():
     """ Entry point."""

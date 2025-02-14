@@ -119,6 +119,7 @@ def run_curr(rm: ResourceManager, amp_config: dict,
             pickle.dump(model, file)
 
     amp.set_output_state(state=0)
+    rm.close()
 
 
 def main():

@@ -39,6 +39,7 @@ def run_one_source(rm: ResourceManager, pm_config: dict, mm_config: dict, folder
 
     pm.set_volt(0)
     pm.set_output_state(0)
+    rm.close()
 
 def main():
     """ Entry point."""

@@ -55,6 +55,7 @@ def run_ring_assisted_mzi_res_mapping(rm: ResourceManager, rpm_config: dict, hpm
     heater_pm.set_output_state(0)
     ring_pm.set_volt(0)
     ring_pm.set_output_state(0)
+    rm.close()
 
 def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dict, mm_config: dict, folder: str):
     """ 
@@ -114,6 +115,7 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
     heater_pm.set_output_state(0)
     ring_pm.set_volt(0)
     ring_pm.set_output_state(0)
+    rm.close()
 
 def main():
     """ Entry point."""

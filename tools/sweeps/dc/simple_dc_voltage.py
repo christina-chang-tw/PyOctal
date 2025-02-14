@@ -68,6 +68,7 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: Path):
         sheet_names=["data"]
     )
     pm.set_volt(0)
+    rm.close()
 
 def main():
     """ Entry point."""

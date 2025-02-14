@@ -54,6 +54,7 @@ def main():
     elif isinstance(cls, AgilentE3640A):
         cls.setup(**setup)
     print("Setup complete.")
+    rm.close()
 
 if __name__ == "__main__":
     main()
