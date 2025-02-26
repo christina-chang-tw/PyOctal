@@ -66,17 +66,16 @@ class Agilent816xB(BaseInstrument):
         if reset:
             self.reset()
 
-        if not self.get_laser_state():
-            self.set_laser_state(1)
+        self.set_laser_state(1)
 
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(power)
         self.set_detect_avgtime(period=period) # avgtime = 200ms
         self.set_unit(source="dBm", sensor="Watt")
-        if not self.get_laser_state():
-            self.unlock("1234")
-            self.set_laser_state(1)
+
+        self.unlock("1234")
+        self.set_laser_state(1)
             
     def disconnect(self):
         """ Disconnect the instrument. """
@@ -300,7 +299,6 @@ class Agilent816xB(BaseInstrument):
         arg = np.argmin(powers)
 
         if arg == 0 or arg == len(powers)-1:
-            print(powers)
             print("Warning: Resonance not found. Please adjust the search range.")
 
         return search_wavelengths[arg]

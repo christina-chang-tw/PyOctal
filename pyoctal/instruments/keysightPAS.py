@@ -34,6 +34,7 @@ class BasePAS:
 
         else:
             self.engine = self.engine_mgr.NewEngine()
+            print(config_path)
             if config_path:
                 self.load_configuration(config_path.absolute())
             self.activate()
@@ -237,9 +238,10 @@ class KeysightILME(BasePAS):
         busy = True
 
         # Wait for the sweep to finish
-        while busy is True:
-            time.sleep(0.1)
+        while busy:
+            time.sleep(1)
             busy = self.engine.Busy
+  
 
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
@@ -256,7 +258,7 @@ class KeysightILME(BasePAS):
         xstart = IOMRGraph.xStart
         xstep = IOMRGraph.xStep
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
-        return Tuple(np.divide(xdata, 1e-9))
+        return tuple(np.divide(xdata, 1e-9))
 
 
 def export_to_omr(data, filename: Path):
