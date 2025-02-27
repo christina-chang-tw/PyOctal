@@ -24,6 +24,7 @@ custom/*
 *.egg-info/*
 *.pypirc
 dist/*
+build/*
 
 *.png
 
