@@ -509,10 +509,9 @@ class Agilent8163B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=1,
+    def __init__(self, rm: ResourceManager, src_num: int=1,
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr,
             rm=rm,
             src_num=src_num,
             src_chan=src_chan,
@@ -539,10 +538,9 @@ class Agilent8164B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=0,
+    def __init__(self, rm: ResourceManager, src_num: int=0,
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr,
             rm=rm,
             src_num=src_num,
             src_chan=src_chan,
