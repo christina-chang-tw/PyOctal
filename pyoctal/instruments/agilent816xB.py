@@ -80,6 +80,7 @@ class Agilent816xB(BaseInstrument):
     def unlock(self, code: str):
         """ Unlock the instrument with a code. """
         self.write(f"lock 0,{code}") # code = 1234
+        
 
     def set_wavelength(self, wavelength: float):
         """ Set both laser and detector wavelength [nm]. """

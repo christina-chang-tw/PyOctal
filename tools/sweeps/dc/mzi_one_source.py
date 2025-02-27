@@ -65,7 +65,7 @@ def main():
 
     mm_config = {
         "addr": "GPIB0::20::INSTR",
-        "wavelength": 1551.85
+        "wavelength": 1553.15
     }
 
     filename = Path(r"C:\Users\Lab2052\Desktop\Users\Christina \
@@ -74,7 +74,7 @@ def main():
     makedirs(filename.parent, exist_ok=True)
     rm = ResourceManager()
 
-    run_one_source_mzi(rm, pm_config, mm_config)
+    run_one_source_mzi(rm, pm_config, mm_config, filename=filename)
 
     
 

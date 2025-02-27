@@ -3,15 +3,16 @@
 # setup for 8163/4B lightwave meter
 816xB:
   class: Agilent8164B
-  addr: GPIB0::20::INSTR
-  wavelength: 1550 # [nm]1548.577,1551.793
+  # addr: GPIB0::20::INSTR
+  addr: TCPIP0::192.168.0.112::inst0::INSTR
+  wavelength: 1550 # [nm]1549.85,1551.793
   power: 10 # [dBm]
   period: 0.2 # [s]
   reset: False
   op_operation: False # if true, find operating point
   op_config:
     db: -3 # [dB]
-    wavelength: 1550 # [nm]
+    wavelength: 1530 # [nm]
     xrange: 0.1 # [nm] the span from the center wavelength
     step: 0.1 # [pm]
     speed: 5 # [nm/s]
@@ -20,5 +21,5 @@
 E3640A:
   class: AgilentE3640A
   addr: GPIB0::5::INSTR
-  voltage: 0 # [V]
-  current: 0.1 # [A]
+  voltage: 3 # [V]
+  current: 0.5 # [A]

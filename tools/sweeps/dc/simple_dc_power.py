@@ -14,10 +14,9 @@ import numpy as np
 from tqdm import tqdm
 import pandas as pd
 from pyvisa import ResourceManager
-import time
+import matplotlib.pyplot as plt
 
 from pyoctal.instruments import AgilentE3640A, Agilent8164B
-from pyoctal.utils.file_operations import export_to_excel
 
 
 def run(rm: ResourceManager, pm_config: dict, pm2_config: dict, mm_config: dict, filename: str):
@@ -49,16 +48,14 @@ def run(rm: ResourceManager, pm_config: dict, pm2_config: dict, mm_config: dict,
     voltages = np.sqrt(ideal_powers)
 
     mm.setup(reset=0, wavelength=mm_config["wavelength"], power=mm_config["power"], period=mm_config["period"])
-    pm2.set_params(pm2_config["v"], 0.5)
+    pm2.set_params(pm2_config["v"], 1)
     pm2.set_output_state(1)
     
     # check if the limits are set correctly
     if pm.get_params()[0] < pm_config["stop"]:
-        pm.set_params(pm_config["stop"], 0.5)
+        pm.set_params(pm_config["stop"], 1)
 
     # turn on the power meter if it is not already on
-    
-    
     pm.set_output_state(1)
 
     for volt in tqdm(voltages, desc="DC Sweep - linear power"):
@@ -75,8 +72,9 @@ def run(rm: ResourceManager, pm_config: dict, pm2_config: dict, mm_config: dict,
         powers.append(volt*curr)
         opowers.append(mm.get_detect_pow())
         
-    pd.DataFrame({"Voltage [V]": voltages, "Detected Voltage [V]": detected_voltages, "Current [A]": currents, "Electrical Power [W]": powers, "Optical power [W]": opowers}).to_csv(filename, index=False)
+    df = pd.DataFrame({"Voltage [V]": voltages, "Detected Voltage [V]": detected_voltages, "Current [A]": currents, "Electrical Power [W]": powers, "Optical power [W]": opowers})
     pm.set_volt(0)
+    return df
 
 
 def main():
@@ -84,33 +82,48 @@ def main():
     # power meter
     pm2_config = {
         "addr": "GPIB0::5::INSTR",
-        "v": 0.5
+        "v": 0
     }
 
     pm_config = {
         "addr": "GPIB0::6::INSTR",
         "start": 0, # [V]
-        "stop": 2.1, # [V]
-        "npts": 121,
+        "stop": 1, # [V]
+        "npts": 55,
     }
 
     # laser/detector source
     mm_config = {
         "addr": "GPIB0::20::INSTR",
-        "wavelength": 1547, # [nm]
+        "wavelength": 1555.65, # [nm]
         "power": 10, # [dBm]
         "period": 0.1, # [s]
     }
-    filename = f"{pm2_config['v']}v_g200_max_2.csv"
+    
+    filename = Path(f"s7_{pm2_config['v']}v_g200_3db_{mm_config['wavelength']}nm.csv")
 
-
-    folder =  r"C:\Users\Lab2052\Desktop\Users\Christina\2024-6-10\ramzi_g200"
+    folder =  Path(r"C:\Users\Lab2052\Desktop\Users\Christina\2024-10-1\ramzi_dc_sweep")
     # check that the directory exists first, else create it.
-    makedirs(filename.parent, exist_ok=True)
+    makedirs(folder, exist_ok=True)
     rm = ResourceManager()
 
     # sweep power in linear scale by specifying voltages and number of points
-    run(rm, pm_config, pm2_config, mm_config, join(folder, filename))
+    df = run(rm, pm_config, pm2_config, mm_config, folder / filename)
+    df.to_csv(folder / filename, index=False)
+    
+    
+    _, ax = plt.subplots(1, 2, figsize=(10, 5))
+    ax[1].plot(df["Electrical Power [W]"], df["Optical power [W]"])
+    ax[0].plot(df["Voltage [V]"], df["Optical power [W]"])
+    
+    ax[1].set_xlabel("Electrical Power [W]")
+    ax[1].set_ylabel("Optical Power [W]")
+    
+    ax[0].set_xlabel("Voltage [V]")
+    ax[0].set_ylabel("Optical Power [W]")
+
+    
+    plt.show()
 
 if __name__ == "__main__":
     main()

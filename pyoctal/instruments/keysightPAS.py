@@ -21,34 +21,44 @@ class BasePAS:
     server_addr: str
         The address of the software
     """
-    def __init__(self, server_addr: str, config_path: Path=None):
+    def __init__(self, server_addr: str, config: dict=None, config_path: Path=None):
         # connect to Engine Manager
         self.engine_mgr = win32com.client.Dispatch(server_addr)
         # List all engines running
         self.engine_ids = self.engine_mgr.EngineIDs
-        self.connect(config_path)
+        self.connect(config, config_path)
 
-    def connect(self, config_path: Path):
+    def connect(self, config: dict, config_path: Path):
         """ Connect to the engine. """
         # always connect to the first engine
         if self.engine_ids:
             self.engine = self.engine_mgr.OpenEngine(self.engine_ids[0])
-
+            if config:
+                self.engine.WavelengthStart = config.get("start", 0)*1e-09
+                self.engine.WavelengthStop = config.get("stop", 0)*1e-09
+                self.engine.WavelengthStep = config.get("step", 0)*1e-012
+                self.engine.TLSPower = pow(10, (config.get("power", 0)/10))*1e-03
+                self.engine.NumberOfScans = pow(10, (config.get("number of scans", 0)/10))*1e-03
+                # self.engine.PWMRanges = pow(10, (config.get("power range", 0)/10))*1e-03
+                self.engine.RangeDecrement = pow(10, (config.get("power decrement", 0)/10))*1e-03
+                self.engine.SweepRate = config.get("sweep rate", -1)
+                
+                
         else:
             self.engine = self.engine_mgr.NewEngine()
             if config_path:
                 self.load_configuration(config_path.absolute())
+        
             self.activate()
             activating = 0
             start = time.time()
 
             # Check engine activation status
             while activating == 0:
-                time.sleep(0.5)
+                time.sleep(0.5) 
                 activating = self.engine_state()
                 if time.time() - start > 30:
                     raise TimeoutError("Timeout error: check devices connection")
-
 
     def activate(self):
         """ Active the engine. """
@@ -90,9 +100,6 @@ class BasePAS:
 
     def __enter__(self):
         return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.quit()
 
 class KeysightILME(BasePAS):
     """
@@ -236,12 +243,10 @@ class KeysightILME(BasePAS):
         col_name: str
             Column name 
         """
-        busy = True
 
         # Wait for the sweep to finish
-        while busy is True:
+        while self.engine.Busy:
             time.sleep(0.1)
-            busy = self.engine.Busy
 
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")
@@ -258,7 +263,7 @@ class KeysightILME(BasePAS):
         xstart = IOMRGraph.xStart
         xstep = IOMRGraph.xStep
         xdata = [xstart + i * xstep for i in range(data_per_curve)]
-        return Tuple(np.divide(xdata, 1e-9))
+        return tuple(np.divide(xdata, 1e-9))
 
 
 def export_to_omr(data, filename: Path):

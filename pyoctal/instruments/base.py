@@ -103,7 +103,7 @@ class BaseInstrument:
             self._instr = self._rm.open_resource(self._addr)
             self._instr.read_termination = self._read_termination
             self._instr.write_termination = self._write_termination
-            instr_type = self._instr.resource_info[3][:4]
+            instr_type = self._instr.resource_info[3].split("::")[0][:-1]
 
             known_type = ("ASRL", "GPIB", "USB", "PXI", "VXI", "TCPIP")
 
