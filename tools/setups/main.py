@@ -41,13 +41,17 @@ def main():
     # Import the setup class
     rm = ResourceManager()
     cls = globals()[setup.pop("class")]
-    cls = cls(addr=setup.pop("addr"), rm=rm)
+    cls = cls(rm=rm)
+    cls.connect(setup.pop("addr")) 
 
     # Setup the instrument
-    if isinstance(cls, Union[Agilent8163B, Agilent8164B]):
+    if type(cls) in (Agilent8163B, Agilent8164B):
+
         if setup["op_operation"]:
             wavelength = cls.find_op_wavelength(**setup["op_config"])
             setup["wavelength"] = wavelength
+        setup.pop("op_operation")
+        setup.pop("op_config")
         else:
             setup.pop("op_config")
             setup.pop("op_operation")
@@ -55,7 +59,10 @@ def main():
 
     elif isinstance(cls, AgilentE3640A):
         cls.setup(**setup)
+    else:
+        raise ValueError("Instrument not recognised")
     print("Setup complete.")
+    rm.close()
 
 if __name__ == "__main__":
     main()

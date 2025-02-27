@@ -20,8 +20,8 @@ class Keysight86100D(BaseInstrument):
         The clock recovery number
     """
 
-    def __init__(self, addr: str, rm: ResourceManager, chan: int=1, clk_num: int=1):
-        super().__init__(rsc_addr=addr, rm=rm)
+    def __init__(self, rm: ResourceManager, chan: int=1, clk_num: int=1):
+        super().__init__(rm=rm)
         self.chan = chan
         self.clk_num = clk_num
         self.channel = f"channel{chan}"

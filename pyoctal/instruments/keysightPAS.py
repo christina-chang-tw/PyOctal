@@ -26,7 +26,7 @@ class BasePAS:
         self.engine_mgr = win32com.client.Dispatch(server_addr)
         # List all engines running
         self.engine_ids = self.engine_mgr.EngineIDs
-        self.connect(config, config_path)
+        self.connect(config_path)
 
     def connect(self, config: dict, config_path: Path):
         """ Connect to the engine. """
@@ -46,6 +46,7 @@ class BasePAS:
                 
         else:
             self.engine = self.engine_mgr.NewEngine()
+            print(config_path)
             if config_path:
                 self.load_configuration(config_path.absolute())
         
@@ -245,8 +246,9 @@ class KeysightILME(BasePAS):
         """
 
         # Wait for the sweep to finish
-        while self.engine.Busy:
+        while busy is True:
             time.sleep(0.1)
+            busy = self.engine.Busy
 
         IOMRFile = self.engine.MeasurementResult
         IOMRGraph = IOMRFile.Graph("RXTXAvgIL")

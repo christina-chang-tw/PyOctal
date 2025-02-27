@@ -21,8 +21,10 @@ from pyoctal.utils.file_operations import export_to_excel
 
 def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: Path):
     """ Run only with instrument. Require one voltage source """
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
-    mm = Agilent8163B(addr=mm_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
+    mm = Agilent8163B(rm=rm)
+    mm.connect(addr=mm_config["addr"])
 
 
     currents = []
@@ -66,15 +68,16 @@ def run(rm: ResourceManager, pm_config: dict, mm_config: dict, filename: Path):
         sheet_names=["data"]
     )
     pm.set_volt(0)
+    rm.close()
 
 def main():
     """ Entry point."""
     # power meter
     pm_config = {
-        "addr": "GPIB0::5::INSTR",
+        "addr": "GPIB0::4::INSTR",
         "start": 0, # [V]
-        "stop": 8, # [V]
-        "step": 0.025, # [V]
+        "stop": 20, # [V]
+        "step": 1, # [V]
     }
 
     # laser/detector source
@@ -85,7 +88,7 @@ def main():
         "period": 0.1, # [s]
     }
 
-    filename = Path(r"Z:\Dave T\pointcloud_mmi\file1")
+    filename = Path(r"Y:\Christina\ktn tests\KTN 2024 Nov\09.12.2024")
 
     # check that the directory exists first, else create it.
     makedirs(filename.parent, exist_ok=True)

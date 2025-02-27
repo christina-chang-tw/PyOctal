@@ -15,9 +15,12 @@ def run_ring_assisted_mzi_res_mapping(rm: ResourceManager, rpm_config: dict, hpm
     Try to see how the output power of a specific wavelength
     changes with the voltage of the MZI and the ring.
     """
-    heater_pm = AgilentE3640A(addr=hpm_config.pop("addr"), rm=rm)
-    ring_pm = AgilentE3640A(addr=rpm_config.pop("addr"), rm=rm)
+    heater_pm = AgilentE3640A(rm=rm)
+    heater_pm.connect(addr=hpm_config.pop("addr"))
+    ring_pm = AgilentE3640A(rm=rm)
+    ring_pm.connect(addr=rpm_config.pop("addr"))
     ilme = KeysightILME()
+    ilme.connect()
     ilme.activate()
 
     # power in linear scale
@@ -52,6 +55,7 @@ def run_ring_assisted_mzi_res_mapping(rm: ResourceManager, rpm_config: dict, hpm
     heater_pm.set_output_state(0)
     ring_pm.set_volt(0)
     ring_pm.set_output_state(0)
+    rm.close()
 
 def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dict, mm_config: dict, folder: str):
     """ 
@@ -111,6 +115,7 @@ def run_ring_assisted_mzi(rm: ResourceManager, rpm_config: dict, hpm_config: dic
     heater_pm.set_output_state(0)
     ring_pm.set_volt(0)
     ring_pm.set_output_state(0)
+    rm.close()
 
 def main():
     """ Entry point."""

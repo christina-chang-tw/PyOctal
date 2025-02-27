@@ -80,28 +80,30 @@ def run_curr(rm: ResourceManager, amp_config: dict,
     """
     currents = np.linspace(amp_config["start"], amp_config["stop"], amp_config["step"])
 
-    amp = FiberlabsAMP(addr=amp_config["addr"], rm=rm)
+    amp = FiberlabsAMP(rm=rm)
+    amp.connect(addr=amp_config["addr"])
     amp.set_ld_mode(chan=1, mode=amp_config.get("mode"))
     amp.set_all_curr(curr=0)
     amp.set_output_state(state=1)
+    
+    ilme = KeysightILME()
+    ilme.connect(config_path=ilme_config)
 
-    with KeysightILME(config_path=ilme_config) as ilme:
-        # initialise a 2d loss array for model training
+    if prediction:
+        loss_2d_arr = np.zeros(shape=(ilme.get_dpts(), len(currents)))
+
+    for j, curr in tqdm(enumerate(currents), desc="Currents", total=len(currents)):
+        amp.set_curr_smart(mode=amp_config.get("mode"), val=curr)
+        ilme.start_meas()
+        wavelength, loss, omr_data = ilme.get_result()
+
         if prediction:
-            loss_2d_arr = np.zeros(shape=(ilme.get_dpts(), len(currents)))
+            loss_2d_arr[:,j] = loss
 
-        for j, curr in tqdm(enumerate(currents), desc="Currents", total=len(currents)):
-            amp.set_curr_smart(mode=amp_config.get("mode"), val=curr)
-            ilme.start_meas()
-            wavelength, loss, omr_data = ilme.get_result()
-
-            if prediction:
-                loss_2d_arr[:,j] = loss
-
-            pd.DataFrame(
-                {"Wavelength": wavelength, "Loss [dB]": loss}
-            ).to_csv(folder / f"{curr}A.csv", index=False)
-            export_to_omr(omr_data, filename=folder / f"{curr}A.omr")
+        pd.DataFrame(
+            {"Wavelength": wavelength, "Loss [dB]": loss}
+        ).to_csv(folder / f"{curr}A.csv", index=False)
+        export_to_omr(omr_data, filename=folder / f"{curr}A.omr")
 
     if prediction:
         dpts = []
@@ -117,6 +119,7 @@ def run_curr(rm: ResourceManager, amp_config: dict,
             pickle.dump(model, file)
 
     amp.set_output_state(state=0)
+    rm.close()
 
 
 def main():

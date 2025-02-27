@@ -18,8 +18,8 @@ class AmetekDSP7230(BaseInstrument):
         Pyvisa resource manager
     """
 
-    def __init__(self, addr: str, rm: ResourceManager):
-        super().__init__(rsc_addr=addr, rm=rm)
+    def __init__(self, rm: ResourceManager):
+        super().__init__(rm=rm)
 
     def get_mag(self) -> float:
         """ Get the magnitude. """

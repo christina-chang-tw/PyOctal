@@ -16,7 +16,8 @@ def run_ilme(rm: ResourceManager, pm_config: dict, ilme_config: dict, folder: Pa
     """ Run with ILME engine """
     voltages = np.arange(pm_config["start"], pm_config["stop"]+pm_config["step"], pm_config["step"])
 
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
     pm.set_output_state(1)
 
     ilme = KeysightILME(config=ilme_config, config_path=ilme_config_path)
@@ -26,15 +27,18 @@ def run_ilme(rm: ResourceManager, pm_config: dict, ilme_config: dict, folder: Pa
 
         ilme.start_meas()
         _, _, omr_data = ilme.get_result()
+        ilme.start_meas()
+        _, _, omr_data = ilme.get_result()
 
         export_to_omr(omr_data, folder / f"r{volt}V.omr")
 
     pm.set_volt(0)
+    rm.close()
 
 def main():
     """ Entry point."""
     pm_config = {
-        "addr": "GPIB0::6::INSTR",
+        "addr": "GPIB0::4::INSTR",
         "start": 0, # [V]
         "stop": 4, # [V]
         "step": 0.5, # [V]

@@ -5,19 +5,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyoctal"
-version = "0.0.2"
+version = "0.0.6"
 authors = [
     {name = "Tzu-Yun Chang", email = "tyc1g20@soton.ac.uk"}
 ]
 description = "Optical chip automated testing library equipped with a wide range of instruments interface."
 readme = "README.md"
-requires-python = ">=3.6"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: Microsoft :: Windows",
     "Development Status :: 2 - Pre-Alpha",
 ]
+requires-python = ">=3.6"
+#license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
 
 [project.urls]
 Repository = "https://github.com/christina-chang-tw/PyOctal"
@@ -30,13 +31,11 @@ tests = [
     'pyvisa-sim',
 ]
 
-
 [tool.setuptools]
 packages = [
     "pyoctal", 
     "pyoctal.instruments", 
-    "pyoctal.util", 
-    "pyoctal.sweeps"
+    "pyoctal.utils", 
 ]
 
 [tool.setuptools.dynamic]

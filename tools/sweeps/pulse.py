@@ -45,8 +45,10 @@ def step_amount_calculation(phase_change_avg: float):
 
 def get_pulse_response_sw(rm: ResourceManager, mm_config: dict, pm_config: dict):
     """ Get pulse response at a single wavelength. """
-    mm = Agilent8163B(addr=mm_config["addr"], rm=rm)
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
+    mm = Agilent8163B(rm=rm)
+    mm.connect(addr=mm_config["addr"])
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
 
     mm.set_detect_autorange(auto=True)
     mm.set_wavelength(mm_config["wavelength"])
@@ -114,6 +116,7 @@ def main():
         columns=["Measurement Number", "Voltage applied",
                  "Current phase", "Phase change", "Phase change average"]
     ).to_csv(phase_fname, index=False)
+    rm.close()
 
 
 if __name__ == "__main__":

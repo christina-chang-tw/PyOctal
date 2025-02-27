@@ -22,27 +22,20 @@ This package supports visa communications with a varitey of instruments.
 
 
 ## More About PyOctal
-This is a tool allowing you to do three things: remotely setup your instruments, run different types of sweeps, and analyse the results afterwards. This is still at its infancy stage so is still lacking a lot of functions which are widely used by the users. Please suggest and we would love to help!
+This is a tool allowing you to do: remotely setup your instruments and run the sweeps. Please make some suggestions on what you would like to accomplish and we would love to help!
 
 Take a look at [here](https://github.com/christina-chang-tw/PyOctal/blob/master/pyoctal/instruments/README.md) for detailed information of supported instruments.
 
 ## Directory Structure
 ```
 .
-<folders>
-├── config                   # all configuration files
-│   └── ...                         # read the README.md
-├── pyoctal                  # core library
-│   └── ...                         # read the README.md
-├── results                  # all test results should be stored here <empty>
-├── tools                    # all test results should be stored here
-│   |── plot_main.py                # plotting graphs
-│   |── instr_main.py               # simple interface for setting up instruments
-│   └── sweep_main.py               # interface for running sweeps
+<folder>
+├── pyoctal                  # core library - low-level definitions
+├── tools                    # all sweep tests are stored here
+├── tests                    # tests to run when commiting to Github
 <files>
 ├── pyproject.toml           # pyoctal package setup 
-├── requirements.txt         # contain all required python packages for this repository <need to be amended>
-└── venv_setup.py            # set up virtual environment <not working>
+├── requirements.txt         # contain all required python packages for this repository
 ```
 
 ## Installation
@@ -55,7 +48,10 @@ This repository only works when two conditions are satisfied:
 - Windows OS machine - this is neccessary for pywin32 module
 - python version >= 3.6 - this is neccessary for f-string formatting
 
-**Method 1 - Install Anaconda (Preferred)**:
+**Method 1 - Install Python**
+Run `python -m pip install requirements.txt`.
+
+**Method 1 - Install Anaconda**:
 
 The Anaconda version must
 - Support your current Windows OS system
@@ -130,15 +126,6 @@ Getting the repository cloned to a local direcotory
 **Method 2 - Download from Github**:
 
 You can download a zip file containing this repository by navigating to <> Code tab and then select Local and Download ZIP.
-
-**Method 3 - Pip Installation**
-
-This package supports installation using pip allowing users to expand the project further. The usage is just like other python packages.
-
-```bash
-> python -m pip install pyoctal
-```
-
 
 ## Getting Started
 

@@ -28,8 +28,10 @@ def run_DSP7265_one(rm: ResourceManager, amp_config: Dict,
     filename: Path
         The filename to save the data to
     """
-    pm = AgilentE3640A(addr=pm_config["addr"], rm=rm)
-    amp = AmetekDSP7265(addr=amp_config["addr"], rm=rm)
+    pm = AgilentE3640A(rm=rm)
+    pm.connect(addr=pm_config["addr"])
+    amp = AmetekDSP7265(rm=rm)
+    amp.connect(addr=amp_config["addr"])
 
     pm.set_volt(0)
     pm.set_output_state(1)
@@ -58,6 +60,7 @@ def run_DSP7265_one(rm: ResourceManager, amp_config: Dict,
         "Current [A]": currents,
         "Optical Power [W]": opowers 
     }).to_csv(filename, index=False)
+    rm.close()
 
 def run_DSP7265_dual(rm: ResourceManager, amp_config: Dict,
                      pm1_config:Dict,pm2_config: Dict, filename: Path):
@@ -77,9 +80,12 @@ def run_DSP7265_dual(rm: ResourceManager, amp_config: Dict,
     filename: Path
         The filename to save the data to
     """
-    pm1 = AgilentE3640A(addr=pm1_config["addr"], rm=rm)
-    pm2 = AgilentE3640A(addr=pm2_config["addr"], rm=rm)
-    amp = AmetekDSP7265(addr=amp_config["addr"], rm=rm)
+    pm1 = AgilentE3640A(rm=rm)
+    pm1.connect(addr=pm1_config["addr"])
+    pm2 = AgilentE3640A(rm=rm)
+    pm2.connect(addr=pm2_config["addr"])
+    amp = AmetekDSP7265(rm=rm)
+    amp.connect(addr=amp_config["addr"])
 
     pm1.set_volt(0)
     pm1.set_output_state(1)
@@ -120,6 +126,7 @@ def run_DSP7265_dual(rm: ResourceManager, amp_config: Dict,
     amp.set_mag(0)
 
     df.to_csv(filename, index=False)
+    rm.close()
 
 
 def main():

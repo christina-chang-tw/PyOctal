@@ -4,6 +4,7 @@ import time
 
 import numpy as np
 from scipy.signal import find_peaks
+from pyvisa import ResourceManager
 
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
@@ -49,9 +50,9 @@ class Agilent816xB(BaseInstrument):
     sens_chan: int
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int,
+    def __init__(self, rm: ResourceManager, src_num: int,
                  src_chan: int, sens_num: int, sens_chan: int):
-        super().__init__(rsc_addr=addr, rm=rm)
+        super().__init__(rm=rm)
         self.src_num = src_num
         self.src_chan = src_chan
         self.sens_num = sens_num
@@ -65,17 +66,20 @@ class Agilent816xB(BaseInstrument):
         if reset:
             self.reset()
 
-        if not self.get_laser_state():
-            self.set_laser_state(1)
+        self.set_laser_state(1)
 
         self.set_detect_autorange(1)
         self.set_wavelength(wavelength=wavelength)
         self.set_laser_pow(power)
         self.set_detect_avgtime(period=period) # avgtime = 200ms
         self.set_unit(source="dBm", sensor="Watt")
-        if not self.get_laser_state():
-            self.unlock("1234")
-            self.set_laser_state(1)
+
+        self.unlock("1234")
+        self.set_laser_state(1)
+            
+    def disconnect(self):
+        """ Disconnect the instrument. """
+        self.write("display:lockout off")
 
     def unlock(self, code: str):
         """ Unlock the instrument with a code. """
@@ -91,7 +95,6 @@ class Agilent816xB(BaseInstrument):
         """ Set the power unit of the laser and detector. """
         self.write(f"{self.laser}:power:unit {source}") # set the source unit in dBm
         self.write(f"{self.detect}:power:unit {sensor}") # set sensor unit
-
 
     ### DETECTOR COMMANDS ###############################
     def set_detect_avgtime(self, period: float):
@@ -180,7 +183,7 @@ class Agilent816xB(BaseInstrument):
 
     def set_laser_unit(self, unit: str):
         """ Set the laser unit. """
-        self.write(f"{self.laser}:power:unit {unit}") # set the source unit in dBm
+        self.write(f"{self.laser}:power:unit {unit}")
 
     def get_laser_data(self, mode: str) -> List:
         """ Get the laser data. """
@@ -297,7 +300,6 @@ class Agilent816xB(BaseInstrument):
         arg = np.argmin(powers)
 
         if arg == 0 or arg == len(powers)-1:
-            print(powers)
             print("Warning: Resonance not found. Please adjust the search range.")
 
         return search_wavelengths[arg]
@@ -508,10 +510,9 @@ class Agilent8163B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=1,
+    def __init__(self, rm: ResourceManager, src_num: int=1,
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr,
             rm=rm,
             src_num=src_num,
             src_chan=src_chan,
@@ -538,10 +539,9 @@ class Agilent8164B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=0,
+    def __init__(self, rm: ResourceManager, src_num: int=0,
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr,
             rm=rm,
             src_num=src_num,
             src_chan=src_chan,

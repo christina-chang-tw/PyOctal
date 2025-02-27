@@ -20,8 +20,8 @@ class FiberlabsAMP(BaseInstrument):
     rm:
         Pyvisa resource manager
     """
-    def __init__(self, addr: str, rm: ResourceManager):
-        super().__init__(rsc_addr=addr, rm=rm, read_termination="")
+    def __init__(self, rm: ResourceManager):
+        super().__init__(rm=rm, read_termination="")
         self._chan_curr_max = 1048 # [mA]
         self._chan_power_max = 398.11 # [mW]
     
