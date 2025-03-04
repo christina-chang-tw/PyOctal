@@ -73,9 +73,14 @@ class Agilent816xB(BaseInstrument):
         self.set_laser_pow(power)
         self.set_detect_avgtime(period=period) # avgtime = 200ms
         self.set_unit(source="dBm", sensor="Watt")
-        if not self.get_laser_state():
-            self.unlock("1234")
-            self.set_laser_state(1)
+
+        self.unlock("1234")
+        self.set_laser_state(1)
+
+            
+    def disconnect(self):
+        """ Disconnect the instrument. """
+        self.write("display:lockout off")
 
     def unlock(self, code: str):
         """ Unlock the instrument with a code. """
@@ -510,10 +515,9 @@ class Agilent8163B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=1,
+    def __init__(self, rm, src_num: int=1,
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr,
             rm=rm,
             src_num=src_num,
             src_chan=src_chan,
@@ -540,10 +544,9 @@ class Agilent8164B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int=0,
+    def __init__(self, rm, src_num: int=0,
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
-            addr=addr,
             rm=rm,
             src_num=src_num,
             src_chan=src_chan,

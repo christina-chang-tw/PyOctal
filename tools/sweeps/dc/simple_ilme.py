@@ -30,7 +30,7 @@ def run_ilme(rm: ResourceManager, pm_config: dict, ilme_config: dict, folder: Pa
         ilme.start_meas()
         _, _, omr_data = ilme.get_result()
 
-        export_to_omr(omr_data, folder / f"r{volt}V.omr")
+        export_to_omr(omr_data, folder / f"ring_{volt}V.omr")
 
     pm.set_volt(0)
     rm.close()

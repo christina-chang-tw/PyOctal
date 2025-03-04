@@ -7,6 +7,10 @@
   addr: TCPIP0::192.168.0.112::inst0::INSTR
   wavelength: 1550 # [nm]1549.85,1551.793
   power: 10 # [dBm]
+  class: Agilent8163B
+  addr: GPIB0::20::INSTR
+  wavelength: 1550 # [nm]1548.577,1551.793
+  power: 0 # [dBm]
   period: 0.2 # [s]
   reset: False
   op_operation: False # if true, find operating point

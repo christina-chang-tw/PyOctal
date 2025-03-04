@@ -145,3 +145,12 @@ class Keithley6487(BaseInstrument):
         data = self.read() # Trigger and return one reading.
         return float(data.split(",")[1].strip('OHM'))
 
+
+
+def main():
+    instr = Keithley6487("GPIB0::22::INSTR")
+    instr.set_laser_volt(5)
+
+
+if __name__ == "__main__":
+    main()

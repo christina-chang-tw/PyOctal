@@ -42,11 +42,10 @@ def main():
     rm = ResourceManager()
     cls = globals()[setup.pop("class")]
     cls = cls(rm=rm)
-    cls.connect(setup.pop("addr")) 
+    cls.connect(addr=setup.pop("addr")) 
 
     # Setup the instrument
     if type(cls) in (Agilent8163B, Agilent8164B):
-
         if setup["op_operation"]:
             wavelength = cls.find_op_wavelength(**setup["op_config"])
             setup["wavelength"] = wavelength
