@@ -516,7 +516,11 @@ class Agilent8163B(Agilent816xB):
         Sensor channel
     """
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     def __init__(self, rm, src_num: int=1,
+=======
+    def __init__(self, rm: ResourceManager, src_num: int=1,
+>>>>>>> Stashed changes
 =======
     def __init__(self, rm: ResourceManager, src_num: int=1,
 >>>>>>> Stashed changes
@@ -549,7 +553,11 @@ class Agilent8164B(Agilent816xB):
         Sensor channel
     """
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     def __init__(self, rm, src_num: int=0,
+=======
+    def __init__(self, rm: ResourceManager, src_num: int=0,
+>>>>>>> Stashed changes
 =======
     def __init__(self, rm: ResourceManager, src_num: int=0,
 >>>>>>> Stashed changes
