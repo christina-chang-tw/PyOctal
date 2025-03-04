@@ -4,6 +4,7 @@ import time
 
 import numpy as np
 from scipy.signal import find_peaks
+from pyvisa import ResourceManager
 
 from pyoctal.instruments.base import BaseInstrument
 from pyoctal.utils.error import PARAM_INVALID_ERR, error_message
@@ -49,9 +50,9 @@ class Agilent816xB(BaseInstrument):
     sens_chan: int
         Sensor channel
     """
-    def __init__(self, addr: str, rm, src_num: int,
+    def __init__(self, rm: ResourceManager, src_num: int,
                  src_chan: int, sens_num: int, sens_chan: int):
-        super().__init__(rsc_addr=addr, rm=rm)
+        super().__init__(rm=rm)
         self.src_num = src_num
         self.src_chan = src_chan
         self.sens_num = sens_num
@@ -86,6 +87,9 @@ class Agilent816xB(BaseInstrument):
         """ Unlock the instrument with a code. """
         self.write(f"lock 0,{code}") # code = 1234
         
+    def disconnect(self):
+        pass
+        
 
     def set_wavelength(self, wavelength: float):
         """ Set both laser and detector wavelength [nm]. """
@@ -117,9 +121,7 @@ class Agilent816xB(BaseInstrument):
 
     def set_detect_unit(self, unit: str):
         """ Set the detector power unit. """
-        string = f"{self.detect}:power:unit {unit}"
-        print(string)
-        self.write(string) # set detector unit
+        self.write(f"{self.detect}:power:unit {unit}") # set detector unit
 
     def set_detect_calibration_val(self, value: float):
         """ Set the detector calibration value [dB]. """
@@ -179,7 +181,7 @@ class Agilent816xB(BaseInstrument):
     
     def set_laser_state(self, state: bool):
         """ Set the laser output state. """
-        self.write(f"{self.laser}:power:state {state}")
+        self.write(f"{self.laser}:power:state {int(state)}")
 
     def set_laser_pow(self, power: float):
         """ Set the laser power [dBm]. """
@@ -304,7 +306,6 @@ class Agilent816xB(BaseInstrument):
         arg = np.argmin(powers)
 
         if arg == 0 or arg == len(powers)-1:
-            print(powers)
             print("Warning: Resonance not found. Please adjust the search range.")
 
         return search_wavelengths[arg]
@@ -327,7 +328,6 @@ class Agilent816xB(BaseInstrument):
         self.set_detect_autorange(1)
         self.set_detect_avgtime(200e-03)
         self.set_laser_pow(power)
-        self.set_detect_autorange(1)
 
         for wavelength in range(lambda_start, lambda_stop + lambda_step, lambda_step):
             tolerance = 0.001 # detector stability tolerance
@@ -515,7 +515,11 @@ class Agilent8163B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
+<<<<<<< Updated upstream
     def __init__(self, rm, src_num: int=1,
+=======
+    def __init__(self, rm: ResourceManager, src_num: int=1,
+>>>>>>> Stashed changes
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
             rm=rm,
@@ -544,7 +548,11 @@ class Agilent8164B(Agilent816xB):
     sens_chan: int, default: 1
         Sensor channel
     """
+<<<<<<< Updated upstream
     def __init__(self, rm, src_num: int=0,
+=======
+    def __init__(self, rm: ResourceManager, src_num: int=0,
+>>>>>>> Stashed changes
                  src_chan: int=1, sens_num: int=2, sens_chan: int=1):
         super().__init__(
             rm=rm,

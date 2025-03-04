@@ -55,26 +55,26 @@ class Keithley6487(BaseInstrument):
 
 
     ## Laser Commands ######################################
-    def set_laser_state(self, state: bool):
-        """ Set the laser output state. """
+    def set_output_state(self, state: bool):
+        """ Set the voltage output state. """
         self.write(f"source:voltage:state {state}")
 
-    def set_laser_range(self, r: int):
+    def set_volt_range(self, r: int):
         """ Set the laser voltage range. """
         self.value_check(r, (10, 50, 500))
         self.write(f"source:voltage:range {r}")
                 
-    def set_laser_volt(self, volt: float):
-        """ Set the laser output voltage. """
+    def set_volt(self, volt: float):
+        """ Set the voltage output level. """
         self.value_check(volt, (-500, 500))
         self.write(f"source:voltage:level {volt}")
 
-    def set_laser_ilim(self, curr_lim: float):
+    def set_volt_ilim(self, curr_lim: float):
         """ Set the laser current limit. """
         self.value_check(curr_lim, (-500, 500))
         self.write(f"source:voltage:ilimit {curr_lim}")
 
-    def get_laser_volt(self) -> float:
+    def get_volt(self) -> float:
         """ Get the laser voltage. """
         return self.query_float("source:voltage:level?")
     
@@ -136,10 +136,10 @@ class Keithley6487(BaseInstrument):
         self.set_sys_zcor_acq() # Use last reading taken as zero correct value.
         self.set_sys_zcor_state(1) # Perform zero correction.
         self.set_detect_autorange(1) # Enable auto range.
-        self.set_laser_range(r=10)
-        self.set_laser_volt(volt=10)
-        self.set_laser_ilim(curr_lim=2.5e-03)
-        self.set_laser_state(1)
+        self.set_volt_range(r=10)
+        self.set_volt(volt=10)
+        self.set_volt_ilim(curr_lim=2.5e-03)
+        self.set_output_state(1)
         self.set_sys_zch_state(0) # Disable zero check.
 	
         data = self.read() # Trigger and return one reading.

@@ -86,6 +86,8 @@ class BaseInstrument:
     def __init__(self, rm: ResourceManager, **kwargs):
         # Communicate with the resource and identify it
         self._addr = None
+        self._instr = None
+        self._identity = None
         self._rm = rm
         self._rm.timeout = 25e+03
         # check which type of resources it is connecting to and automatically determine the read and write termination
@@ -116,6 +118,8 @@ class BaseInstrument:
             raise ValueError(f"Error code {RESOURCE_ADDR_UNKNOWN_ERR:x}: \
                             {error_message[RESOURCE_ADDR_UNKNOWN_ERR]}")
 
+    def disconnect(self):
+        pass
 
     def list_resources(self):
         return self._rm.list_resources()
