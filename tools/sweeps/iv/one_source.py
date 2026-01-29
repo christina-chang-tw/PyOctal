@@ -18,8 +18,8 @@ def run_6487(rm: ResourceManager, vs_config: dict, filename: Path):
     vs = Keithley6487(rm=rm)
     vs.connect(addr=vs_config["addr"])
 
-    vs.set_laser_volt(0)
-    vs.set_laser_state(1) # turn the laser on
+    vs.set_volt(0)
+    vs.set_output_state(1)
 
     voltages = np.linspace(vs_config["start"],
                            vs_config["stop"] + vs_config["step"], vs_config["step"])
