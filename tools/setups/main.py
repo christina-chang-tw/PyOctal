@@ -51,9 +51,6 @@ def main():
             setup["wavelength"] = wavelength
         setup.pop("op_operation")
         setup.pop("op_config")
-        else:
-            setup.pop("op_config")
-            setup.pop("op_operation")
         cls.setup(**setup)
 
     elif isinstance(cls, AgilentE3640A):
